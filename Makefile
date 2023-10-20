@@ -72,7 +72,6 @@ $(MKDEPENDTARGET): $(MKDEPEND_OBJECTS)
 	$(LD) -o $(MKDEPENDTARGET) $(MKDEPEND_OBJECTS) $(LDFLAGS)
 
 check_targ_cc:
-	@if test "$(TARG_CC)" = ""; then echo "TARG_CC is not set - please review Makefile.def"; exit 1; fi; exit 0
 
 #---------------------------------------------------------------------------
 # special rules for objects dependant on string resource files

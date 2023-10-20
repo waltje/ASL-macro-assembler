@@ -1,0 +1,29 @@
+This code can now be built for Windows using Microsoft Visual Studio.
+
+The build process is not fully finished yet, because we still need the
+.dep and .rsc files built by other dev tools (such as MSYS-MinGW), but
+this will be fixed soon.
+
+So, for now:
+
+1.  DO NOT remove the *.dep or *.rsc files.  If you did, you will have
+    to either restore them, or build them using MSYS-MinGW or such.
+
+2.  Copy the file Makefile.def-samples/Makefile.def-msvc to Makefile.def
+
+3.  Run the MSVC-specific Makefile:
+
+       nmake -f Makefile.MSVC
+
+    and it will build all EXE files for you.
+
+4.  Note that the default ASL installation folder is set to C:\ASL ; you
+    can change this in the Makefile.def file, at the bottom.
+
+Tested with Microsoft Visual Studio 2019 and up, on x86, x64, arm and arm64
+platforms.
+
+I will remove the (1) limitation as soon as I feel less lazy ;-)
+
+Fred N. van Kempen, <waltje@varcem.com>
+Last updated: 2023/10/19

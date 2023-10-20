@@ -18,7 +18,7 @@
 #ifndef __MUNIX__
 #include <stdlib.h>
 #endif
-#if !defined ( __MSDOS__ ) && !defined( __IBMC__ )
+#if !defined ( __MSDOS__ ) && !defined( __IBMC__ ) && !defined(_WIN32)
 #include <unistd.h>
 #endif
 #include <math.h>

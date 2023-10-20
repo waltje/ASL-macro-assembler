@@ -8,6 +8,10 @@
 /*                                                                           */
 /*****************************************************************************/
 
+#ifdef _MSC_VER
+# include <windows.h>
+#endif
+
 #undef DEBUG_NLS
 
 #include "stdinc.h"

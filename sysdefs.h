@@ -1,5 +1,5 @@
 #ifndef _SYSDEFS_H
-#define _SYSDEFS_H
+# define _SYSDEFS_H
 /* sysdefs.h */
 /*****************************************************************************/
 /* SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only                     */
@@ -21,19 +21,103 @@
  *
  */
 
+#ifdef _MSC_VER
+# define __PROTOS__
+# define UNUSED(x) (void)x
+
+/*
+ * Windows systems using Microsoft Visual Studio.
+ */
+# ifdef _M_ARM
+#  define ARCHPRNAME "arm"
+# endif
+# ifdef _M_ARM64
+#  define ARCHPRNAME "arm64"
+# endif
+# ifdef _M_IX86
+#  define ARCHPRNAME "x86"
+# endif
+# ifdef _M_X64
+#  define ARCHPRNAME "x64"
+# endif
+
+# define ARCHSYSNAME "windows-msvc"
+
+# define DEFSMADE
+# define OPENRDMODE "rb"
+# define OPENWRMODE "wb"
+# define OPENUPMODE "rb+"
+# define IEEEFLOAT
+# define SLASHARGS
+# define PATHSEP '\\'
+# define SPATHSEP "\\"
+# define DIRSEP ';'
+# define SDIRSEP ";"
+# define DRSEP ':'
+# define SDRSEP ":"
+# define NULLDEV "NUL"
+typedef signed char Integ8;
+typedef unsigned char Card8;
+typedef signed short Integ16;
+typedef unsigned short Card16;
+# define HAS16
+typedef signed int Integ32;
+# define PRIInteg32 "d"
+typedef unsigned int Card32;
+# ifndef NOLONGLONG
+typedef signed long long Integ64;
+typedef unsigned long long Card64;
+#  define HAS64
+# endif
+# define W32_NLS
+#endif
+
+
+/*===========================================================================*/
+/* Intel i386 platforms */
+
+#ifdef __i386
+# define ARCHPRNAME "i386"
+
+/*---------------------------------------------------------------------------*/
+/* Intel i386 with NetBSD 1. and GCC: (tested on 1.5.3)
+
+   principally, a normal 32-bit UNIX */
+
+#ifdef __NetBSD__
+#define ARCHSYSNAME "i386-netbsd"
+#define DEFSMADE
+#define OPENRDMODE "r"
+#define OPENWRMODE "w"
+#define OPENUPMODE "r+"
+#define IEEEFLOAT
+typedef signed char Integ8;
+typedef unsigned char Card8;
+typedef signed short Integ16;
+typedef unsigned short Card16;
+#define HAS16
+typedef signed int Integ32;
+#define PRIInteg32 "d"
+typedef unsigned int Card32;
+typedef signed long long Integ64;
+typedef unsigned long long Card64;
+#define HAS64
+#define LOCALE_NLS
+#endif
+
 /*---------------------------------------------------------------------------*/
 /* unify 68K platforms */
 
 #ifdef __mc68020
-#ifndef __m68k
-#define __m68k
-#endif
+# ifndef __m68k
+#  define __m68k
+# endif
 #endif
 
 #ifdef m68000
-#ifndef __m68k
-#define __m68k
-#endif
+# ifndef __m68k
+#  define __m68k
+# endif
 #endif
 
 #ifdef __mc68000
@@ -48,41 +132,41 @@
 /* MSDOS only runs on x86s... */
 
 #ifdef __MSDOS__
-#define __i386
+# define __i386
 #endif
 
 /* For IBMC... */
 
 #ifdef _M_I386
-#define __i386
+# define __i386
 #endif
 
 #ifdef __i386__
-#ifndef __i386
-#define __i386
-#endif
+# ifndef __i386
+#  define __i386
+# endif
 #endif
 
 /*---------------------------------------------------------------------------*/
 /* ditto for VAX platforms */
 
 #ifdef vax
-#define __vax__
+# define __vax__
 #endif
 
 /*---------------------------------------------------------------------------*/
 /* ditto for PPC platforms */
 
 #ifdef __PPC
-#ifndef _POWER
-#define _POWER
-#endif
+# ifndef _POWER
+#  define _POWER
+# endif
 #endif
 
 #ifdef __ppc__
-#ifndef _POWER
-#define _POWER
-#endif
+# ifndef _POWER
+#  define _POWER
+# endif
 #endif
 
 #ifdef __PPC__
@@ -101,28 +185,28 @@
 /* ditto for ARM platforms */
 
 #ifdef __arm__
-#ifndef __arm
-#define __arm
-#endif
+# ifndef __arm
+#  define __arm
+# endif
 #endif
 
 /*---------------------------------------------------------------------------*/
 /* If the compiler claims to be ANSI, we surely can use prototypes */
 
 #ifdef __STDC__
-#define __PROTOS__
-#define UNUSED(x) (void)x
+# define __PROTOS__
+# define UNUSED(x) (void)x
 #else
-#define UNUSED(x) {}
+# define UNUSED(x) {}
 #endif
 
 /*---------------------------------------------------------------------------*/
 /* just a hack to allow distinguishing SunOS from Solaris on Sparcs... */
 
 #ifdef sparc
-#ifndef __sparc
-#define __sparc
-#endif
+# ifndef __sparc
+#  define __sparc
+# endif
 #endif
 
 #ifdef __sparc
@@ -140,22 +224,22 @@
 #endif /* __sparc */
 
 #ifdef __sparc__
-#ifndef __sparc
-#define __sparc
-#endif
+# ifndef __sparc
+#  define __sparc
+# endif
 #endif
 
 /*---------------------------------------------------------------------------*/
 /* similar on Sun 3's... */
 
 #ifdef __m68k
-#ifndef __NetBSD__
-#ifndef __MUNIX__
-#ifndef __amiga
-#define __sunos__
-#endif
-#endif
-#endif
+# ifndef __NetBSD__
+#  ifndef __MUNIX__
+#   ifndef __amiga
+#    define __sunos__
+#   endif
+#  endif
+# endif
 #endif
 
 /*===========================================================================*/
@@ -903,39 +987,6 @@ typedef unsigned long Card64;
 
 #endif /* __alpha */
 
-/*===========================================================================*/
-/* Intel i386 platforms */
-
-#ifdef __i386
-
-#define ARCHPRNAME "i386"
-
-/*---------------------------------------------------------------------------*/
-/* Intel i386 with NetBSD 1. and GCC: (tested on 1.5.3)
-
-   principally, a normal 32-bit UNIX */
-
-#ifdef __NetBSD__
-#define ARCHSYSNAME "i386-netbsd"
-#define DEFSMADE
-#define OPENRDMODE "r"
-#define OPENWRMODE "w"
-#define OPENUPMODE "r+"
-#define IEEEFLOAT
-typedef signed char Integ8;
-typedef unsigned char Card8;
-typedef signed short Integ16;
-typedef unsigned short Card16;
-#define HAS16
-typedef signed int Integ32;
-#define PRIInteg32 "d"
-typedef unsigned int Card32;
-typedef signed long long Integ64;
-typedef unsigned long long Card64;
-#define HAS64
-#define LOCALE_NLS
-#endif
-
 /*---------------------------------------------------------------------------*/
 /* Intel i386 with Linux and GCC:
 
@@ -1023,19 +1074,18 @@ typedef unsigned long long Card64;
 #endif
 
 /*---------------------------------------------------------------------------*/
-/* Intel i386 with WIN32 and Cygnus GCC:
+/* Intel i386 with Windows and Cygnus GCC:
 
    well, not really a UNIX... */
 
 #ifdef _WIN32
-
 /* no long long data type if C89 is used */
-
 #if (defined __STDC__) && (!defined __STDC_VERSION__)
 # define NOLONGLONG
 #endif
 
 #define ARCHSYSNAME "unknown-win32"
+
 #define DEFSMADE
 #define OPENRDMODE "rb"
 #define OPENWRMODE "wb"
@@ -1371,18 +1421,18 @@ typedef unsigned int Card64;
 
 
 #ifdef DEFSMADE
-#ifndef PATHSEP
-#define PATHSEP '/'
-#define SPATHSEP "/"
-#define DIRSEP ':'
-#define SDIRSEP ":"
-#endif
-#ifndef NULLDEV
-#define NULLDEV "/dev/null"
-#endif
+# ifndef PATHSEP
+#  define PATHSEP '/'
+#  define SPATHSEP "/"
+#  define DIRSEP ':'
+#  define SDIRSEP ":"
+# endif
+# ifndef NULLDEV
+#  define NULLDEV "/dev/null"
+# endif
 #else
-#error "your platform so far is not included in AS's header files!"
-#error "please edit sysdefs.h!"
+# error "your platform so far is not included in AS's header files!"
+# error "please edit sysdefs.h!"
 #endif
 
 #ifdef CKMALLOC
