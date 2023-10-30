@@ -8,7 +8,7 @@ a bit faster than the original Pascal version.
 
 LICENSING
 
-AS is based upon the Gnu General Public License (GPL); read the file
+AS is based upon the GNU General Public License (GPL); read the file
 COPYING for its details.  You should have received a copy of this file
 together with AS; if not, someone sneaked in!
 
@@ -95,4 +95,5 @@ See the file 'INSTALL'
 FEEDBACK
 
 In case of problems or questions, send them to alfred@ccac.rwth-aachen.de .
+
 For questions regarding this version/repo, contact waltje@varcem.com instead!

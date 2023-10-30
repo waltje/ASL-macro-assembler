@@ -7,6 +7,7 @@
 CC = gcc
 OBJDIR =
 CFLAGS = -O2 -Wall 
+LIBM =
 HOST_OBJEXTENSION = .o
 LD = $(CC)
 LDFLAGS =

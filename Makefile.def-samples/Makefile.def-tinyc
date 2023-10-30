@@ -1,23 +1,27 @@
 # -------------------------------------------------------------------------
+#
 # choose your compiler (must be ANSI-compliant!) and linker command, plus
 # any additionally needed flags
+#
+# Makefile.def for TinyC running on Windows.
 
 
 # ...for host-side build tools:
-CC = tcc
-OBJDIR =
-CFLAGS = -O2 -Wall 
+CC	= tcc
+OBJDIR	=
+CFLAGS	= -O2 -Wall 
+LIBM	=
+LD	= $(CC)
+LDFLAGS	=
 HOST_OBJEXTENSION = .o
-LD = $(CC)
-LDFLAGS =
 HOST_EXEXTENSION = .exe
 
 TARG_CC = $(CC)
 TARG_OBJDIR = $(OBJDIR)
 TARG_CFLAGS = $(CFLAGS)
-TARG_OBJEXTENSION = .o
 TARG_LD = $(LD)
 TARG_LDFLAGS = $(LDFLAGS)
+TARG_OBJEXTENSION = .o
 TARG_EXEXTENSION = $(HOST_EXEXTENSION)
 
 # -------------------------------------------------------------------------

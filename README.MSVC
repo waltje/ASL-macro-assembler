@@ -1,19 +1,17 @@
 This code can now be built for Windows using Microsoft Visual Studio.
 
-The build process is not fully finished yet, because we still need the
-.dep and .rsc files built by other dev tools (such as MSYS-MinGW), but
-this will be fixed soon.
+The build process is not fully finished yet, because we still need to
+manually remove old files - no recursive "rm" available and all that.
 
 So, for now:
 
-1.  DO NOT remove the *.dep or *.rsc files.  If you did, you will have
-    to either restore them, or build them using MSYS-MinGW or such.
+1.  Make sure all previous EXE,OBJ,DEP,MSH and .RSC files are gone.
 
-2.  Copy the file Makefile.def-samples/Makefile.def-msvc to Makefile.def
+2.  Copy the file Makefile.def-samples/Makefile.def-MSVC to Makefile.def
 
-3.  Run the MSVC-specific Makefile:
+3.  Run Make or NMake:
 
-       nmake -f Makefile.MSVC
+       nmake
 
     and it will build all EXE files for you.
 
@@ -26,4 +24,4 @@ platforms.
 I will remove the (1) limitation as soon as I feel less lazy ;-)
 
 Fred N. van Kempen, <waltje@varcem.com>
-Last updated: 2023/10/19
+Last updated: 2023/10/30
