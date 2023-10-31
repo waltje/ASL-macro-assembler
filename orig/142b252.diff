@@ -1,4 +1,4 @@
-*** ..\src.142b252\asmsub.c	Sat Sep 23 07:27:52 2023
+*** ../src.142b252/asmsub.c	Sat Sep 23 07:27:52 2023
 --- asmsub.c	Thu Oct 19 21:18:06 2023
 ***************
 *** 1639,1644 ****
@@ -52,53 +52,46 @@
   #else
   
   #include <sys/time.h>
-*** ..\src.142b252\doc_DE\makedefs.dok	Mon Oct 03 11:38:27 2022
---- doc_DE\makedefs.dok	Mon Oct 30 16:54:52 2023
+*** ../src.142b252/codescmp.c	Mon Oct 03 11:38:27 2022
+--- codescmp.c	Mon Oct 30 19:59:59 2023
 ***************
-*** 24,43 ****
-  	$(CURRDIR)$(TEX2HTMLTARGET) $(DOC_DE_DIR)as.tex $(DOC_DE_DIR)as.html
+*** 97,107 ****
+        }
+        if (!as_strcasecmp(Left.str.p_str, "E"))
+          BAsmCode[1] = 0x80;
+-       else if (*Arg == 0)
+-       {
+-         WrStrErrorPos(ErrNum_InvReg, &Right);
+-         return False;
+-       }
+        else
+        {
+          BAsmCode[1] = EvalStrIntExpression(&Left, SInt8, &OK);
+--- 97,102 ----
+***************
+*** 110,116 ****
+        }
+        return True;
+      }
+!     else pArg->str.p_str[l - 1] = ')';
+    }
   
-  clean_doc_DE:
-! 	$(RM) $(DOC_DE_DIR)as.dvi
-! 	$(RM) $(DOC_DE_DIR)as.ps
-! 	$(RM) $(DOC_DE_DIR)as.pdf
-! 	$(RM) $(DOC_DE_DIR)as.i*
-! 	$(RM) $(DOC_DE_DIR)*log
-! 	$(RM) $(DOC_DE_DIR)as.aux
-! 	$(RM) $(DOC_DE_DIR)as.out
-! 	$(RM) $(DOC_DE_DIR)as.toc
-! 	$(RM) $(DOC_DE_DIR)*~
-! 	$(RM) $(DOC_DE_DIR)DEADJOE
-! 	$(RM) $(DOC_DE_DIR)as.doc
-! 	$(RM) $(DOC_DE_DIR)as.dtoc
-! 	$(RM) $(DOC_DE_DIR)as.daux
-! 	$(RM) $(DOC_DE_DIR)as.html
-! 	$(RM) $(DOC_DE_DIR)as.htoc
-! 	$(RM) $(DOC_DE_DIR)as.haux
-! 	$(RM) $(DOC_DE_DIR)commpseudo.tex cpupseudo.tex
---- 24,44 ----
-  	$(CURRDIR)$(TEX2HTMLTARGET) $(DOC_DE_DIR)as.tex $(DOC_DE_DIR)as.html
+    /* no carry in PC from bit 11 to 12; additionally handle preincrement */
+--- 105,117 ----
+        }
+        return True;
+      }
+!     else
+!     {
+! // FIXME: what is this for?
+! //   else pArg->str.p_str[l - 1] = ')';
+!       WrStrErrorPos(ErrNum_InvReg, &Right);
+!       return False;
+!     }
+    }
   
-  clean_doc_DE:
-! 	@(cd $(DOC_DE_DIR) ; \
-! 	  $(RM) $(DOC_DE_DIR)as.dvi
-! 	  $(RM) $(DOC_DE_DIR)as.ps
-! 	  $(RM) $(DOC_DE_DIR)as.pdf
-! 	  $(RM) $(DOC_DE_DIR)as.i*
-! 	  $(RM) $(DOC_DE_DIR)*log
-! 	  $(RM) $(DOC_DE_DIR)as.aux
-! 	  $(RM) $(DOC_DE_DIR)as.out
-! 	  $(RM) $(DOC_DE_DIR)as.toc
-! 	  $(RM) $(DOC_DE_DIR)*~
-! 	  $(RM) $(DOC_DE_DIR)DEADJOE
-! 	  $(RM) $(DOC_DE_DIR)as.doc
-! 	  $(RM) $(DOC_DE_DIR)as.dtoc
-! 	  $(RM) $(DOC_DE_DIR)as.daux
-! 	  $(RM) $(DOC_DE_DIR)as.html
-! 	  $(RM) $(DOC_DE_DIR)as.htoc
-! 	  $(RM) $(DOC_DE_DIR)as.haux
-! 	  $(RM) $(DOC_DE_DIR)commpseudo.tex cpupseudo.tex )
-*** ..\src.142b252\Makefile	Sun Oct 29 15:49:38 2023
+    /* no carry in PC from bit 11 to 12; additionally handle preincrement */
+*** ../src.142b252/Makefile	Sun Oct 29 15:49:38 2023
 --- Makefile	Mon Oct 30 16:24:29 2023
 ***************
 *** 80,86 ****
@@ -117,8 +110,8 @@
   
   #---------------------------------------------------------------------------
   # special rules for objects dependant on string resource files
-*** ..\src.142b252\Makefile.def-samples\Makefile.def-MSVC	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-MSVC	Mon Oct 30 16:50:08 2023
+*** ../src.142b252/Makefile.def-samples/Makefile.def-MSVC	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples/Makefile.def-MSVC	Mon Oct 30 16:50:08 2023
 ***************
 *** 0 ****
 --- 1,43 ----
@@ -165,8 +158,8 @@
 + MANDIR = C:/ASL/man
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
-*** ..\src.142b252\Makefile.def-samples\Makefile.def-tinyc	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-tinyc	Mon Oct 30 16:26:25 2023
+*** ../src.142b252/Makefile.def-samples/Makefile.def-tinyc	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples/Makefile.def-tinyc	Mon Oct 30 16:26:25 2023
 ***************
 *** 0 ****
 --- 1,35 ----
@@ -205,8 +198,8 @@
 + MANDIR = C:/ASL/man
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
-*** ..\src.142b252\Makefile.def-samples\Makefile.def-x86-msys2-mingw	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-x86-msys2-mingw	Mon Oct 30 16:31:38 2023
+*** ../src.142b252/Makefile.def-samples/Makefile.def-x86-msys2-mingw	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples/Makefile.def-x86-msys2-mingw	Mon Oct 30 16:31:38 2023
 ***************
 *** 0 ****
 --- 1,32 ----
@@ -242,7 +235,7 @@
 + MANDIR = C:/ASL/man
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
-*** ..\src.142b252\mkdepend.c	Wed Jun 28 15:17:12 2023
+*** ../src.142b252/mkdepend.c	Wed Jun 28 15:17:12 2023
 --- mkdepend.c	Thu Oct 19 16:54:59 2023
 ***************
 *** 6,12 ****
@@ -263,7 +256,7 @@
   
   #include "strutil.h"
   #include "stringlists.h"
-*** ..\src.142b252\nls.c	Mon Apr 17 12:43:46 2023
+*** ../src.142b252/nls.c	Mon Apr 17 12:43:46 2023
 --- nls.c	Thu Oct 19 20:33:29 2023
 ***************
 *** 8,13 ****
@@ -278,7 +271,7 @@
   #undef DEBUG_NLS
   
   #include "stdinc.h"
-*** ..\src.142b252\README	Wed Feb 17 12:04:28 2021
+*** ../src.142b252/README	Wed Feb 17 12:04:28 2021
 --- README	Mon Oct 30 17:00:51 2023
 ***************
 *** 8,14 ****
@@ -326,7 +319,7 @@
   In case of problems or questions, send them to alfred@ccac.rwth-aachen.de .
 + 
 + For questions regarding this version/repo, contact waltje@varcem.com instead!
-*** ..\src.142b252\README.MSVC	Wed Dec 31 19:00:00 1969
+*** ../src.142b252/README.MSVC	Wed Dec 31 19:00:00 1969
 --- README.MSVC	Mon Oct 30 16:59:23 2023
 ***************
 *** 0 ****
@@ -358,7 +351,7 @@
 + 
 + Fred N. van Kempen, <waltje@varcem.com>
 + Last updated: 2023/10/30
-*** ..\src.142b252\stdhandl.c	Thu Jun 22 16:03:33 2023
+*** ../src.142b252/stdhandl.c	Thu Jun 22 16:03:33 2023
 --- stdhandl.c	Thu Oct 19 20:34:39 2023
 ***************
 *** 118,125 ****
@@ -373,7 +366,7 @@
     else
       Redirected = NoRedir;
   
-*** ..\src.142b252\stdinc.h	Thu Jun 22 16:03:33 2023
+*** ../src.142b252/stdinc.h	Thu Jun 22 16:03:33 2023
 --- stdinc.h	Thu Oct 19 19:19:37 2023
 ***************
 *** 18,24 ****
@@ -392,7 +385,7 @@
   #include <unistd.h>
   #endif
   #include <math.h>
-*** ..\src.142b252\strutil.h	Wed Dec 29 06:27:29 2021
+*** ../src.142b252/strutil.h	Wed Dec 29 06:27:29 2021
 --- strutil.h	Thu Oct 19 19:59:28 2023
 ***************
 *** 13,18 ****
@@ -406,7 +399,7 @@
   
   #include "datatypes.h"
   
-*** ..\src.142b252\sysdefs.h	Sun Dec 04 11:57:07 2022
+*** ../src.142b252/sysdefs.h	Sun Dec 04 11:57:07 2022
 --- sysdefs.h	Mon Oct 30 15:58:45 2023
 ***************
 *** 1,5 ****
@@ -858,7 +851,7 @@
   #endif
   
   #ifdef CKMALLOC
-*** ..\src.142b252\TODO	Wed Feb 17 12:04:28 2021
+*** ../src.142b252/TODO	Wed Feb 17 12:04:28 2021
 --- TODO	Mon Oct 30 17:01:16 2023
 ***************
 *** 9,11 ****
@@ -867,7 +860,7 @@
   - Entschüsselung AttrPart über strchr()
   
 + - fix the "const" warnings in WARNINGS.
-*** ..\src.142b252\WARNINGS	Wed Dec 31 19:00:00 1969
+*** ../src.142b252/WARNINGS	Wed Dec 31 19:00:00 1969
 --- WARNINGS	Mon Oct 30 16:48:13 2023
 ***************
 *** 0 ****

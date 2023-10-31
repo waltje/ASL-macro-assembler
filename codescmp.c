@@ -97,11 +97,6 @@ static Boolean DecodeAdr(const tStrComp *pArg, Boolean MayInc, Byte PCDisp, Byte
       }
       if (!as_strcasecmp(Left.str.p_str, "E"))
         BAsmCode[1] = 0x80;
-      else if (*Arg == 0)
-      {
-        WrStrErrorPos(ErrNum_InvReg, &Right);
-        return False;
-      }
       else
       {
         BAsmCode[1] = EvalStrIntExpression(&Left, SInt8, &OK);
@@ -110,7 +105,13 @@ static Boolean DecodeAdr(const tStrComp *pArg, Boolean MayInc, Byte PCDisp, Byte
       }
       return True;
     }
-    else pArg->str.p_str[l - 1] = ')';
+    else
+    {
+// FIXME: what is this for?
+//   else pArg->str.p_str[l - 1] = ')';
+      WrStrErrorPos(ErrNum_InvReg, &Right);
+      return False;
+    }
   }
 
   /* no carry in PC from bit 11 to 12; additionally handle preincrement */
