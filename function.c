@@ -11,6 +11,7 @@
 #include "stdinc.h"
 #include "bpemu.h"
 #include <ctype.h>
+#include <string.h>
 #include "nonzstring.h"
 #include "strutil.h"
 #include "asmdef.h"

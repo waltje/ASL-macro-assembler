@@ -8,5 +8,3 @@
 
 - IsDef liefert Dekoder
 - Entschüsselung AttrPart über strchr()
-
-- fix the "const" warnings in WARNINGS.

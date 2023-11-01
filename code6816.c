@@ -1066,8 +1066,8 @@ static void DeinitFields(void)
 {
   order_array_free(GenOrders);
   order_array_free(EmuOrders);
-  DestroyInstTable(InstTable);
-  free(Regs);
+  DestroyInstTable(InstTable); InstTable = NULL;
+  free((void *)Regs); Regs = NULL;
 }
 
 /*-------------------------------------------------------------------------*/

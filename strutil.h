@@ -13,9 +13,6 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
-#ifdef _WIN32
-# include <string.h>
-#endif
 
 #include "datatypes.h"
 

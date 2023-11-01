@@ -1,0 +1,93 @@
+*** orig/codevars.h.orig	Wed Nov 01 16:50:11 2023
+--- codevars.h	Wed Nov 01 15:06:39 2023
+***************
+*** 16,22 ****
+  
+  #define order_array_free(orders) \
+    do { \
+!     free(orders); \
+      orders = NULL; \
+    } while (0)
+  
+--- 16,22 ----
+  
+  #define order_array_free(orders) \
+    do { \
+!     free((void *)orders); \
+      orders = NULL; \
+    } while (0)
+  
+*** orig/dyn_array.h.orig	Wed Nov 01 16:48:45 2023
+--- dyn_array.h	Wed Nov 01 16:39:00 2023
+***************
+*** 20,30 ****
+      size_t old_roundup_cnt = dyn_array_roundup(old_cnt); \
+      if (new_roundup_cnt != old_roundup_cnt) { \
+        size_t s = sizeof(*array) * new_roundup_cnt; \
+!       array = (decl_type*) (array ? realloc(array, s) : malloc(s)); \
+        if (new_roundup_cnt > old_roundup_cnt) \
+!         memset(&array[old_roundup_cnt], 0, sizeof(*array) * (new_roundup_cnt - old_roundup_cnt)); \
+        else if (new_roundup_cnt > (size_t)(new_cnt)) \
+!         memset(&array[new_cnt], 0, sizeof(*array) * (new_roundup_cnt - (new_cnt))); \
+      } \
+    } while (0)
+  
+--- 20,30 ----
+      size_t old_roundup_cnt = dyn_array_roundup(old_cnt); \
+      if (new_roundup_cnt != old_roundup_cnt) { \
+        size_t s = sizeof(*array) * new_roundup_cnt; \
+!       array = (decl_type*) (array ? realloc((void *)array, s) : malloc(s)); \
+        if (new_roundup_cnt > old_roundup_cnt) \
+!         memset((void *)&array[old_roundup_cnt], 0, sizeof(*array) * (new_roundup_cnt - old_roundup_cnt)); \
+        else if (new_roundup_cnt > (size_t)(new_cnt)) \
+!         memset((void *)&array[new_cnt], 0, sizeof(*array) * (new_roundup_cnt - (new_cnt))); \
+      } \
+    } while (0)
+  
+*** orig/code6816.c.orig	Sun Sep 17 08:13:11 2023
+--- code6816.c	Wed Nov 01 18:53:57 2023
+***************
+*** 1066,1073 ****
+  {
+    order_array_free(GenOrders);
+    order_array_free(EmuOrders);
+!   DestroyInstTable(InstTable);
+!   free(Regs);
+  }
+  
+  /*-------------------------------------------------------------------------*/
+--- 1066,1073 ----
+  {
+    order_array_free(GenOrders);
+    order_array_free(EmuOrders);
+!   DestroyInstTable(InstTable); InstTable = NULL;
+!   free((void *)Regs); Regs = NULL;
+  }
+  
+  /*-------------------------------------------------------------------------*/
+*** orig/strutil.h.orig	Wed Nov 01 18:57:28 2023
+--- strutil.h	Wed Nov 01 16:52:31 2023
+***************
+*** 13,21 ****
+  #include <stdio.h>
+  #include <stddef.h>
+  #include <stdarg.h>
+- #ifdef _WIN32
+- # include <string.h>
+- #endif
+  
+  #include "datatypes.h"
+  
+--- 13,18 ----
+*** orig/function.c.orig	Wed Nov 01 18:56:13 2023
+--- function.c	Wed Nov 01 16:52:40 2023
+***************
+*** 11,16 ****
+--- 11,17 ----
+  #include "stdinc.h"
+  #include "bpemu.h"
+  #include <ctype.h>
++ #include <string.h>
+  #include "nonzstring.h"
+  #include "strutil.h"
+  #include "asmdef.h"

@@ -1,7 +1,0 @@
-code6816.c(1070): warning C4090: 'function': different 'const' qualifiers
-codem16.c(2920): warning C4090: 'function': different 'const' qualifiers
-codem16.c(3068): warning C4090: 'function': different 'const' qualifiers
-code97c241.c(2295): warning C4090: 'function': different 'const' qualifiers
-code97c241.c(2466): warning C4090: 'function': different 'const' qualifiers
-code3203x.c(1597): warning C4090: 'function': different 'const' qualifiers
-code3203x.c(1821): warning C4090: 'function': different 'const' qualifiers
