@@ -3,7 +3,7 @@
 # any additionally needed flags
 
 OBJDIR =
-CC = gcc -m64
+CC = gcc -m32
 CFLAGS = -O3 -fomit-frame-pointer -Wall
 HOST_OBJEXTENSION = .o
 LD = $(CC)

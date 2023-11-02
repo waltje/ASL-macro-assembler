@@ -3,11 +3,11 @@
 # any additionally needed flags
 
 OBJDIR =
-CC = gcc -m64
-CFLAGS = -O3 -fomit-frame-pointer -Wall
+CC = cc
+CFLAGS = -O3 -fomit-frame-pointer -Wall -arch x86_64
 HOST_OBJEXTENSION = .o
-LD = $(CC)
-LDFLAGS =
+LD = cc
+LDFLAGS = -arch x86_64
 HOST_EXEXTENSION =
 
 # no cross build
@@ -26,6 +26,6 @@ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
 
 BINDIR = /usr/local/bin
 INCDIR = /usr/local/include/asl
-MANDIR = /usr/local/man
+MANDIR = /usr/local/share/man
 LIBDIR =
-DOCDIR = /usr/local/doc/asl
+DOCDIR = /usr/local/share/doc/asl
