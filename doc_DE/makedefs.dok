@@ -24,21 +24,20 @@ $(DOC_DE_DIR)as.html: $(DOC_DE_DIR)as.tex  $(INCFILES) $(TEX2HTMLTARGET)
 	$(CURRDIR)$(TEX2HTMLTARGET) $(DOC_DE_DIR)as.tex $(DOC_DE_DIR)as.html
 
 clean_doc_DE:
-	@(cd $(DOC_DE_DIR) ; \
-	  $(RM) $(DOC_DE_DIR)as.dvi
-	  $(RM) $(DOC_DE_DIR)as.ps
-	  $(RM) $(DOC_DE_DIR)as.pdf
-	  $(RM) $(DOC_DE_DIR)as.i*
-	  $(RM) $(DOC_DE_DIR)*log
-	  $(RM) $(DOC_DE_DIR)as.aux
-	  $(RM) $(DOC_DE_DIR)as.out
-	  $(RM) $(DOC_DE_DIR)as.toc
-	  $(RM) $(DOC_DE_DIR)*~
-	  $(RM) $(DOC_DE_DIR)DEADJOE
-	  $(RM) $(DOC_DE_DIR)as.doc
-	  $(RM) $(DOC_DE_DIR)as.dtoc
-	  $(RM) $(DOC_DE_DIR)as.daux
-	  $(RM) $(DOC_DE_DIR)as.html
-	  $(RM) $(DOC_DE_DIR)as.htoc
-	  $(RM) $(DOC_DE_DIR)as.haux
-	  $(RM) $(DOC_DE_DIR)commpseudo.tex cpupseudo.tex )
+	$(RM) $(DOC_DE_DIR)as.dvi
+	$(RM) $(DOC_DE_DIR)as.ps
+	$(RM) $(DOC_DE_DIR)as.pdf
+	$(RM) $(DOC_DE_DIR)as.i*
+	$(RM) $(DOC_DE_DIR)*log
+	$(RM) $(DOC_DE_DIR)as.aux
+	$(RM) $(DOC_DE_DIR)as.out
+	$(RM) $(DOC_DE_DIR)as.toc
+	$(RM) $(DOC_DE_DIR)*~
+	$(RM) $(DOC_DE_DIR)DEADJOE
+	$(RM) $(DOC_DE_DIR)as.doc
+	$(RM) $(DOC_DE_DIR)as.dtoc
+	$(RM) $(DOC_DE_DIR)as.daux
+	$(RM) $(DOC_DE_DIR)as.html
+	$(RM) $(DOC_DE_DIR)as.htoc
+	$(RM) $(DOC_DE_DIR)as.haux
+	$(RM) $(DOC_DE_DIR)commpseudo.tex cpupseudo.tex
