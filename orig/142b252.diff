@@ -52,6 +52,27 @@
   #else
   
   #include <sys/time.h>
+*** ../src.142b252/code6816.c	Sun Sep 17 08:13:11 2023
+--- code6816.c	Wed Nov 01 18:53:57 2023
+***************
+*** 1066,1073 ****
+  {
+    order_array_free(GenOrders);
+    order_array_free(EmuOrders);
+!   DestroyInstTable(InstTable);
+!   free(Regs);
+  }
+  
+  /*-------------------------------------------------------------------------*/
+--- 1066,1073 ----
+  {
+    order_array_free(GenOrders);
+    order_array_free(EmuOrders);
+!   DestroyInstTable(InstTable); InstTable = NULL;
+!   free((void *)Regs); Regs = NULL;
+  }
+  
+  /*-------------------------------------------------------------------------*/
 *** ../src.142b252/codescmp.c	Mon Oct 03 11:38:27 2022
 --- codescmp.c	Mon Oct 30 19:59:59 2023
 ***************
@@ -91,6 +112,64 @@
     }
   
     /* no carry in PC from bit 11 to 12; additionally handle preincrement */
+*** ../src.142b252/codevars.h	Thu Sep 21 16:07:39 2023
+--- codevars.h	Wed Nov 01 15:06:39 2023
+***************
+*** 16,22 ****
+  
+  #define order_array_free(orders) \
+    do { \
+!     free(orders); \
+      orders = NULL; \
+    } while (0)
+  
+--- 16,22 ----
+  
+  #define order_array_free(orders) \
+    do { \
+!     free((void *)orders); \
+      orders = NULL; \
+    } while (0)
+  
+*** ../src.142b252/dyn_array.h	Thu Sep 21 16:07:39 2023
+--- dyn_array.h	Wed Nov 01 16:39:00 2023
+***************
+*** 20,30 ****
+      size_t old_roundup_cnt = dyn_array_roundup(old_cnt); \
+      if (new_roundup_cnt != old_roundup_cnt) { \
+        size_t s = sizeof(*array) * new_roundup_cnt; \
+!       array = (decl_type*) (array ? realloc(array, s) : malloc(s)); \
+        if (new_roundup_cnt > old_roundup_cnt) \
+!         memset(&array[old_roundup_cnt], 0, sizeof(*array) * (new_roundup_cnt - old_roundup_cnt)); \
+        else if (new_roundup_cnt > (size_t)(new_cnt)) \
+!         memset(&array[new_cnt], 0, sizeof(*array) * (new_roundup_cnt - (new_cnt))); \
+      } \
+    } while (0)
+  
+--- 20,30 ----
+      size_t old_roundup_cnt = dyn_array_roundup(old_cnt); \
+      if (new_roundup_cnt != old_roundup_cnt) { \
+        size_t s = sizeof(*array) * new_roundup_cnt; \
+!       array = (decl_type*) (array ? realloc((void *)array, s) : malloc(s)); \
+        if (new_roundup_cnt > old_roundup_cnt) \
+!         memset((void *)&array[old_roundup_cnt], 0, sizeof(*array) * (new_roundup_cnt - old_roundup_cnt)); \
+        else if (new_roundup_cnt > (size_t)(new_cnt)) \
+!         memset((void *)&array[new_cnt], 0, sizeof(*array) * (new_roundup_cnt - (new_cnt))); \
+      } \
+    } while (0)
+  
+*** ../src.142b252/function.c	Mon Apr 17 12:43:46 2023
+--- function.c	Wed Nov 01 16:52:40 2023
+***************
+*** 11,16 ****
+--- 11,17 ----
+  #include "stdinc.h"
+  #include "bpemu.h"
+  #include <ctype.h>
++ #include <string.h>
+  #include "nonzstring.h"
+  #include "strutil.h"
+  #include "asmdef.h"
 *** ../src.142b252/Makefile	Sun Oct 29 15:49:38 2023
 --- Makefile	Mon Oct 30 16:24:29 2023
 ***************
@@ -110,8 +189,80 @@
   
   #---------------------------------------------------------------------------
   # special rules for objects dependant on string resource files
-*** ../src.142b252/Makefile.def-samples/Makefile.def-MSVC	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples/Makefile.def-MSVC	Mon Oct 30 16:50:08 2023
+*** ../src.142b252/Makefile.def-samples\Makefile.def-arm-macos	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples\Makefile.def-arm-macos	Wed Nov 01 19:57:33 2023
+***************
+*** 0 ****
+--- 1,31 ----
++ # -------------------------------------------------------------------------
++ # choose your compiler (must be ANSI-compliant!) and linker command, plus
++ # any additionally needed flags
++ 
++ OBJDIR =
++ CC = gcc
++ CFLAGS = -O3 -fomit-frame-pointer -Wall -arch arm64
++ HOST_OBJEXTENSION = .o
++ LD = gcc
++ LDFLAGS = -arch arm64
++ HOST_EXEXTENSION =
++ 
++ # no cross build
++ 
++ TARG_OBJDIR = $(OBJDIR)
++ TARG_CC = $(CC)
++ TARG_CFLAGS = $(CFLAGS)
++ TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
++ TARG_LD = $(LD)
++ TARG_LDFLAGS = $(LDFLAGS)
++ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
++ 
++ # -------------------------------------------------------------------------
++ # directories where binaries, includes, and manpages should go during
++ # installation
++ 
++ BINDIR = /usr/local/bin
++ INCDIR = /usr/local/include/asl
++ MANDIR = /usr/local/share/man
++ LIBDIR =
++ DOCDIR = /usr/local/share/doc/asl
+*** ../src.142b252/Makefile.def-samples\Makefile.def-i386-unknown-linux	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples\Makefile.def-i386-unknown-linux	Wed Nov 01 22:46:08 2023
+***************
+*** 0 ****
+--- 1,31 ----
++ # -------------------------------------------------------------------------
++ # choose your compiler (must be ANSI-compliant!) and linker command, plus
++ # any additionally needed flags
++ 
++ OBJDIR =
++ CC = gcc -m32
++ CFLAGS = -O3 -fomit-frame-pointer -Wall
++ HOST_OBJEXTENSION = .o
++ LD = $(CC)
++ LDFLAGS =
++ HOST_EXEXTENSION =
++ 
++ # no cross build
++ 
++ TARG_OBJDIR = $(OBJDIR)
++ TARG_CC = $(CC)
++ TARG_CFLAGS = $(CFLAGS)
++ TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
++ TARG_LD = $(LD)
++ TARG_LDFLAGS = $(LDFLAGS)
++ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
++ 
++ # -------------------------------------------------------------------------
++ # directories where binaries, includes, and manpages should go during
++ # installation
++ 
++ BINDIR = /usr/local/bin
++ INCDIR = /usr/local/include/asl
++ MANDIR = /usr/local/man
++ LIBDIR =
++ DOCDIR = /usr/local/doc/asl
+*** ../src.142b252/Makefile.def-samples\Makefile.def-MSVC	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples\Makefile.def-MSVC	Mon Oct 30 16:50:08 2023
 ***************
 *** 0 ****
 --- 1,43 ----
@@ -158,8 +309,8 @@
 + MANDIR = C:/ASL/man
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
-*** ../src.142b252/Makefile.def-samples/Makefile.def-tinyc	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples/Makefile.def-tinyc	Mon Oct 30 16:26:25 2023
+*** ../src.142b252/Makefile.def-samples\Makefile.def-tinyc	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples\Makefile.def-tinyc	Mon Oct 30 16:26:25 2023
 ***************
 *** 0 ****
 --- 1,35 ----
@@ -198,8 +349,8 @@
 + MANDIR = C:/ASL/man
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
-*** ../src.142b252/Makefile.def-samples/Makefile.def-x86-msys2-mingw	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples/Makefile.def-x86-msys2-mingw	Mon Oct 30 16:31:38 2023
+*** ../src.142b252/Makefile.def-samples\Makefile.def-x86-msys2-mingw	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples\Makefile.def-x86-msys2-mingw	Mon Oct 30 16:31:38 2023
 ***************
 *** 0 ****
 --- 1,32 ----
@@ -235,6 +386,63 @@
 + MANDIR = C:/ASL/man
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
+*** ../src.142b252/Makefile.def-samples\Makefile.def-x86_64-macos	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples\Makefile.def-x86_64-macos	Wed Nov 01 22:26:29 2023
+***************
+*** 0 ****
+--- 1,31 ----
++ # -------------------------------------------------------------------------
++ # choose your compiler (must be ANSI-compliant!) and linker command, plus
++ # any additionally needed flags
++ 
++ OBJDIR =
++ CC = cc
++ CFLAGS = -O3 -fomit-frame-pointer -Wall -arch x86_64
++ HOST_OBJEXTENSION = .o
++ LD = cc
++ LDFLAGS = -arch x86_64
++ HOST_EXEXTENSION =
++ 
++ # no cross build
++ 
++ TARG_OBJDIR = $(OBJDIR)
++ TARG_CC = $(CC)
++ TARG_CFLAGS = $(CFLAGS)
++ TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
++ TARG_LD = $(LD)
++ TARG_LDFLAGS = $(LDFLAGS)
++ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
++ 
++ # -------------------------------------------------------------------------
++ # directories where binaries, includes, and manpages should go during
++ # installation
++ 
++ BINDIR = /usr/local/bin
++ INCDIR = /usr/local/include/asl
++ MANDIR = /usr/local/share/man
++ LIBDIR =
++ DOCDIR = /usr/local/share/doc/asl
+*** ../src.142b252/Makefile.def-samples\Makefile.def-x86_64-unknown-linux	Fri Sep 01 15:53:54 2023
+--- Makefile.def-samples\Makefile.def-x86_64-unknown-linux	Wed Nov 01 22:46:40 2023
+***************
+*** 3,10 ****
+  # any additionally needed flags
+  
+  OBJDIR =
+! CC = gcc
+! CFLAGS = -g -O3 -march=athlon64 -fomit-frame-pointer -Wall
+  HOST_OBJEXTENSION = .o
+  LD = $(CC)
+  LDFLAGS =
+--- 3,10 ----
+  # any additionally needed flags
+  
+  OBJDIR =
+! CC = gcc -m64
+! CFLAGS = -O3 -fomit-frame-pointer -Wall
+  HOST_OBJEXTENSION = .o
+  LD = $(CC)
+  LDFLAGS =
 *** ../src.142b252/mkdepend.c	Wed Jun 28 15:17:12 2023
 --- mkdepend.c	Thu Oct 19 16:54:59 2023
 ***************
@@ -385,67 +593,2691 @@
   #include <unistd.h>
   #endif
   #include <math.h>
-*** ../src.142b252/strutil.h	Wed Dec 29 06:27:29 2021
---- strutil.h	Thu Oct 19 19:59:28 2023
-***************
-*** 13,18 ****
---- 13,21 ----
-  #include <stdio.h>
-  #include <stddef.h>
-  #include <stdarg.h>
-+ #ifdef _WIN32
-+ # include <string.h>
-+ #endif
-  
-  #include "datatypes.h"
-  
 *** ../src.142b252/sysdefs.h	Sun Dec 04 11:57:07 2022
---- sysdefs.h	Mon Oct 30 15:58:45 2023
+--- sysdefs.h	Wed Nov 01 22:17:42 2023
 ***************
 *** 1,5 ****
-  #ifndef _SYSDEFS_H
-! #define _SYSDEFS_H
+- #ifndef _SYSDEFS_H
+- #define _SYSDEFS_H
   /* sysdefs.h */
   /*****************************************************************************/
   /* SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only                     */
---- 1,5 ----
-  #ifndef _SYSDEFS_H
-! # define _SYSDEFS_H
-  /* sysdefs.h */
-  /*****************************************************************************/
-  /* SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only                     */
+--- 1,3 ----
 ***************
-*** 21,39 ****
+*** 11,16 ****
+--- 9,15 ----
+  /* History:  2001-04-13 activated DRSEP for Win32 platform                   */
+  /*           2001-09-11 added MacOSX                                         */
+  /*           2001-10-13 added ARM/Linux                                      */
++ /*           2023-10-19 added Windows using Visual Studio                    */
+  /*                                                                           */
+  /*****************************************************************************/
+  
+***************
+*** 21,1396 ****
    *
    */
+  
+! /*---------------------------------------------------------------------------*/
+! /* unify 68K platforms */
+! 
+! #ifdef __mc68020
+! #ifndef __m68k
+! #define __m68k
+! #endif
+! #endif
+! 
+! #ifdef m68000
+! #ifndef __m68k
+! #define __m68k
+! #endif
+! #endif
+! 
+! #ifdef __mc68000
+! # ifndef __m68k
+! #  define __m68k
+! # endif
+! #endif
+! 
+! /*---------------------------------------------------------------------------*/
+! /* ditto for i386 platforms */
+! 
+! /* MSDOS only runs on x86s... */
+! 
+! #ifdef __MSDOS__
+! #define __i386
+! #endif
+! 
+! /* For IBMC... */
+! 
+! #ifdef _M_I386
+! #define __i386
+! #endif
+! 
+! #ifdef __i386__
+! #ifndef __i386
+! #define __i386
+! #endif
+! #endif
+! 
+! /*---------------------------------------------------------------------------*/
+! /* ditto for VAX platforms */
+! 
+! #ifdef vax
+! #define __vax__
+! #endif
+! 
+! /*---------------------------------------------------------------------------*/
+! /* ditto for PPC platforms */
+! 
+! #ifdef __PPC
+! #ifndef _POWER
+! #define _POWER
+! #endif
+! #endif
+! 
+! #ifdef __ppc__
+! #ifndef _POWER
+! #define _POWER
+! #endif
+! #endif
+! 
+! #ifdef __PPC__
+! # ifndef _POWER
+! #  define _POWER
+! # endif
+! #endif
+! 
+! #ifdef __PPC64__
+! # ifndef _POWER4
+! #  define _POWER4
+! # endif
+! #endif
+! 
+! /*---------------------------------------------------------------------------*/
+! /* ditto for ARM platforms */
+  
+- #ifdef __arm__
+- #ifndef __arm
+- #define __arm
+- #endif
+- #endif
+  
+- /*---------------------------------------------------------------------------*/
+  /* If the compiler claims to be ANSI, we surely can use prototypes */
+- 
+  #ifdef __STDC__
+! #define __PROTOS__
+! #define UNUSED(x) (void)x
+  #else
+! #define UNUSED(x) {}
+! #endif
+! 
+! /*---------------------------------------------------------------------------*/
+! /* just a hack to allow distinguishing SunOS from Solaris on Sparcs... */
+! 
+! #ifdef sparc
+! #ifndef __sparc
+! #define __sparc
+! #endif
+! #endif
+! 
+! #ifdef __sparc
+! # ifndef __NetBSD__
+! #  ifndef __FreeBSD__
+! #   ifndef __linux__
+! #    ifndef __SVR4
+! #     define __sunos__
+! #    else /* __SVR4 */
+! #     define __solaris__
+! #    endif /* __SVR4 */
+! #   endif /* __linux__ */
+! #  endif /* __FreeBSD__ */
+! # endif /* __NetBSD */
+! #endif /* __sparc */
+! 
+! #ifdef __sparc__
+! #ifndef __sparc
+! #define __sparc
+! #endif
+  #endif
+  
+- /*---------------------------------------------------------------------------*/
+- /* similar on Sun 3's... */
+- 
+- #ifdef __m68k
+- #ifndef __NetBSD__
+- #ifndef __MUNIX__
+- #ifndef __amiga
+- #define __sunos__
+- #endif
+- #endif
+- #endif
+- #endif
+  
+  /*===========================================================================*/
+! /* 68K platforms */
+  
+! #ifdef __m68k
+  
+! #define ARCHPRNAME "m68k"
+  
+! /*---------------------------------------------------------------------------*/
+! /* SUN/3 with SunOS 4.x:
+  
+!    see my SunOS quarrels in the Sparc section... */
+  
+! #ifdef __sunos__
+! #define ARCHSYSNAME "sun-sunos"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #ifdef __GNUC__
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #else
+! #define NOLONGLONG
+! #endif
+! #define memmove(s1,s2,len) bcopy(s2,s1,len)
+! extern void bcopy();
+! #define NO_NLS
+! #endif
   
   /*---------------------------------------------------------------------------*/
-  /* unify 68K platforms */
+! /* SUN/3 with NetBSD 1.x:
   
-  #ifdef __mc68020
-! #ifndef __m68k
-! #define __m68k
+!    quite a normal 32-Bit-UNIX system */
+  
+! #ifdef __NetBSD__
+! #define ARCHSYSNAME "sun-netbsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
 ! #endif
+  
+! /*---------------------------------------------------------------------------*/
+! /* PCS/Cadmus:
+  
+-    quite a bare system, lots of work required... */
+  
+! #ifdef __MUNIX__
+! #define ARCHSYSNAME "pcs-munix"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+! #define NEEDS_STRSTR
+! typedef char Integ8;
+! typedef unsigned char Card8;
+! typedef short Integ16;
+! typedef unsigned short Card16;
+! #define HAS16
+! typedef int Integ32;
+! #define PRIInteg32 "d"
+! typedef unsigned int Card32;
+! #define NOLONGLONG
+! #define memmove(s1,s2,len) bcopy(s2,s1,len)
+! extern double strtod();
+! extern char *getenv();
+! #define NO_NLS
   #endif
   
-  #ifdef m68000
-! #ifndef __m68k
-! #define __m68k
+! /*---------------------------------------------------------------------------*/
+! /* Linux/68K:
+  
+!    quite a normal 32-Bit-UNIX system */
+  
+! #ifdef __linux__
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define NO_NLS
 ! #endif
+! 
+! #endif /* __m68k */
+! 
+! /*===========================================================================*/
+! /* SPARC platforms */
+! 
+! #ifdef __sparc
+! 
+! #define ARCHPRNAME "sparc"
+  
+  /*---------------------------------------------------------------------------*/
+! /* SUN Sparc with SunOS 4.1.x:
+  
+!    don't try cc, use gcc, it's hopeless without an ANSI-compliant compiler...
+!    SunOS does have NLS support, but it does not have D_FMT and T_FMT
+!    I should change this ...
+!    Though the manual pages claim that memmove and atexit exist, I could not
+!    find them in any library :-(  Fortunately, bcopy claims to be safe for
+!    overlapping arrays, we just have to reverse source and destination pointers.
+!    The sources themselves contain a switch to use on_exit instead of atexit
+!    (it uses a different callback scheme, so we cannot just make a #define here...)
+!    To get rid of most of the messages about missing prototypes, add
+!    -D__USE_FIXED_PROTOTYPES__ to your compiler flags!
+!    Apart from these few points, one could claim SunOS to be quite a normal
+!    32-bit-UNIX... */
+  
+! #ifdef __sunos__
+! #define ARCHSYSNAME "sun-sunos"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #ifdef __GNUC__
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #else
+! #define NOLONGLONG
+! #endif
+! #define fpos_t long
+! #ifdef __STDC__
+! extern void bcopy();
+! #endif
+! #define memmove(s1,s2,len) bcopy(s2,s1,len)
+! #define NO_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* SUN Sparc with Solaris 2.x:
+  
+!    quite a normal 32-Bit-UNIX system */
+  
+! #ifdef __solaris__
+! #define ARCHSYSNAME "sun-solaris"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* Sparc with NetBSD 1.x:
+! 
+!    quite a normal 32-Bit-UNIX system */
+! 
+! #ifdef __NetBSD__
+! #define ARCHSYSNAME "sun-netbsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* Sparc with Linux                                                          */
+  
+! #ifdef __linux__
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+! 
+! #endif /* __sparc */
+! 
+! /*===========================================================================*/
+! /* Mips platforms */
+! 
+! #ifdef __mips
+! 
+! #define ARCHPRNAME "mips"
+  
+  /*---------------------------------------------------------------------------*/
+! /* R3000 with Ultrix 4.3:
+! 
+!    nl_langinfo prototype is there, but no function in library ?!
+!    use long long only if you have gcc, c89 doesn't like them !
+!    cc isn't worth trying, believe me! */
+  
+! #ifdef __ultrix
+! #define ARCHSYSNAME "dec-ultrix"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+! #define NEEDS_STRDUP
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+- #ifdef __GNUC__
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #else
+! #define NOLONGLONG
+! #endif
+! #define NO_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* R2000/3000 with NetBSD 1.2:
+  
+!    quite a normal 32-Bit-UNIX system */
+  
+! #ifdef __NetBSD__
+! #define ARCHSYSNAME "dec-netbsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+! typedef signed int Integ32;
+! #define PRIInteg32 "d"
+! typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* R3000/4x00 with Irix 5.x:
+  
+!   quite a normal 32-Bit-UNIX system
+!   seems also to work with 6.2... */
+  
+! #ifdef __sgi
+! #define ARCHSYSNAME "sgi-irix"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+! #ifdef __linux__
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+! 
+! #endif /* __mips */
+! 
+! /*===========================================================================*/
+! /* HP-PA platforms */
+  
+! #ifdef __hppa
+  
+! #define ARCHPRNAME "parisc"
+  
+  /*---------------------------------------------------------------------------*/
+! /* HP-PA 1.x with HP-UX: */
+! 
+! #ifdef __hpux
+! #define ARCHSYSNAME "hp-hpux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+! 
+! #endif /* __hppa */
+! 
+! /*===========================================================================*/
+! /* POWER 64 bit platforms */
+! 
+! #ifdef _POWER64
+! 
+! #define ARCHPRNAME "ppc64"
+  
+  /*---------------------------------------------------------------------------*/
+! /* POWER64 with Linux (Macintosh) */
+  
+! #ifdef __linux__
+  
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+! /*===========================================================================*/
+! /* POWER(32) platforms */
+  
+! #elif defined _POWER
+  
+- #define ARCHPRNAME "ppc"
+  
+  /*---------------------------------------------------------------------------*/
+! /* POWER with AIX 4.1: rs6000 */
+  
+! #ifdef _AIX
+! #define ARCHSYSNAME "ibm-aix"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* POWER with Linux (Macintosh) */
+! 
+! #ifdef __linux__
+! 
+! /* no long long data type if C89 is used */
+! 
+! #if (defined __STDC__) && (!defined __STDC_VERSION__)
+! # define NOLONGLONG
+! #endif
+  
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+- #ifndef NOLONGLONG
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! # define HAS64
+! #endif /* !NOLONGLONG */
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* POWER with OSX (Macintosh) */
+  
+! #ifdef __APPLE__
+! #define ARCHSYSNAME "apple-macosx"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define NO_NLS
+! #endif
+  
+- #endif /* _POWER */
+  
+  /*===========================================================================*/
+! /* VAX platforms */
+  
+! #ifdef __vax__
+  
+! #define ARCHPRNAME "vax"
+  
+  /*---------------------------------------------------------------------------*/
+! /* VAX with Ultrix: */
+  
+! #ifdef ultrix
+! #define ARCHSYSNAME "dec-ultrix"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define HOST_DECFLOAT
+! #define NEEDS_STRDUP
+! #define BKOKEN_SPRINTF
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #define NOLONGLONG
+! #define NO_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* VAX with NetBSD 1.x:
+! 
+!    quite a normal 32-Bit-UNIX system - apart from the float format... */
+  
+! #ifdef __NetBSD__
+! #define ARCHSYSNAME "vax-netbsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define HOST_DECFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+! 
+! #endif /* vax */
+! 
+! #ifdef __aarch64__
+! 
+! #define ARCHPRNAME "aarch64"
+  
+  /*---------------------------------------------------------------------------*/
+! /* AArch64 with Linux and GCC: */
+  
+! #ifdef __linux__
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* AArch64 with macOS (Apple M-series CPU) */
+! 
+! #ifdef __APPLE__
+! #define ARCHSYSNAME "apple-darwin"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+! 
+! #endif /* __aarch64__ */
+  
+! /*===========================================================================*/
+! /* DEC Alpha platforms */
+  
+- #ifdef __alpha
+  
+! #define ARCHPRNAME "alpha"
+  
+  /*---------------------------------------------------------------------------*/
+! /* DEC Alpha with Digital UNIX and DEC C / GCC:
+! 
+!    Alpha is a 64 bit machine, so we do not need to use extra longs
+!    OSF has full NLS support */
+  
+! #ifdef __osf__
+! #define ARCHSYSNAME "dec-osf"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* DEC Alpha with Linux and GCC:
+! 
+!    see OSF... */
+  
+! #ifdef __linux__
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* DEC Alpha with NetBSD and GCC:
+! 
+!    see OSF... */
+  
+! #ifdef __NetBSD__
+! #define ARCHSYSNAME "unknown-netbsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+! #ifdef __FreeBSD__
+! #define ARCHSYSNAME "unknown-freebsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #define HAS64
+! #define NO_NLS
+! #endif
+! 
+! #endif /* __alpha */
+  
+! /*===========================================================================*/
+! /* Intel i386 platforms */
+  
+- #ifdef __i386
+  
+! #define ARCHPRNAME "i386"
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with NetBSD 1. and GCC: (tested on 1.5.3)
+! 
+!    principally, a normal 32-bit UNIX */
+! 
+! #ifdef __NetBSD__
+! #define ARCHSYSNAME "i386-netbsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+! 
+! /*---------------------------------------------------------------------------*/
+! /* Intel i386 with Linux and GCC:
+  
+!    principally, a normal 32-bit *NIX */
+! 
+! #ifdef __linux__
+  
+- /* no long long data type if C89 is used */
+  
+! #if (defined __STDC__) && (!defined __STDC_VERSION__)
+! # define NOLONGLONG
   #endif
   
-  #ifdef __mc68000
---- 21,123 ----
+! #define ARCHSYSNAME "unknown-linux"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #ifndef NOLONGLONG
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #endif /* !NOLONGLONG */
+! #define LOCALE_NLS
+! #endif
+  
+! /*---------------------------------------------------------------------------*/
+! /* Intel i386 with FreeBSD and GCC:
+  
+-    principally, a normal 32-bit *NIX */
+  
+! #ifdef __FreeBSD__
+! #define ARCHSYSNAME "unknown-freebsd"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+! typedef signed char Integ8;
+! typedef unsigned char Card8;
+! typedef signed short Integ16;
+! typedef unsigned short Card16;
+! #define HAS16
+! typedef signed int Integ32;
+! #define PRIInteg32 "d"
+! typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #define NO_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with Darwin and GCC:
+!    principally, a normal 32-bit *NIX */
+! 
+! #ifdef __APPLE__
+! #define ARCHSYSNAME "apple-osx"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with WIN32 and Cygnus GCC:
+! 
+!    well, not really a UNIX... */
+! 
+! #ifdef _WIN32
+  
+  /* no long long data type if C89 is used */
+  
+! #if (defined __STDC__) && (!defined __STDC_VERSION__)
+! # define NOLONGLONG
+! #endif
+! 
+! #define ARCHSYSNAME "unknown-win32"
+! #define DEFSMADE
+! #define OPENRDMODE "rb"
+! #define OPENWRMODE "wb"
+! #define OPENUPMODE "rb+"
+! #define IEEEFLOAT
+! #define SLASHARGS
+! #define PATHSEP '\\'
+! #define SPATHSEP "\\"
+! #define DIRSEP ';'
+! #define SDIRSEP ";"
+! #define DRSEP ':'
+! #define SDRSEP ":"
+! #define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #ifndef NOLONGLONG
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! # define HAS64
+! #endif
+! #define W32_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with OS/2 and emx-GCC:
+! 
+!    well, not really a UNIX... */
+! 
+! #ifdef __EMX__
+! #define ARCHSYSNAME "unknown-os2"
+! #define DEFSMADE
+! #define OPENRDMODE "rb"
+! #define OPENWRMODE "wb"
+! #define OPENUPMODE "rb+"
+! #define IEEEFLOAT
+! #define SLASHARGS
+! #define PATHSEP '\\'
+! #define SPATHSEP "\\"
+! #define DIRSEP ';'
+! #define SDIRSEP ";"
+! #define DRSEP ':'
+! #define SDRSEP ":"
+! #define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #define HAS64
+! #define OS2_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with OS/2 and IBMC:
+  
+! well, not really a UNIX... */
+  
+! #ifdef __IBMC__
+! #define DEFSMADE
+! #define NODUP
+! #define OPENRDMODE "rb"
+! #define OPENWRMODE "wb"
+! #define OPENUPMODE "rb+"
+! #define IEEEFLOAT
+! #define SLASHARGS
+! #define PATHSEP '\\'
+! #define SPATHSEP "\\"
+! #define DRSEP ':'
+! #define SDRSEP ":"
+! #define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #define NOLONGLONG
+! #define OS2_NLS
+! #endif
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel x86 with MS-DOS and Borland-C:
+! 
+!    well, not really a UNIX...
+!    assure we get a usable memory model */
+  
+! #ifdef __MSDOS__
+! #ifdef __TURBOC__
+! #ifndef __LARGE__
+! #error Wrong memory model - use large!
+! #endif
+! #undef ARCHPRNAME
+! #ifdef __DPMI16__
+! #define ARCHPRNAME "i286"
+! #define ARCHSYSNAME "unknown-dpmi"
+! #else
+! #define ARCHPRNAME "i86"
+! #define ARCHSYSNAME "unknown-msdos"
+! #endif
+! #define CKMALLOC
+! #define HEAPRESERVE 4096
+! #define DEFSMADE
+! #define OPENRDMODE "rb"
+! #define OPENWRMODE "wb"
+! #define OPENUPMODE "rb+"
+! #define IEEEFLOAT
+! #define SLASHARGS
+! #define PATHSEP '\\'
+! #define SPATHSEP "\\"
+! #define DIRSEP ';'
+! #define SDIRSEP ";"
+! #define DRSEP ':'
+! #define SDRSEP ":"
+! #define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+! typedef signed long Integ32;
+! #define PRIInteg32 "ld"
+! typedef unsigned long Card32;
+! #define NOLONGLONG
+! #define DOS_NLS
+! #define __PROTOS__
+! #undef UNUSED
+! #define UNUSED(x) (void)x
+! #endif
+! #endif
+  
+! #endif /* __i386 */
+  
+  
+  /*===========================================================================*/
+! /* Intel x86_64 platforms */
+! 
+! #if  (defined __k8__) || (defined __x86_64) || (defined __x86_64__)
+! 
+! #define ARCHPRNAME "x86_64"
+  
+  /*---------------------------------------------------------------------------*/
+! /* x86-64/amd64 with Linux/FreeBSD, OSX and GCC:
+! 
+!    Principally, a normal *NIX. */
+! 
+! #if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+! 
+! /* no long long data type if C89 is used */
+! 
+! #if (defined __STDC__) && (!defined __STDC_VERSION__)
+! # define NOLONGLONG
+! #endif
+! 
+! #ifdef __linux__
+! #define ARCHSYSNAME "unknown-linux"
+! #elif defined __FreeBSD__
+! #define ARCHSYSNAME "unknown-freebsd"
+! #elif defined __NetBSD__
+! #define ARCHSYSNAME "unknown-netbsd"
+! #else
+! #define ARCHSYSNAME "apple-osx"
+! #endif
+! 
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long Integ64;
+  typedef unsigned long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! 
+! #endif /* __linux__ || __FreeBSD__ || __NetBSD__ || __APPLE__ */
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with WIN32 and MinGW:
+! 
+!    Well, not really a UNIX...note that in contrast to Unix-like systems,
+!    the size of 'long' remains 32 bit.  One still has to use 'long long' to
+!    get 64 bits. */
+! 
+! #ifdef _WIN32
+! 
+! /* no long long data type if C89 is used */
+! 
+! #if (defined __STDC__) && (!defined __STDC_VERSION__)
+! # define NOLONGLONG
+! #endif
+  
+! #define ARCHSYSNAME "unknown-win64"
+! #define DEFSMADE
+! #define OPENRDMODE "rb"
+! #define OPENWRMODE "wb"
+! #define OPENUPMODE "rb+"
+! #define IEEEFLOAT
+! #define SLASHARGS
+! #define PATHSEP '\\'
+! #define SPATHSEP "\\"
+! #define DIRSEP ';'
+! #define SDIRSEP ";"
+! #define DRSEP ':'
+! #define SDRSEP ":"
+! #define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #ifndef NOLONGLONG
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! # define HAS64
+! #endif
+! #define NO_NLS
+! 
+! #endif /* _WIN32 */
+! 
+! #endif /* __k8__ || __x86_64 || __x86_64__ */
+! 
+! /*===========================================================================*/
+! /* ARM platform */
+! 
+! #ifdef __arm
+! 
+! #define ARCHPRNAME "arm"
+  
+  /*---------------------------------------------------------------------------*/
+! /* ARM linux with GCC */
+  
+! #ifdef __linux__
+! #define ARCHSYSNAME "unknown-linux-arm"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #define LOCALE_NLS
+! #endif /* __linux__ */
+  
+  /*---------------------------------------------------------------------------*/
+! /* Psion PDA (ARM cpu) with SymbianOS Epoc32 rel.5 and installed epocemx-GCC:
+! 
+!    well, not really a UNIX... */
+! 
+! #ifdef __EPOC32__
+  
+! #ifdef __EPOCEMX__
+! #define ARCHSYSNAME "psion-epoc32-epocemx"
+! #define DEFSMADE
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #define HAS16
+  typedef signed int Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #define HAS64
+! #define NO_NLS
+! #endif /* __EPOCEMX__ */
+! 
+  
+! #endif /* __EPOC32__ */
+  
+- #endif /* __arm */
+  
+  /*===========================================================================*/
+  /* Misc... */
+  
+  /*---------------------------------------------------------------------------*/
+  /* Just for curiosity, it won't work without 16 bit int's... */
+- 
+  #ifdef _CRAYMPP
+! #define OPENRDMODE "r"
+! #define OPENWRMODE "w"
+! #define OPENUPMODE "r+"
+! #define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ32;
+! #define PRIInteg32 "d"
+  typedef unsigned short Card32;
+  typedef signed int Integ64;
+  typedef unsigned int Card64;
+! #define HAS64
+! #define LOCALE_NLS
+  #endif
+  
+- /*===========================================================================*/
+- /* Post-Processing: check for definition, add defaults */
+  
+  
+- #ifdef DEFSMADE
+- #ifndef PATHSEP
+- #define PATHSEP '/'
+- #define SPATHSEP "/"
+- #define DIRSEP ':'
+- #define SDIRSEP ":"
+- #endif
+- #ifndef NULLDEV
+- #define NULLDEV "/dev/null"
+- #endif
+- #else
+- #error "your platform so far is not included in AS's header files!"
+- #error "please edit sysdefs.h!"
+- #endif
+  
+  #ifdef CKMALLOC
+! #define malloc(s) ckmalloc(s)
+! #define realloc(p,s) ckrealloc(p,s)
+  
+  extern void *ckmalloc(size_t s);
+  
+  extern void *ckrealloc(void *p, size_t s);
+  #endif
+! #endif /* _SYSDEFS_H */
+--- 20,1377 ----
    *
    */
   
-+ #ifdef _MSC_VER
-+ # define __PROTOS__
-+ # define UNUSED(x) (void)x
+! #ifndef _SYSDEFS_H
+! # define _SYSDEFS_H
+  
+  
+  /* If the compiler claims to be ANSI, we surely can use prototypes */
+  #ifdef __STDC__
+! # define __PROTOS__
+! # define UNUSED(x) (void)x
+  #else
+! # define UNUSED(x) {}
+  #endif
+  
+  
+  /*===========================================================================*/
+! /* Intel x86_64 (64-bit) based platformss. */
+! #if defined(__k8__) || defined(__x86_64) || defined(__x86_64__)
+! # define ARCHPRNAME "x86_64"
+  
+! /*---------------------------------------------------------------------------*/
+! /* x86-64/amd64 with Linux/FreeBSD, OSX and GCC:
+  
+!    Principally, a normal *NIX. */
+! # if defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+  
+! /* no long long data type if C89 is used */
+! #  if (defined __STDC__) && (!defined __STDC_VERSION__)
+! #   define NOLONGLONG
+! #  endif
+  
+! #  ifdef __linux__
+! #   define ARCHSYSNAME "unknown-linux"
+! #  elif defined __FreeBSD__
+! #   define ARCHSYSNAME "unknown-freebsd"
+! #  elif defined __NetBSD__
+! #   define ARCHSYSNAME "unknown-netbsd"
+! #  else
+! //#   define ARCHSYSNAME "apple-osx"
+! #   define ARCHSYSNAME "apple-macos"
+! #  endif
+  
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__linux__ || __FreeBSD__ || __NetBSD__ || __APPLE__ */
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel 86_64 with WIN32 and MinGW:
+  
+!    Well, not really a UNIX...note that in contrast to Unix-like systems,
+!    the size of 'long' remains 32 bit.  One still has to use 'long long' to
+!    get 64 bits. */
+! # ifdef _WIN32
+  
+! /* no long long data type if C89 is used */
+! #  if defined(__STDC__) && !defined(__STDC_VERSION__)
+! #   define NOLONGLONG
+! #  endif
+! 
+! #  define ARCHSYSNAME "windows-mingw"
+! #  define DEFSMADE
+! #  define OPENRDMODE "rb"
+! #  define OPENWRMODE "wb"
+! #  define OPENUPMODE "rb+"
+! #  define IEEEFLOAT
+! #  define SLASHARGS
+! #  define PATHSEP '\\'
+! #  define SPATHSEP "\\"
+! #  define DIRSEP ';'
+! #  define SDIRSEP ";"
+! #  define DRSEP ':'
+! #  define SDRSEP ":"
+! #  define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
++ #  ifndef NOLONGLONG
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #   define HAS64
+! #  endif
+! #  define NO_NLS
+! # endif	/* _WIN32 */
+  
+! #endif	/*__k8__ || __x86_64 || __x86_64__ */
+  
+  
+! /*===========================================================================*/
+! /* Intel i386 (32-bit) based platforms. */
+! /*---------------------------------------------------------------------------*/
+! /* Unify platforms. */
+! #ifdef __MSDOS__
+! /* MSDOS only runs on x86s... */
+! # define __i386
+! #endif
+! #ifdef _M_I386
+! /* For IBMC... */
+! # define __i386
+! #endif
+! #ifdef __i386__
+! # ifndef __i386
+! #  define __i386
+! # endif
+  #endif
+  
+! #ifdef __i386
+! # define ARCHPRNAME "i386"
+  
+! /*---------------------------------------------------------------------------*/
+! /* Intel i386 with NetBSD 1. and GCC: (tested on 1.5.3)
+  
+!    principally, a normal 32-bit UNIX */
+! # ifdef __NetBSD__
+! #  define ARCHSYSNAME "unknown-netbsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__NetBSD__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with Linux and GCC:
+  
+!    principally, a normal 32-bit *NIX */
+! # ifdef __linux__
+  
+! /* no long long data type if C89 is used */
+! #  if (defined __STDC__) && (!defined __STDC_VERSION__)
+! #   define NOLONGLONG
+! #  endif
+! 
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #  ifndef NOLONGLONG
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #   define HAS64
+! #  endif /* !NOLONGLONG */
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with FreeBSD and GCC:
+  
+!    principally, a normal 32-bit *NIX */
+  
+! # ifdef __FreeBSD__
+! #  define ARCHSYSNAME "unknown-freebsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define NO_NLS
+! # endif	/*__FreeBSD__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with Darwin and GCC:
+!    principally, a normal 32-bit *NIX */
+! # ifdef __APPLE__
+! #  define ARCHSYSNAME "apple-osx"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__APPLE__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with Windows and Cygnus GCC:
+! 
+!    well, not really a UNIX... */
+! # ifdef _WIN32
+! /* no long long data type if C89 is used */
+! #  if (defined __STDC__) && (!defined __STDC_VERSION__)
+! #   define NOLONGLONG
+! #  endif
+  
+! #  define ARCHSYSNAME "unknown-win32"
+! #  define DEFSMADE
+! #  define OPENRDMODE "rb"
+! #  define OPENWRMODE "wb"
+! #  define OPENUPMODE "rb+"
+! #  define IEEEFLOAT
+! #  define SLASHARGS
+! #  define PATHSEP '\\'
+! #  define SPATHSEP "\\"
+! #  define DIRSEP ';'
+! #  define SDIRSEP ";"
+! #  define DRSEP ':'
+! #  define SDRSEP ":"
+! #  define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
++ #  ifndef NOLONGLONG
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #   define HAS64
+! #  endif
+! #  define W32_NLS
+! # endif	/*_WIN32*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with OS/2 and emx-GCC:
+  
+!    well, not really a UNIX... */
+! # ifdef __EMX__
+! #  define ARCHSYSNAME "unknown-os2"
+! #  define DEFSMADE
+! #  define OPENRDMODE "rb"
+! #  define OPENWRMODE "wb"
+! #  define OPENUPMODE "rb+"
+! #  define IEEEFLOAT
+! #  define SLASHARGS
+! #  define PATHSEP '\\'
+! #  define SPATHSEP "\\"
+! #  define DIRSEP ';'
+! #  define SDIRSEP ";"
+! #  define DRSEP ':'
+! #  define SDRSEP ":"
+! #  define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define OS2_NLS
+! # endif	/*__EMX__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* Intel i386 with OS/2 and IBMC:
+! well, not really a UNIX... */
+! # ifdef __IBMC__
+! #  define ARCHSYSNAME "ibmpc-os2"
+! #  define DEFSMADE
+! #  define NODUP
+! #  define OPENRDMODE "rb"
+! #  define OPENWRMODE "wb"
+! #  define OPENUPMODE "rb+"
+! #  define IEEEFLOAT
+! #  define SLASHARGS
+! #  define PATHSEP '\\'
+! #  define SPATHSEP "\\"
+! #  define DRSEP ':'
+! #  define SDRSEP ":"
+! #  define NULLDEV "NUL"
+! typedef signed char Integ8;
+! typedef unsigned char Card8;
+! typedef signed short Integ16;
+! typedef unsigned short Card16;
+! #  define HAS16
+! typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+! typedef unsigned int Card32;
+! #  define NOLONGLONG
+! #  define OS2_NLS
+! # endif	/*IBMPC*/
+  
+! /*---------------------------------------------------------------------------*/
+! /* Intel x86 with MS-DOS and Borland-C:
+  
+!    well, not really a UNIX...
+!    assure we get a usable memory model */
+! # ifdef __MSDOS__
+! #  ifdef __TURBOC__
+! #   ifndef __LARGE__
+! #    error Wrong memory model - use large!
+! #   endif
+! #   undef ARCHPRNAME
+! #   ifdef __DPMI16__
+! #    define ARCHPRNAME "i286"
+! #    define ARCHSYSNAME "unknown-dpmi"
+! #   else
+! #    define ARCHPRNAME "i86"
+! #    define ARCHSYSNAME "unknown-msdos"
+! #   endif
+! #   define CKMALLOC
+! #   define HEAPRESERVE 4096
+! #   define DEFSMADE
+! #   define OPENRDMODE "rb"
+! #   define OPENWRMODE "wb"
+! #   define OPENUPMODE "rb+"
+! #   define IEEEFLOAT
+! #   define SLASHARGS
+! #   define PATHSEP '\\'
+! #   define SPATHSEP "\\"
+! #   define DIRSEP ';'
+! #   define SDIRSEP ";"
+! #   define DRSEP ':'
+! #   define SDRSEP ":"
+! #   define NULLDEV "NUL"
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #   define HAS16
+! typedef signed long Integ32;
+! #   define PRIInteg32 "ld"
+! typedef unsigned long Card32;
+! #   define NOLONGLONG
+! #   define DOS_NLS
+! #   define __PROTOS__
+! #   undef UNUSED
+! #   define UNUSED(x) (void)x
+! #  endif
+! # endif	/*__MSDOS__*/
+! 
+! #endif	/*__i386*/
+! 
+  
++ /*===========================================================================*/
++ /* ARM64 (64-bit) and ARM (32-bit) based platforms. */
+  /*---------------------------------------------------------------------------*/
+! /* Unify platforms. */
+! #ifdef __arm__
+! # ifndef __arm
+! #  define __arm
+! # endif
+! #endif
+  
+! #ifdef __aarch64__
+! # define ARCHPRNAME "aarch64"
+  
+! /*---------------------------------------------------------------------------*/
+! /* AArch64 with Linux and GCC: */
+! # ifdef __linux__
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+! /*---------------------------------------------------------------------------*/
+! /* AArch64 with macOS (Apple M-series CPU) */
+! # ifdef __APPLE__
+! #  define ARCHSYSNAME "apple-darwin"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__APPLE__*/
+  
+! #endif	/*__aarch64__*/
+  
+! #ifdef __arm
+! # define ARCHPRNAME "arm"
+  
+  /*---------------------------------------------------------------------------*/
+! /* ARM linux with GCC */
+! # ifdef __linux__
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* Psion PDA (ARM cpu) with SymbianOS Epoc32 rel.5 and installed epocemx-GCC:
+  
+!    well, not really a UNIX... */
+! # ifdef __EPOC32__
+! #  undef ARCHPRNAME
+! #  define ARCHPRNAME "epoc32"
+  
+! #  ifdef __EPOCEMX__
+! #   define ARCHSYSNAME "psion-epocemx"
+! #   define DEFSMADE
+! #   define OPENRDMODE "r"
+! #   define OPENWRMODE "w"
+! #   define OPENUPMODE "r+"
+! #   define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #   define HAS16
+  typedef signed int Integ32;
+! #   define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #   define HAS64
+! #   define NO_NLS
+! #  endif /*__EPOCEMX__*/
+  
+! # endif	/*__EPOC32__*/
+  
+! #endif	/*__arm*/
+  
+  
++ /*===========================================================================*/
++ /* 68K-based platforms. */
+  /*---------------------------------------------------------------------------*/
+! /* Unify platforms. */
+! #ifdef __mc68020
+! # ifndef __m68k
+! #  define __m68k
+! # endif
+! #endif
+! #ifdef m68000
+! # ifndef __m68k
+! #  define __m68k
+! # endif
+! #endif
+! #ifdef __mc68000
+! # ifndef __m68k
+! #  define __m68k
+! # endif
+! #endif
+! 
+! #ifdef __m68k
+! # define ARCHPRNAME "m68k"
+! 
+! /*---------------------------------------------------------------------------*/
+! /* SUN/3 with SunOS 4.x:
+  
+!    see my SunOS quarrels in the Sparc section... */
+! # ifdef __sunos__
+! #  define ARCHSYSNAME "sun-sunos"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
++ #  ifdef __GNUC__
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #   define HAS64
+! #  else
+! #   define NOLONGLONG
+! #  endif
+! #  define memmove(s1,s2,len) bcopy(s2,s1,len)
+! extern void bcopy();
+! #  define NO_NLS
+! # endif	/*__sunos__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* SUN/3 with NetBSD 1.x:
+  
+!    quite a normal 32-Bit-UNIX system */
+! # ifdef __NetBSD__
+! #  define ARCHSYSNAME "sun-netbsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__NetBSD__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* PCS/Cadmus:
+! 
+!    quite a bare system, lots of work required... */
+! # ifdef __MUNIX__
+! #  define ARCHSYSNAME "pcs-munix"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+! #  define NEEDS_STRSTR
+! typedef char Integ8;
+! typedef unsigned char Card8;
+! typedef short Integ16;
+! typedef unsigned short Card16;
+! #  define HAS16
+! typedef int Integ32;
+! #  define PRIInteg32 "d"
+! typedef unsigned int Card32;
+! #  define NOLONGLONG
+! #  define memmove(s1,s2,len) bcopy(s2,s1,len)
+! extern double strtod();
+! extern char *getenv();
+! #  define NO_NLS
+! # endif	/*__MUNIX__*/
+! 
+! /*---------------------------------------------------------------------------*/
+! /* Linux/68K:
+  
+!    quite a normal 32-Bit-UNIX system */
+! # ifdef __linux__
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define NO_NLS
+! # endif	/*__linux__*/
+! 
+! #endif	/*__m68k*/
+  
+  
+  /*===========================================================================*/
+! /* SPARC-based platforms. */
+! /*---------------------------------------------------------------------------*/
+! /* just a hack to allow distinguishing SunOS from Solaris on Sparcs... */
+! #ifdef sparc
+! # ifndef __sparc
+! #  define __sparc
+! # endif
+! #endif
+! #ifdef __sparc
+! # ifndef __NetBSD__
+! #  ifndef __FreeBSD__
+! #   ifndef __linux__
+! #    ifndef __SVR4
+! #     define __sunos__
+! #    else /* __SVR4 */
+! #     define __solaris__
+! #    endif /* __SVR4 */
+! #   endif /* __linux__ */
+! #  endif /* __FreeBSD__ */
+! # endif /* __NetBSD */
+! #endif /* __sparc */
+! #ifdef __sparc__
+! # ifndef __sparc
+! #  define __sparc
+! # endif
+! #endif
+  
+! /*---------------------------------------------------------------------------*/
+! /* similar on Sun 3's... */
+! #ifdef __m68k
+! # ifndef __NetBSD__
+! #  ifndef __MUNIX__
+! #   ifndef __amiga
+! #    define __sunos__
+! #   endif
+! #  endif
+! # endif
+! #endif
+  
+! #ifdef __sparc
+! # define ARCHPRNAME "sparc"
+  
+  /*---------------------------------------------------------------------------*/
+! /* SUN SPARC with SunOS 4.1.x:
+  
+!    Don't try cc, use gcc, it's hopeless without an ANSI-compliant compiler...
+!    SunOS does have NLS support, but it does not have D_FMT and T_FMT
+!    I should change this ...
+!    Though the manual pages claim that memmove and atexit exist, I could not
+!    find them in any library :-(  Fortunately, bcopy claims to be safe for
+!    overlapping arrays, we just have to reverse source and destination pointers.
+!    The sources themselves contain a switch to use on_exit instead of atexit
+!    (it uses a different callback scheme, so we cannot just make a #define here...)
+!    To get rid of most of the messages about missing prototypes, add
+!    -D__USE_FIXED_PROTOTYPES__ to your compiler flags!
+!    Apart from these few points, one could claim SunOS to be quite a normal
+!    32-bit-UNIX... */
+! # ifdef __sunos__
+! #  define ARCHSYSNAME "sun-sunos"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #  ifdef __GNUC__
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #   define HAS64
+! #else
+! #   define NOLONGLONG
+! #  endif
+! #  define fpos_t long
+! #  ifdef __STDC__
+! extern void bcopy();
+! #  endif
+! #  define memmove(s1,s2,len) bcopy(s2,s1,len)
+! #  define NO_NLS
+! # endif	/*__sunos__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* SUN SPARC with Solaris 2.x:
+  
+!    quite a normal 32-Bit-UNIX system */
+! # ifdef __solaris__
+! #  define ARCHSYSNAME "sun-solaris"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__solaris__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* SUN SPARC with NetBSD 1.x:
+  
+!    quite a normal 32-Bit-UNIX system */
+! # ifdef __NetBSD__
+! #  define ARCHSYSNAME "sun-netbsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__NetBSD__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* SUN SPARC with Linux                                                          */
+! # ifdef __linux__
+! #  define ARCHSYSNAME "sun-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+! #endif	/*__sparc*/
+  
+  
+! /*===========================================================================*/
+! /* MIPS-based platforms. */
+! #ifdef __mips
+! # define ARCHPRNAME "mips"
+  
+  /*---------------------------------------------------------------------------*/
+! /* R3000 with Ultrix 4.3:
+  
+!    nl_langinfo prototype is there, but no function in library ?!
+!    use long long only if you have gcc, c89 doesn't like them !
+!    cc isn't worth trying, believe me! */
+! #ifdef __ultrix
+! #  define ARCHSYSNAME "dec-ultrix"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+! #  define NEEDS_STRDUP
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #  ifdef __GNUC__
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #   define HAS64
+! #  else
+! #   define NOLONGLONG
+! #  endif
+! #  define NO_NLS
+! # endif	/*__ultrix*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* R2000/3000 with NetBSD 1.2:
+  
+!    quite a normal 32-Bit-UNIX system */
+! # ifdef __NetBSD__
+! #  define ARCHSYSNAME "dec-netbsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__NetBSD__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* R3000/4x00 with Irix 5.x and 6.2
+  
+!   quite a normal 32-Bit-UNIX system */
+! # ifdef __sgi
+! #  define ARCHSYSNAME "sgi-irix"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! #endif	/*__sgi*/
+  
+! # ifdef __linux__
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+! #endif	/*__mips*/
+  
+  
+! /*===========================================================================*/
+! /* HP-PA-based platforms. */
+! #ifdef __hppa
+! # define ARCHPRNAME "parisc"
+  
+  /*---------------------------------------------------------------------------*/
+! /* HP-PA 1.x with HP-UX: */
+! # ifdef __hpux
+! #  define ARCHSYSNAME "hp-hpux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__hpux*/
+  
+! #endif	/*__hppa*/
+  
+  
+! /*===========================================================================*/
+! /* POWER64 (64-bit) and POWER (32-bit) based platforms. */
+! /*---------------------------------------------------------------------------*/
+! /* Unify platforms. */
+! #ifdef __PPC
+! # ifndef _POWER
+! #  define _POWER
+! # endif
+! #endif
+! #ifdef __ppc__
+! # ifndef _POWER
+! #  define _POWER
+! # endif
+! #endif
+! #ifdef __PPC__
+! # ifndef _POWER
+! #  define _POWER
+! # endif
+! #endif
+! #ifdef __PPC64__
+! # ifndef _POWER4
+! #  define _POWER4
+! # endif
+  #endif
+  
+! #ifdef _POWER64
+! # define ARCHPRNAME "ppc64"
+! 
+! /*---------------------------------------------------------------------------*/
+! /* POWER64 with Linux (Macintosh) */
+! # ifdef __linux__
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+! #endif	/*_POWER64*/
+  
+  
+! #ifdef _POWER
+! # define ARCHPRNAME "ppc"
+  
+  /*---------------------------------------------------------------------------*/
+! /* POWER with AIX 4.1: rs6000 */
+! # ifdef _AIX
+! #  define ARCHSYSNAME "ibm-aix"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*_AIX*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* POWER with Linux (Macintosh) */
+! # ifdef __linux__
+  
+  /* no long long data type if C89 is used */
++ #  if (defined __STDC__) && (!defined __STDC_VERSION__)
++ #   define NOLONGLONG
++ #  endif
+  
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #  ifndef NOLONGLONG
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #   define HAS64
+! #  endif /* !NOLONGLONG */
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* POWER with OSX (Macintosh) */
+! # ifdef __APPLE__
+! #  define ARCHSYSNAME "apple-macosx"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long long Integ64;
+  typedef unsigned long long Card64;
+! #  define HAS64
+! #  define NO_NLS
+! # endif	/*__APPLE__*/
+! 
+! #endif	/*_POWER*/
+  
 + 
-+ /*
-+  * Windows systems using Microsoft Visual Studio.
-+  */
++ /*===========================================================================*/
++ /* VAX-based platforms. */
+  /*---------------------------------------------------------------------------*/
+! /* Unify platforms. */
+! #ifdef vax
+! # define __vax__
+! #endif
+  
+! #ifdef __vax__
+! # define ARCHPRNAME "vax"
+  
+! /*---------------------------------------------------------------------------*/
+! /* VAX with Ultrix: */
+! # ifdef ultrix		//FIXME: not __ultrix ?
+! #  define ARCHSYSNAME "dec-ultrix"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define HOST_DECFLOAT
+! #  define NEEDS_STRDUP
+! #  define BKOKEN_SPRINTF
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! #  define NOLONGLONG
+! #  define NO_NLS
+! # endif	/*ultrix*/	//FIXME: not __ultrix ?
+  
+  /*---------------------------------------------------------------------------*/
+! /* VAX with NetBSD 1.x:
+  
+!    quite a normal 32-Bit-UNIX system - apart from the float format... */
+! # ifdef __NetBSD__
+! #  define ARCHSYSNAME "vax-netbsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define HOST_DECFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+! typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+! typedef unsigned int Card32;
+! typedef signed long long Integ64;
+! typedef unsigned long long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__NetBSD__*/
+  
+! #endif	/*__vax__*/
+  
+  
+  /*===========================================================================*/
+! /* DEC Alpha-based platforms. */
+! #ifdef __alpha
+! # define ARCHPRNAME "alpha"
+  
+  /*---------------------------------------------------------------------------*/
+! /* DEC Alpha with Digital UNIX and DEC C / GCC:
+!    Alpha is a 64 bit machine, so we do not need to use extra longs
+!    OSF has full NLS support */
+! # ifdef __osf__
+! #  define ARCHSYSNAME "dec-osf"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+  typedef signed long Integ64;
+  typedef unsigned long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__osf__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* DEC Alpha with Linux and GCC:
+  
+!    see OSF... */
+! # ifdef __linux__
+! #  define ARCHSYSNAME "unknown-linux"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! # endif	/*__linux__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* DEC Alpha with NetBSD and GCC:
+  
+!    see OSF... */
+! # ifdef __NetBSD__
+! #  define ARCHSYSNAME "unknown-netbsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #  define HAS64
+! #  define LOCALE_NLS
+! #endif	/*__NetBSD__*/
+  
+  /*---------------------------------------------------------------------------*/
+! /* DEC Alpha with FreeBSD and GCC:
+  
+!    see OSF... */
+! # ifdef __FreeBSD__
+! #  define ARCHSYSNAME "unknown-freebsd"
+! #  define DEFSMADE
+! #  define OPENRDMODE "r"
+! #  define OPENWRMODE "w"
+! #  define OPENUPMODE "r+"
+! #  define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ16;
+  typedef unsigned short Card16;
+! #  define HAS16
+  typedef signed int Integ32;
+! #  define PRIInteg32 "d"
+  typedef unsigned int Card32;
+! typedef signed long Integ64;
+! typedef unsigned long Card64;
+! #  define HAS64
+! #  define NO_NLS
+! # endif	/*__FreeBSD__*/
+  
+! #endif	/*__alpha*/
+  
+  
+  /*===========================================================================*/
+  /* Misc... */
+  
+  /*---------------------------------------------------------------------------*/
+  /* Just for curiosity, it won't work without 16 bit int's... */
+  #ifdef _CRAYMPP
+! # define OPENRDMODE "r"
+! # define OPENWRMODE "w"
+! # define OPENUPMODE "r+"
+! # define IEEEFLOAT
+  typedef signed char Integ8;
+  typedef unsigned char Card8;
+  typedef signed short Integ32;
+! # define PRIInteg32 "d"
+  typedef unsigned short Card32;
+  typedef signed int Integ64;
+  typedef unsigned int Card64;
+! # define HAS64
+! # define LOCALE_NLS
+  #endif
+  
+  
++ /* Windows systems using Microsoft Visual Studio. */
++ #ifdef _MSC_VER
++ //# define __PROTOS__
++ //# define UNUSED(x) (void)x
++ 
 + # ifdef _M_ARM
 + #  define ARCHPRNAME "arm"
 + # endif
@@ -460,7 +3292,6 @@
 + # endif
 + 
 + # define ARCHSYSNAME "windows-msvc"
-+ 
 + # define DEFSMADE
 + # define OPENRDMODE "rb"
 + # define OPENWRMODE "wb"
@@ -488,354 +3319,21 @@
 + #  define HAS64
 + # endif
 + # define W32_NLS
-+ #endif
-+ 
-+ 
++ #endif	/*_MSC_VER*/
+  
+  
 + /*===========================================================================*/
-+ /* Intel i386 platforms */
-+ 
-+ #ifdef __i386
-+ # define ARCHPRNAME "i386"
-+ 
-+ /*---------------------------------------------------------------------------*/
-+ /* Intel i386 with NetBSD 1. and GCC: (tested on 1.5.3)
-+ 
-+    principally, a normal 32-bit UNIX */
-+ 
-+ #ifdef __NetBSD__
-+ #define ARCHSYSNAME "i386-netbsd"
-+ #define DEFSMADE
-+ #define OPENRDMODE "r"
-+ #define OPENWRMODE "w"
-+ #define OPENUPMODE "r+"
-+ #define IEEEFLOAT
-+ typedef signed char Integ8;
-+ typedef unsigned char Card8;
-+ typedef signed short Integ16;
-+ typedef unsigned short Card16;
-+ #define HAS16
-+ typedef signed int Integ32;
-+ #define PRIInteg32 "d"
-+ typedef unsigned int Card32;
-+ typedef signed long long Integ64;
-+ typedef unsigned long long Card64;
-+ #define HAS64
-+ #define LOCALE_NLS
-+ #endif
-+ 
-  /*---------------------------------------------------------------------------*/
-  /* unify 68K platforms */
-  
-  #ifdef __mc68020
-! # ifndef __m68k
-! #  define __m68k
-! # endif
-  #endif
-  
-  #ifdef m68000
-! # ifndef __m68k
-! #  define __m68k
-! # endif
-  #endif
-  
-  #ifdef __mc68000
-***************
-*** 48,88 ****
-  /* MSDOS only runs on x86s... */
-  
-  #ifdef __MSDOS__
-! #define __i386
-  #endif
-  
-  /* For IBMC... */
-  
-  #ifdef _M_I386
-! #define __i386
-  #endif
-  
-  #ifdef __i386__
-! #ifndef __i386
-! #define __i386
-! #endif
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* ditto for VAX platforms */
-  
-  #ifdef vax
-! #define __vax__
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* ditto for PPC platforms */
-  
-  #ifdef __PPC
-! #ifndef _POWER
-! #define _POWER
-! #endif
-  #endif
-  
-  #ifdef __ppc__
-! #ifndef _POWER
-! #define _POWER
-! #endif
-  #endif
-  
-  #ifdef __PPC__
---- 132,172 ----
-  /* MSDOS only runs on x86s... */
-  
-  #ifdef __MSDOS__
-! # define __i386
-  #endif
-  
-  /* For IBMC... */
-  
-  #ifdef _M_I386
-! # define __i386
-  #endif
-  
-  #ifdef __i386__
-! # ifndef __i386
-! #  define __i386
-! # endif
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* ditto for VAX platforms */
-  
-  #ifdef vax
-! # define __vax__
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* ditto for PPC platforms */
-  
-  #ifdef __PPC
-! # ifndef _POWER
-! #  define _POWER
-! # endif
-  #endif
-  
-  #ifdef __ppc__
-! # ifndef _POWER
-! #  define _POWER
-! # endif
-  #endif
-  
-  #ifdef __PPC__
-***************
-*** 101,128 ****
-  /* ditto for ARM platforms */
-  
-  #ifdef __arm__
-! #ifndef __arm
-! #define __arm
-! #endif
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* If the compiler claims to be ANSI, we surely can use prototypes */
-  
-  #ifdef __STDC__
-! #define __PROTOS__
-! #define UNUSED(x) (void)x
-  #else
-! #define UNUSED(x) {}
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* just a hack to allow distinguishing SunOS from Solaris on Sparcs... */
-  
-  #ifdef sparc
-! #ifndef __sparc
-! #define __sparc
-! #endif
-  #endif
-  
-  #ifdef __sparc
---- 185,212 ----
-  /* ditto for ARM platforms */
-  
-  #ifdef __arm__
-! # ifndef __arm
-! #  define __arm
-! # endif
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* If the compiler claims to be ANSI, we surely can use prototypes */
-  
-  #ifdef __STDC__
-! # define __PROTOS__
-! # define UNUSED(x) (void)x
-  #else
-! # define UNUSED(x) {}
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* just a hack to allow distinguishing SunOS from Solaris on Sparcs... */
-  
-  #ifdef sparc
-! # ifndef __sparc
-! #  define __sparc
-! # endif
-  #endif
-  
-  #ifdef __sparc
-***************
-*** 140,161 ****
-  #endif /* __sparc */
-  
-  #ifdef __sparc__
-! #ifndef __sparc
-! #define __sparc
-! #endif
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* similar on Sun 3's... */
-  
-  #ifdef __m68k
-! #ifndef __NetBSD__
-! #ifndef __MUNIX__
-! #ifndef __amiga
-! #define __sunos__
-! #endif
-! #endif
-! #endif
-  #endif
-  
-  /*===========================================================================*/
---- 224,245 ----
-  #endif /* __sparc */
-  
-  #ifdef __sparc__
-! # ifndef __sparc
-! #  define __sparc
-! # endif
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-  /* similar on Sun 3's... */
-  
-  #ifdef __m68k
-! # ifndef __NetBSD__
-! #  ifndef __MUNIX__
-! #   ifndef __amiga
-! #    define __sunos__
-! #   endif
-! #  endif
-! # endif
-  #endif
-  
-  /*===========================================================================*/
-***************
-*** 903,941 ****
-  
-  #endif /* __alpha */
-  
-- /*===========================================================================*/
-- /* Intel i386 platforms */
-- 
-- #ifdef __i386
-- 
-- #define ARCHPRNAME "i386"
-- 
-- /*---------------------------------------------------------------------------*/
-- /* Intel i386 with NetBSD 1. and GCC: (tested on 1.5.3)
-- 
--    principally, a normal 32-bit UNIX */
-- 
-- #ifdef __NetBSD__
-- #define ARCHSYSNAME "i386-netbsd"
-- #define DEFSMADE
-- #define OPENRDMODE "r"
-- #define OPENWRMODE "w"
-- #define OPENUPMODE "r+"
-- #define IEEEFLOAT
-- typedef signed char Integ8;
-- typedef unsigned char Card8;
-- typedef signed short Integ16;
-- typedef unsigned short Card16;
-- #define HAS16
-- typedef signed int Integ32;
-- #define PRIInteg32 "d"
-- typedef unsigned int Card32;
-- typedef signed long long Integ64;
-- typedef unsigned long long Card64;
-- #define HAS64
-- #define LOCALE_NLS
-- #endif
-- 
-  /*---------------------------------------------------------------------------*/
-  /* Intel i386 with Linux and GCC:
-  
---- 987,992 ----
-***************
-*** 1023,1041 ****
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-! /* Intel i386 with WIN32 and Cygnus GCC:
-  
-     well, not really a UNIX... */
-  
-  #ifdef _WIN32
-- 
-  /* no long long data type if C89 is used */
-- 
-  #if (defined __STDC__) && (!defined __STDC_VERSION__)
-  # define NOLONGLONG
-  #endif
-  
-  #define ARCHSYSNAME "unknown-win32"
-  #define DEFSMADE
-  #define OPENRDMODE "rb"
-  #define OPENWRMODE "wb"
---- 1074,1091 ----
-  #endif
-  
-  /*---------------------------------------------------------------------------*/
-! /* Intel i386 with Windows and Cygnus GCC:
-  
-     well, not really a UNIX... */
-  
-  #ifdef _WIN32
-  /* no long long data type if C89 is used */
-  #if (defined __STDC__) && (!defined __STDC_VERSION__)
-  # define NOLONGLONG
-  #endif
-  
-  #define ARCHSYSNAME "unknown-win32"
-+ 
-  #define DEFSMADE
-  #define OPENRDMODE "rb"
-  #define OPENWRMODE "wb"
-***************
-*** 1371,1388 ****
-  
-  
-  #ifdef DEFSMADE
-! #ifndef PATHSEP
-! #define PATHSEP '/'
-! #define SPATHSEP "/"
-! #define DIRSEP ':'
-! #define SDIRSEP ":"
-! #endif
-! #ifndef NULLDEV
-! #define NULLDEV "/dev/null"
-! #endif
-  #else
-! #error "your platform so far is not included in AS's header files!"
-! #error "please edit sysdefs.h!"
-  #endif
-  
++ /* Post-Processing: check for definition, add defaults */
   #ifdef CKMALLOC
---- 1421,1438 ----
+! # define malloc(s) ckmalloc(s)
+! # define realloc(p,s) ckrealloc(p,s)
   
+  extern void *ckmalloc(size_t s);
   
-  #ifdef DEFSMADE
+  extern void *ckrealloc(void *p, size_t s);
+  #endif
+! 
+! #ifdef DEFSMADE
 ! # ifndef PATHSEP
 ! #  define PATHSEP '/'
 ! #  define SPATHSEP "/"
@@ -845,30 +3343,19 @@
 ! # ifndef NULLDEV
 ! #  define NULLDEV "/dev/null"
 ! # endif
-  #else
+! #else
 ! # error "your platform so far is not included in AS's header files!"
 ! # error "please edit sysdefs.h!"
-  #endif
-  
-  #ifdef CKMALLOC
+! #endif
+! 
+! 
+! #endif	/* _SYSDEFS_H */
 *** ../src.142b252/TODO	Wed Feb 17 12:04:28 2021
---- TODO	Mon Oct 30 17:01:16 2023
+--- TODO	Wed Nov 01 19:04:46 2023
 ***************
-*** 9,11 ****
---- 9,12 ----
+*** 8,11 ****
+  
   - IsDef liefert Dekoder
   - Entschüsselung AttrPart über strchr()
-  
-+ - fix the "const" warnings in WARNINGS.
-*** ../src.142b252/WARNINGS	Wed Dec 31 19:00:00 1969
---- WARNINGS	Mon Oct 30 16:48:13 2023
-***************
-*** 0 ****
---- 1,7 ----
-+ code6816.c(1070): warning C4090: 'function': different 'const' qualifiers
-+ codem16.c(2920): warning C4090: 'function': different 'const' qualifiers
-+ codem16.c(3068): warning C4090: 'function': different 'const' qualifiers
-+ code97c241.c(2295): warning C4090: 'function': different 'const' qualifiers
-+ code97c241.c(2466): warning C4090: 'function': different 'const' qualifiers
-+ code3203x.c(1597): warning C4090: 'function': different 'const' qualifiers
-+ code3203x.c(1821): warning C4090: 'function': different 'const' qualifiers
+- 
+--- 8,10 ----
