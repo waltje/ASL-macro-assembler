@@ -4760,156 +4760,6 @@
 + MANDIR = /usr/local/man
 + LIBDIR =
 + DOCDIR = /usr/local/doc/asl
-*** ../src.142b252/Makefile.def-samples\Makefile.def-MSVC	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-MSVC	Mon Nov 06 00:18:42 2023
-***************
-*** 0 ****
---- 1,51 ----
-+ # -------------------------------------------------------------------------
-+ # choose your compiler (must be ANSI-compliant!) and linker command, plus
-+ # any additionally needed flags.  Also set target directory and file extensions:
-+ #
-+ # Makefile.def for using Visual Studio on Windows.
-+ 
-+ 
-+ # ...for host-side build tools:
-+ 
-+ RM	= del /q
-+ OBJDIR	=
-+ CC	= cl /nologo
-+ CFLAGS	= /O2
-+ OOBJ	= /Fo
-+ LD	= cl /nologo
-+ LDFLAGS	=
-+ EOBJ	= /Fe
-+ RC	= rc /fo $@
-+ HOST_OBJEXTENSION = .obj
-+ HOST_EXEXTENSION = .exe
-+ LIBM	=
-+ 
-+ TARG_OOBJ=$(OOBJ)
-+ TARG_EOBJ=$(EOBJ)
-+ 
-+ # ...for the actual build targets.  This is the simple case for no cross-build:
-+ 
-+ TARG_OBJDIR = $(OBJDIR)
-+ TARG_CC = $(CC)
-+ TARG_CFLAGS = $(CFLAGS)
-+ TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
-+ TARG_LD = $(LD)
-+ TARG_LDFLAGS = $(LDFLAGS)
-+ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
-+ 
-+ ALINKRES=alink.res
-+ ASLRES=as.res
-+ P2BINRES=p2bin.res
-+ P2HEXRES=p2hex.res
-+ PBINDRES=pbind.res
-+ PLISTRES=plist.res
-+ 
-+ # -------------------------------------------------------------------------
-+ # directories where binaries, includes, and manpages should go during
-+ # installation
-+ 
-+ BINDIR = C:/ASL/bin
-+ INCDIR = C:/ASL/include
-+ MANDIR = C:/ASL/man
-+ LIBDIR =
-+ DOCDIR = C:/ASL/doc
-*** ../src.142b252/Makefile.def-samples\Makefile.def-tinyc	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-tinyc	Mon Nov 06 00:08:23 2023
-***************
-*** 0 ****
---- 1,44 ----
-+ # -------------------------------------------------------------------------
-+ #
-+ # choose your compiler (must be ANSI-compliant!) and linker command, plus
-+ # any additionally needed flags
-+ #
-+ # Makefile.def for TinyC running on Windows.
-+ 
-+ 
-+ # ...for host-side build tools:
-+ CC	= tcc
-+ OBJDIR	=
-+ CFLAGS	= -O2 -Wall 
-+ LIBM	=
-+ LD	= $(CC)
-+ LDFLAGS	=
-+ RC	= windres -Ocoff
-+ HOST_OBJEXTENSION = .o
-+ HOST_EXEXTENSION = .exe
-+ 
-+ TARG_CC = $(CC)
-+ TARG_OBJDIR = $(OBJDIR)
-+ TARG_CFLAGS = $(CFLAGS)
-+ TARG_LD = $(LD)
-+ TARG_LDFLAGS = $(LDFLAGS)
-+ TARG_OBJEXTENSION = .o
-+ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
-+ 
-+ ALINKRES=alink.res
-+ ASLRES=as.res
-+ P2BINRES=p2bin.res
-+ P2HEXRES=p2hex.res
-+ PBINDRES=pbind.res
-+ PLISTRES=plist.res
-+ 
-+ 
-+ # -------------------------------------------------------------------------
-+ # directories where binaries, includes, and manpages should go during
-+ # installation
-+ 
-+ BINDIR = C:/ASL/bin
-+ INCDIR = C:/ASL/include
-+ MANDIR = C:/ASL/man
-+ LIBDIR =
-+ DOCDIR = C:/ASL/doc
-*** ../src.142b252/Makefile.def-samples\Makefile.def-x86-msys2-mingw	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-x86-msys2-mingw	Mon Nov 06 00:07:56 2023
-***************
-*** 0 ****
---- 1,40 ----
-+ # -------------------------------------------------------------------------
-+ # choose your compiler (must be ANSI-compliant!) and linker command, plus
-+ # any additionally needed flags
-+ 
-+ 
-+ # ...for host-side build tools:
-+ CC = gcc
-+ OBJDIR =
-+ CFLAGS = -O2 -Wall 
-+ LIBM =
-+ HOST_OBJEXTENSION = .o
-+ LD = $(CC)
-+ LDFLAGS =
-+ RC = windres -Ocoff
-+ HOST_EXEXTENSION = .exe
-+ 
-+ TARG_CC = $(CC)
-+ TARG_OBJDIR = $(OBJDIR)
-+ TARG_CFLAGS = $(CFLAGS)
-+ TARG_OBJEXTENSION = .o
-+ TARG_LD = $(LD)
-+ TARG_LDFLAGS = $(LDFLAGS)
-+ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
-+ 
-+ ALINKRES=alink.res
-+ ASLRES=as.res
-+ P2BINRES=p2bin.res
-+ P2HEXRES=p2hex.res
-+ PBINDRES=pbind.res
-+ PLISTRES=plist.res
-+ 
-+ # -------------------------------------------------------------------------
-+ # directories where binaries, includes, and manpages should go during
-+ # installation
-+ 
-+ BINDIR = C:/ASL/bin
-+ INCDIR = C:/ASL/include
-+ MANDIR = C:/ASL/man
-+ LIBDIR =
-+ DOCDIR = C:/ASL/doc
 *** ../src.142b252/Makefile.def-samples\Makefile.def-x86_64-macos	Wed Dec 31 19:00:00 1969
 --- Makefile.def-samples\Makefile.def-x86_64-macos	Wed Nov 01 21:26:29 2023
 ***************
@@ -9068,18 +8918,225 @@
 -  ".p"
 - 
 --- 0 ----
-*** ../src.142b252/version.h	Wed Feb 17 11:04:29 2021
---- version.h	Sun Nov 05 23:51:23 2023
+*** ../src.142b252/Makefile.def-samples/Makefile.def-MSVC	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples/Makefile.def-MSVC	Mon Nov 06 00:18:42 2023
 ***************
-*** 10,15 ****
---- 10,38 ----
+*** 0 ****
+--- 1,51 ----
++ # -------------------------------------------------------------------------
++ # choose your compiler (must be ANSI-compliant!) and linker command, plus
++ # any additionally needed flags.  Also set target directory and file extensions:
++ #
++ # Makefile.def for using Visual Studio on Windows.
++ 
++ 
++ # ...for host-side build tools:
++ 
++ RM	= del /q
++ OBJDIR	=
++ CC	= cl /nologo
++ CFLAGS	= /O2
++ OOBJ	= /Fo
++ LD	= cl /nologo
++ LDFLAGS	=
++ EOBJ	= /Fe
++ RC	= rc /fo $@
++ HOST_OBJEXTENSION = .obj
++ HOST_EXEXTENSION = .exe
++ LIBM	=
++ 
++ TARG_OOBJ=$(OOBJ)
++ TARG_EOBJ=$(EOBJ)
++ 
++ # ...for the actual build targets.  This is the simple case for no cross-build:
++ 
++ TARG_OBJDIR = $(OBJDIR)
++ TARG_CC = $(CC)
++ TARG_CFLAGS = $(CFLAGS)
++ TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
++ TARG_LD = $(LD)
++ TARG_LDFLAGS = $(LDFLAGS)
++ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
++ 
++ ALINKRES=alink.res
++ ASLRES=as.res
++ P2BINRES=p2bin.res
++ P2HEXRES=p2hex.res
++ PBINDRES=pbind.res
++ PLISTRES=plist.res
++ 
++ # -------------------------------------------------------------------------
++ # directories where binaries, includes, and manpages should go during
++ # installation
++ 
++ BINDIR = C:/ASL/bin
++ INCDIR = C:/ASL/include
++ MANDIR = C:/ASL/man
++ LIBDIR =
++ DOCDIR = C:/ASL/doc
+*** ../src.142b252/Makefile.def-samples/Makefile.def-tinyc	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples/Makefile.def-tinyc	Mon Nov 06 13:08:21 2023
+***************
+*** 0 ****
+--- 1,44 ----
++ # -------------------------------------------------------------------------
++ #
++ # choose your compiler (must be ANSI-compliant!) and linker command, plus
++ # any additionally needed flags
++ #
++ # Makefile.def for TinyC running on Windows.
++ 
++ 
++ # ...for host-side build tools:
++ CC	= tcc
++ OBJDIR	=
++ CFLAGS	= -O2 -Wall 
++ LIBM	=
++ LD	= $(CC)
++ LDFLAGS	=
++ RC	= windres -Ocoff -o $@
++ HOST_OBJEXTENSION = .o
++ HOST_EXEXTENSION = .exe
++ 
++ TARG_CC = $(CC)
++ TARG_OBJDIR = $(OBJDIR)
++ TARG_CFLAGS = $(CFLAGS)
++ TARG_LD = $(LD)
++ TARG_LDFLAGS = $(LDFLAGS)
++ TARG_OBJEXTENSION = .o
++ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
++ 
++ ALINKRES=alink.res
++ ASLRES=as.res
++ P2BINRES=p2bin.res
++ P2HEXRES=p2hex.res
++ PBINDRES=pbind.res
++ PLISTRES=plist.res
++ 
++ 
++ # -------------------------------------------------------------------------
++ # directories where binaries, includes, and manpages should go during
++ # installation
++ 
++ BINDIR = C:/ASL/bin
++ INCDIR = C:/ASL/include
++ MANDIR = C:/ASL/man
++ LIBDIR =
++ DOCDIR = C:/ASL/doc
+*** ../src.142b252/Makefile.def-samples/Makefile.def-x86-msys2-mingw	Wed Dec 31 19:00:00 1969
+--- Makefile.def-samples/Makefile.def-x86-msys2-mingw	Mon Nov 06 13:31:35 2023
+***************
+*** 0 ****
+--- 1,40 ----
++ # -------------------------------------------------------------------------
++ # choose your compiler (must be ANSI-compliant!) and linker command, plus
++ # any additionally needed flags
++ 
++ 
++ # ...for host-side build tools:
++ CC = gcc
++ OBJDIR =
++ CFLAGS = -O2 -Wall 
++ LIBM =
++ HOST_OBJEXTENSION = .o
++ LD = $(CC)
++ LDFLAGS =
++ RC = windres -Ocoff -o $@
++ HOST_EXEXTENSION = .exe
++ 
++ TARG_CC = $(CC)
++ TARG_OBJDIR = $(OBJDIR)
++ TARG_CFLAGS = $(CFLAGS)
++ TARG_OBJEXTENSION = .o
++ TARG_LD = $(LD)
++ TARG_LDFLAGS = $(LDFLAGS)
++ TARG_EXEXTENSION = $(HOST_EXEXTENSION)
++ 
++ ALINKRES=alink.res
++ ASLRES=as.res
++ P2BINRES=p2bin.res
++ P2HEXRES=p2hex.res
++ PBINDRES=pbind.res
++ PLISTRES=plist.res
++ 
++ # -------------------------------------------------------------------------
++ # directories where binaries, includes, and manpages should go during
++ # installation
++ 
++ BINDIR = C:/ASL/bin
++ INCDIR = C:/ASL/include
++ MANDIR = C:/ASL/man
++ LIBDIR =
++ DOCDIR = C:/ASL/doc
+*** ../src.142b252/version.c	Sun Oct 29 14:49:38 2023
+--- version.c	Mon Nov 06 13:28:47 2023
+***************
+*** 8,21 ****
   /*                                                                           */
   /*****************************************************************************/
   
-+ #define AS_VER_MAJOR	1
-+ #define AS_VER_MINOR	42
-+ #define AS_VER_BUILD	252
-+ #define AS_VER_PATCH	3
+- #include "stdinc.h"
+  #include <string.h>
+  
+! const char *Version = "1.42 Beta [Bld 252]";
+! const char *DebVersion = "1.42bld252-1";
+! LongInt VerNo = 0x142f;
+  
+! const char *InfoMessCopyright = "(C) 1992,2023 Alfred Arnold";
+  
+  LongInt Magic = 0x12372f46;
+  
+--- 8,42 ----
+  /*                                                                           */
+  /*****************************************************************************/
+  
+  #include <string.h>
++ #include "stdinc.h"
++ #include "version.h"
++ 
++ 
++ /* Preprocessor magic, needed below. */
++ #define _STRCAT(a,b)  0x##a##b##f
++ #define STRCAT(a,b)  _STRCAT(a,b)
++ 
++ 
++ #if AS_ALPHA
++ # define ABSTATE	" Alpha"
++ #elif AS_BETA
++ # define ABSTATE	" Beta"
++ #else
++ # define ABSTATE	""
++ #endif
++ 
++ #ifdef AS_VER_PATCH && AS_VER_PATCH > 0
++ const char *Version = STR(AS_VER_MAJOR.AS_VER_MINOR) ABSTATE " [Bld " STR(AS_VER_BUILD)"] Patch " STR(AS_VER_PATCH);
++ const char *DebVersion = STR(AS_VER_MAJOR.AS_VER_MINOR)"bld"STR(AS_VER_BUILD)"-"STR(AS_VER_PATCH);
++ #else
++ const char *Version = STR(AS_VER_MAJOR.AS_VER_MINOR) ABSTATE " [Bld " STR(AS_VER_BUILD)"]";
++ const char *DebVersion = STR(AS_VER_MAJOR.AS_VER_MINOR)"bld"STR(AS_VER_BUILD)"-1";
++ #endif
+  
+! LongInt VerNo = STRCAT(AS_VER_MAJOR,AS_VER_MINOR);
+  
+! const char *InfoMessCopyright = "(C) 1992-2023 Alfred Arnold";
+  
+  LongInt Magic = 0x12372f46;
+  
+*** ../src.142b252/version.h	Wed Feb 17 11:04:29 2021
+--- version.h	Mon Nov 06 13:29:32 2023
+***************
+*** 10,15 ****
+--- 10,41 ----
+  /*                                                                           */
+  /*****************************************************************************/
+  
++ #define AS_VER_MAJOR	1		// major version number
++ #define AS_VER_MINOR	42		// minor version number
++ #define AS_VER_BUILD	252		// build (should be automated)
++ #define AS_VER_PATCH	3		// local patch number
++ 
++ #define AS_ALPHA	0		// is this an ALPHA-level build?
++ #define AS_BETA		1		// is this a BETA-level build?
 + 
 + 
 + /* Standard C preprocessor macros. */
