@@ -1,18 +1,12 @@
-;* alink.res
+;* alink.msg
 ;*****************************************************************************
 ;* AS-Portierung                                                             *
 ;*                                                                           *
 ;* Stringdefinitionen fuer ALINK                                             *
-;*                                                                           *
-;* Historie:  2. 7.2000 Grundsteinlegung                                     *
-;*            4. 7.2000 misc. info messages                                  *
-;*           30.10.2000 added byte messages                                  *
-;*                                                                           *
 ;*****************************************************************************
 
-Include header.res
-
-Include tools2.res
+Include header.msg
+Include tools2.msg
 
 ;-----------------------------------------------------------------------------
 ; info messages

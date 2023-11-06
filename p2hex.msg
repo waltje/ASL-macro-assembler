@@ -1,14 +1,12 @@
-;* p2hex.res
+;* p2hex.msg
 ;*****************************************************************************
 ;* AS-Portierung                                                             *
 ;*                                                                           *
 ;* String-Definitionen fuer P2HEX                                            *
-;*                                                                           *
 ;*****************************************************************************/ 
 
-Include header.res
-
-Include tools2.res
+Include header.msg
+Include tools2.msg
 
 ;------------------------------------------------------------------------------
 ; Steuerstrings HEX-Files

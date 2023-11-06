@@ -10,6 +10,29 @@
 /*                                                                           */
 /*****************************************************************************/
 
+#define AS_VER_MAJOR	1
+#define AS_VER_MINOR	42
+#define AS_VER_BUILD	252
+#define AS_VER_PATCH	3
+
+
+/* Standard C preprocessor macros. */
+#define STR_STRING(x)	#x
+#define STR(x)		STR_STRING(x)
+#define STR_RC(a,e)	a ## , ## e
+
+
+/* These are used in the application. */
+#define AS_VER_NUM	AS_VER_MAJOR.AS_VER_MINOR.AS_VER_BUILD
+#if defined(AS_VER_PATCH) && AS_VER_PATCH > 0
+# define AS_VER_NUM_4	AS_VER_MAJOR.AS_VER_MINOR.AS_VER_BUILD.AS_VER_PATCH
+# define AS_VERSION	STR(AS_VER_NUM_4)
+#else
+# define AS_VER_NUM_4	AS_VER_MAJOR.AS_VER_MINOR.AS_VER_BUILD.0
+# define AS_VERSION	STR(AS_VER_NUM)
+#endif
+
+
 extern const char *Version;
 extern LongInt VerNo;
 

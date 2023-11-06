@@ -1,5 +1,3482 @@
-*** ../src.142b252/asmsub.c	Sat Sep 23 07:27:52 2023
---- asmsub.c	Thu Oct 19 21:18:06 2023
+*** ../src.142b252/alink.msg	Wed Dec 31 19:00:00 1969
+--- alink.msg	Sun Nov 05 22:46:32 2023
+***************
+*** 0 ****
+--- 1,86 ----
++ ;* alink.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* Stringdefinitionen fuer ALINK                                             *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ Include tools2.msg
++ 
++ ;-----------------------------------------------------------------------------
++ ; info messages
++ 
++ Message InfoMsgGetSyms
++  "Symbole lesen aus"
++  "reading symbols from"
++ 
++ Message InfoMsgOpenSrc
++  "&Ouml;ffne Quelldatei"
++  "opening source file"
++ 
++ Message InfoMsgReading
++  "modifiziere an Adresse"
++  "patching at address"
++ 
++ Message InfoMsgLocating
++  "reloziere an Adresse"
++  "relocating to address"
++ 
++ ;-----------------------------------------------------------------------------
++ ; Fehlermeldungen
++ 
++ Message ErrMsgSrcMissing
++  "Quelldateiangabe(n) fehlt!"
++  "source file specification(s) missing!"
++ 
++ Message FormatRelocInfoMissing
++  "Relokationsinformation fehlt hinter Datensatz"
++  "relocation info for relocatable record missing"
++ 
++ Message DoubleDefSymbol
++  "doppelt definiertes Symbol"
++  "double defined symbol"
++ 
++ Message UndefSymbol
++  "undefiniertes Symbol"
++  "undefined symbol"
++ 
++ Message SumUndefSymbol
++  "undefiniertes Symbol"
++  "undefined symbol"
++ 
++ Message SumUndefSymbols
++  "undefiniertes Symbole"
++  "undefined symbols"
++ 
++ ;-----------------------------------------------------------------------------
++ ; Ansagen
++ 
++ Message Byte
++  "byte"
++  "Byte"
++ 
++ Message Bytes
++  "bytes"
++  "Bytes"
++ 
++ Message InfoMessHead2
++  " <Quelldatei(en)> <Zieldatei> [Optionen]"
++  " <source file(s)> <target file> [options]"
++ 
++ Message InfoMessHelp
++  "\n" \
++  "Optionen:\n" \
++  "-help      : nur Hilfe ausgeben\n" \
++  "-q, -quiet : Stiller Betrieb\n" \
++  "-v         : ausf&uuml;hrliche Meldungen\n" \
++  "-version   : nur Versionsinfo ausgeben\n" \
++  "\n"
++  "\n" \
++  "options:\n" \
++  "-help      : print help and exit\n" \
++  "-q, -quiet : silent operation\n" \
++  "-v         : verbose messages\n" \
++  "-version   : print version info and exit\n" \
++  "\n"
+*** ../src.142b252/alink.rc	Wed Dec 31 19:00:00 1969
+--- alink.rc	Sun Nov 05 23:57:05 2023
+***************
+*** 0 ****
+--- 1,52 ----
++ #include <windows.h>
++ #include "version.h"
++ 
++ 
++ 100		ICON		"project.ico"
++ 
++ 
++ VS_VERSION_INFO VERSIONINFO
++ #ifdef AS_VER_PATCH
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++ #else
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++ #endif
++  FILEFLAGSMASK	0x3fL
++ #ifndef RELEASE_BUILD
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_SPECIALBUILD | VS_FF_DEBUG
++ # else
++  FILEFLAGS	VS_FF_SPECIALBUILD
++ # endif
++ #else
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_DEBUG
++ # else
++  FILEFLAGS	0x0L
++ # endif
++ #endif
++  FILEOS		VOS_NT_WINDOWS32
++  FILETYPE	VFT_APP
++  FILESUBTYPE	0x0L
++  BEGIN
++     BLOCK "StringFileInfo"
++     BEGIN
++         BLOCK "0409fde9"
++         BEGIN
++             VALUE "CompanyName", "The VARCem Group LLC"
++             VALUE "LegalCopyright", "Licenced under GPL-2.0-only OR GPL-3.0-only."
++             VALUE "ProductName", "AS Makro Assembler"
++             VALUE "ProductVersion", AS_VERSION
++             VALUE "InternalName", "ALINK"
++             VALUE "FileDescription", "ALINK Linker"
++             VALUE "FileVersion", AS_VERSION
++             VALUE "OriginalFilename", "alink.exe"
++         END
++     END
++     BLOCK "VarFileInfo"
++     BEGIN
++         VALUE "Translation", 0x0409, 65001
++     END
++ END
+*** ../src.142b252/alink.res	Thu Jun 22 15:03:33 2023
+--- alink.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,92 ****
+- ;* alink.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* Stringdefinitionen fuer ALINK                                             *
+- ;*                                                                           *
+- ;* Historie:  2. 7.2000 Grundsteinlegung                                     *
+- ;*            4. 7.2000 misc. info messages                                  *
+- ;*           30.10.2000 added byte messages                                  *
+- ;*                                                                           *
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- Include tools2.res
+- 
+- ;-----------------------------------------------------------------------------
+- ; info messages
+- 
+- Message InfoMsgGetSyms
+-  "Symbole lesen aus"
+-  "reading symbols from"
+- 
+- Message InfoMsgOpenSrc
+-  "&Ouml;ffne Quelldatei"
+-  "opening source file"
+- 
+- Message InfoMsgReading
+-  "modifiziere an Adresse"
+-  "patching at address"
+- 
+- Message InfoMsgLocating
+-  "reloziere an Adresse"
+-  "relocating to address"
+- 
+- ;-----------------------------------------------------------------------------
+- ; Fehlermeldungen
+- 
+- Message ErrMsgSrcMissing
+-  "Quelldateiangabe(n) fehlt!"
+-  "source file specification(s) missing!"
+- 
+- Message FormatRelocInfoMissing
+-  "Relokationsinformation fehlt hinter Datensatz"
+-  "relocation info for relocatable record missing"
+- 
+- Message DoubleDefSymbol
+-  "doppelt definiertes Symbol"
+-  "double defined symbol"
+- 
+- Message UndefSymbol
+-  "undefiniertes Symbol"
+-  "undefined symbol"
+- 
+- Message SumUndefSymbol
+-  "undefiniertes Symbol"
+-  "undefined symbol"
+- 
+- Message SumUndefSymbols
+-  "undefiniertes Symbole"
+-  "undefined symbols"
+- 
+- ;-----------------------------------------------------------------------------
+- ; Ansagen
+- 
+- Message Byte
+-  "byte"
+-  "Byte"
+- 
+- Message Bytes
+-  "bytes"
+-  "Bytes"
+- 
+- Message InfoMessHead2
+-  " <Quelldatei(en)> <Zieldatei> [Optionen]"
+-  " <source file(s)> <target file> [options]"
+- 
+- Message InfoMessHelp
+-  "\n" \
+-  "Optionen:\n" \
+-  "-help      : nur Hilfe ausgeben\n" \
+-  "-q, -quiet : Stiller Betrieb\n" \
+-  "-v         : ausf&uuml;hrliche Meldungen\n" \
+-  "-version   : nur Versionsinfo ausgeben\n" \
+-  "\n"
+-  "\n" \
+-  "options:\n" \
+-  "-help      : print help and exit\n" \
+-  "-q, -quiet : silent operation\n" \
+-  "-v         : verbose messages\n" \
+-  "-version   : print version info and exit\n" \
+-  "\n"
+--- 0 ----
+*** ../src.142b252/as.msg	Wed Dec 31 19:00:00 1969
+--- as.msg	Sun Nov 05 22:54:34 2023
+***************
+*** 0 ****
+--- 1,1582 ----
++ ;* as.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* String-Definitionen fuer AS                                               *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ 
++ ;-----------------------------------------------------------------------------
++ ; Fehlermeldungen
++ 
++ Message ErrName
++  "Fehler"
++  "error"
++ 
++ Message WarnName
++  "Warnung"
++  "warning"
++ 
++ Message InLineName
++  " in Zeile "
++  " in line "
++ 
++ Message GNUErrorMsg1
++  "In Datei included von"
++  "In file included from"
++ 
++ Message GNUErrorMsgN
++  "                  von"
++  "                 from"
++ 
++ Message ErrMsgUselessDisp
++  "Displacement=0, &uuml;berfl&uuml;ssig"
++  "useless displacement 0"
++ 
++ Message ErrMsgShortAddrPossible
++  "Kurzadressierung m&ouml;glich"
++  "short addressing possible"
++ 
++ Message ErrMsgShortJumpPossible
++  "kurzer Sprung m&ouml;glich"
++  "short jump possible"
++ 
++ Message ErrMsgNoShareFile
++  "kein Sharefile angelegt, SHARED ignoriert"
++  "no sharefile created, SHARED ignored"
++ 
++ Message ErrMsgBigDecFloat
++  "FPU liest Wert evtl. nicht korrekt ein (>=1E1000)"
++  "FPU possibly cannot read this value (> 1E1000)"
++ 
++ Message ErrMsgPrivOrder
++  "privilegierte Anweisung"
++  "privileged instruction"
++ 
++ Message ErrMsgDistNull
++  "Distanz 0 nicht bei Kurzsprung erlaubt (NOP erzeugt)"
++  "distance of 0 not allowed for short jump (NOP created instead)"
++ 
++ Message ErrMsgWrongSegment
++  "Symbol aus falschem Segment"
++  "symbol out of wrong segment"
++ 
++ Message ErrMsgInAccSegment
++  "Segment nicht adressierbar"
++  "segment not accessible"
++ 
++ Message ErrMsgPhaseErr
++  "&Auml;nderung des Symbolwertes erzwingt zus&auml;tzlichen Pass"
++  "change of symbol values forces additional pass"
++ 
++ Message ErrMsgOverlap
++  "&uuml;berlappende Speicherbelegung"
++  "overlapping memory usage"
++ 
++ Message ErrMsgOverlapReg
++  "&uuml;berlappende Registernutzung"
++  "overlapping register usage"
++ 
++ Message ErrMsgNoCaseHit
++  "keine CASE-Bedingung zugetroffen"
++  "none of the CASE conditions was true"
++ 
++ Message ErrMsgInAccPage
++  "Seite m&ouml;glicherweise nicht adressierbar"
++  "page might not be addressable"
++ 
++ Message ErrMsgRMustBeEven
++  "Registernummer mu&szlig; gerade sein"
++  "register number must be even"
++ 
++ Message ErrMsgObsolete
++  "veralteter Befehl"
++  "obsolete instruction, usage discouraged"
++ 
++ Message ErrMsgUnpredictable
++  "nicht vorhersagbare Ausf&uuml;hrung dieser Anweisung"
++  "unpredictable execution of this instruction"
++ 
++ Message ErrMsgAlphaNoSense
++  "Lokaloperator au&szlig;erhalb einer Sektion &uuml;berfl&uuml;ssig"
++  "localization operator senseless out of a section"
++ 
++ Message ErrMsgSenseless
++  "sinnlose Operation"
++  "senseless instruction"
++ 
++ Message ErrMsgRepassUnknown
++  "unbekannter Symbolwert erzwingt zus&auml;tzlichen Pass"
++  "unknown symbol value forces additional pass"
++ 
++ Message ErrMsgAddrNotAligned
++  "Adresse nicht ausgerichtet"
++  "address is not properly aligned"
++ 
++ Message ErrMsgIOAddrNotAllowed
++  "I/O-Adresse darf nicht verwendet werden"
++  "I/O-address must not be used here"
++ 
++ Message ErrMsgPipeline
++  "m&ouml;gliche Pipelining-Effekte"
++  "possible pipelining effects"
++ 
++ Message ErrMsgDoubleAdrRegUse
++  "mehrfache Adre&szlig;registerbenutzung in einer Anweisung"
++  "multiple use of address register in one instruction"
++ 
++ Message ErrMsgNotBitAddressable
++  "Speicherstelle nicht bitadressierbar"
++  "memory location is not bit addressable"
++ 
++ Message ErrMsgStackNotEmpty
++  "Stack ist nicht leer"
++  "stack is not empty"
++ 
++ Message ErrMsgNULCharacter
++  "NUL-Zeichen in String, Ergebnis undefiniert"
++  "NUL character in string, result is undefined"
++ 
++ Message ErrMsgPageCrossing
++  "Befehl &uuml;berschreitet Seitengrenze"
++  "instruction crosses page boundary" 
++ 
++ Message ErrMsgWUnderRange
++  "Bereichsunterschreitung"
++  "range underflow"
++ 
++ Message ErrMsgWOverRange
++  "Bereichs&uuml;berschreitung"
++  "range overflow"
++ 
++ Message ErrMsgNegDUP
++  "negatives Argument f&uuml;r DUP"
++  "negative argument for DUP"
++ 
++ Message ErrMsgConvIndX
++  "einzelner X-Operand wird als indizierte und nicht als implizite Adressierung interpretiert"
++  "single X operand interpreted as indexed and not implicit addressing"
++ 
++ Message ErrMsgNullResMem
++  "kein Speicher reserviert, sind Sie sicher, da&szlig; Sie das wollten?"
++  "no memory reserved, are you sure you wanted that?"
++ 
++ Message ErrMsgBitNumberTruncated
++  "Bit-Nummer wird abgeschnitten werden"
++  "bit number will be truncated"
++ 
++ Message ErrMsgInvRegisterPointer
++  "Ung&uuml;ltiger Wert f&uuml;r Registerzeiger"
++  "invalid register pointer value"
++ 
++ Message ErrMsgMacArgRedef
++  "Makro-Argument umdefiniert"
++  "macro argument redefined"
++ 
++ Message ErrMsgDeprecated
++  "veraltete Anweisung"
++  "deprecated instruction"
++ 
++ Message ErrMsgDeprecated_Instead
++  "%s benutzen"
++  "use %s"
++ 
++ Message ErrMsgSrcLEThanDest
++  "Quelloperand l&auml;nger oder gleich Zieloperand"
++  "source operand is longer or same size as destination operand"
++ 
++ Message ErrMsgTrapValidInstruction
++  "TRAP-Nummer ist g&uuml;ltige Instruktion"
++  "TRAP number represents valid instruction"
++ 
++ Message ErrMsgPaddingAdded
++  "Padding hinzugef&uuml;gt"
++  "Padding added"
++ 
++ Message ErrMsgRegNumWraparound
++  "Registernummer-Umlauf"
++  "register number wraparound"
++ 
++ Message ErrMsgIndexedForIndirect
++  "verwende indizierte anstelle indirekter Adressierung"
++  "using indexed instead of indirect addressing"
++ 
++ Message ErrMsgNotInNormalMode
++  "nicht im Normal-Modus erlaubt"
++  "not allowed in normal mode"
++ 
++ Message ErrMsgNotInPanelMode
++  "nicht im Panel-Modus erlaubt"
++  "not allowed in panel mode"
++ 
++ Message ErrMsgArgOutOfRange
++  "Argument ausserhalb erlauben Bereichs"
++  "argument out of range"
++ 
++ Message ErrMsgTrySkipMultiwordInstruction
++  "Versuch, eine Mehrwort-Instruktion zu &uuml;berspringen"
++  "attempt to skip multiword instruction"
++ 
++ Message ErrMsgSignExtension
++  "implizite Vorzeichenerweiterung"
++  "implicit sign extension"
++ 
++ ;*****
++ 
++ Message ErrMsgDoubleDef
++  "Symbol doppelt definiert"
++  "symbol double defined"
++ 
++ Message ErrMsgSymbolUndef
++  "Symbol nicht definiert"
++  "symbol undefined"
++ 
++ Message ErrMsgInvSymName
++  "ung&uuml;ltiger Symbolname"
++  "invalid symbol name"
++ 
++ Message ErrMsgInvFormat
++  "ung&uuml;ltiges Format"
++   "invalid format"
++ 
++ Message ErrMsgUseLessAttr
++  "&uuml;berfl&uuml;ssiges Attribut"
++  "useless attribute"
++ 
++ Message ErrMsgUndefAttr
++  "undefiniertes Attribut"
++  "undefined attribute"
++ 
++ Message ErrMsgTooLongAttr
++  "Attribut darf nur 1 Zeichen lang sein"
++  "attribute may only be one character long"
++ 
++ Message ErrMsgWrongArgCnt
++  "unpassende Operandenzahl"
++  "wrong number of operands"
++ 
++ Message ErrMsgWrongOptCnt
++  "unpassende Optionszahl"
++  "wrong number of options"
++ 
++ Message ErrMsgOnlyImmAddr
++  "nur immediate-Adressierung erlaubt"
++  "addressing mode must be immediate"
++ 
++ Message ErrMsgInvOpSize
++  "unpassende Operandengr&ouml;&szlig;e"
++  "invalid operand size"
++ 
++ Message ErrMsgConfOpSizes
++  "widersprechende Operandengr&ouml;&szlig;en"
++  "conflicting operand sizes"
++ 
++ Message ErrMsgUndefOpSizes
++  "undefinierte Operandengr&ouml;&szlig;e"
++  "undefined operand size"
++ 
++ Message ErrMsgStringOrIntButFloat
++  "Ganzzahl oder String erwartet, aber Gleitkommazahl erhalten"
++  "expected integer or string, but got floating point number"
++ 
++ Message ErrMsgIntButFloat
++  "Ganzzahl erwartet, aber Gleitkommazahl erhalten"
++  "expected integer, but got floating point number"
++ 
++ Message ErrMsgFloatButString
++  "Gleitkommazahl erwartet, aber String erhalten"
++  "expected floating point number, but got string"
++ 
++ Message ErrMsgOpTypeMismatch
++  "Operandentyp-Diskrepanz"
++  "operand type mismatch"
++ 
++ Message ErrMsgStringButInt
++  "String erwartet, aber Ganzzahl erhalten"
++  "expected string, but got integer"
++ 
++ Message ErrMsgStringButFloat
++  "String erwartet, aber Gleitkommazahl erhalten"
++  "expected string, but got floating point number"
++ 
++ Message ErrMsgTooManyArgs
++  "zu viele Argumente"
++  "too many arguments"
++ 
++ Message ErrMsgIntButString
++  "Ganzzahl erwartet, aber String erhalten"
++  "expected integer, but got string"
++ 
++ Message ErrMsgIntOrFloatButString
++  "Ganz- oder Gleitkommazahl erwartet, aber String erhalten"
++  "expected integer or floating point number, but got string"
++ 
++ Message ErrMsgExpectString
++  "String erwartet"
++  "expected string"
++ 
++ Message ErrMsgExpectInt
++  "Ganzzahl erwartet"
++  "expected integer"
++ 
++ Message ErrMsgStringOrIntOrFloatButReg
++  "Ganz-, Gleitkommazahl oder String erwartet, aber Register bekommen"
++  "expected integer, floating point number or string but got register"
++ 
++ Message ErrMsgExpectIntOrString
++  "Ganzzahl oder String erwartet"
++  "expected integer or string"
++ 
++ Message ErrMsgExpectReg
++  "Register erwartet"
++  "expected register"
++ 
++ Message ErrMsgRegWrongTarget
++  "Registersymbol f&uuml;r anderes Ziel"
++  "register symbol for different target"
++ 
++ Message ErrMsgFloatButInt
++  "Gleitkomma-Argument erwartet, aber Ganzzahl bekommen"
++  "expected floating point argument but got integer"
++ 
++ Message ErrMsgUnknownInstruction
++  "unbekannter Befehl"
++  "unknown instruction"
++ 
++ Message ErrMsgBrackErr
++  "Klammerfehler"
++  "number of opening/closing parentheses does not match"
++ 
++ Message ErrMsgDivByZero
++  "Division durch 0"
++  "division by 0"
++ 
++ Message ErrMsgUnderRange
++  "Bereichsunterschreitung"
++  "range underflow"
++ 
++ Message ErrMsgOverRange
++  "Bereichs&uuml;berschreitung"
++  "range overflow"
++ 
++ Message ErrMsgNotPwr2
++  "keine Zweierpotenz"
++  "not a power of two"
++ 
++ Message ErrMsgNotAligned
++  "Adresse nicht ausgerichtet"
++  "address is not properly aligned"
++ 
++ Message ErrMsgDistTooBig
++  "Distanz zu gro&szlig;"
++  "distance too big"
++ 
++ Message ErrMsgTargOnDiffPage
++  "Ziel nicht auf gleicher Seite"
++  "target not on same page"
++ 
++ Message ErrMsgInAccReg
++  "Register nicht zugreifbar"
++  "register not accessible"
++ 
++ Message ErrMsgNoShortAddr
++  "Kurzadressierung nicht m&ouml;glich"
++  "short addressing not allowed"
++ 
++ Message ErrMsgInvAddrMode
++  "unerlaubter Adressierungsmodus"
++  "addressing mode not allowed here"
++ 
++ Message ErrMsgAddrMustBeEven
++  "Addresse mu&szlig; gerade sein"
++  "address must be even"
++ 
++ Message ErrMsgAddrMustBeAligned
++  "Addresse mu&szlig; ausgerichtet sein"
++  "address must be aligned"
++ 
++ Message ErrMsgInvParAddrMode
++  "Adressierungsmodus im Parallelbetrieb nicht erlaubt"
++  "addressing mode not allowed in parallel operation"
++ 
++ Message ErrMsgUndefCond
++  "undefinierte Bedingung"
++  "undefined condition"
++ 
++ Message ErrMsgIncompCond
++  "inkompatible Bedingungen"
++  "incompatible conditions"
++ 
++ Message ErrMsgUnknownFlag
++  "unbekanntes Flag"
++  "unknown flag"
++ 
++ Message ErrMsgDuplicateFlag
++  "doppeltes Flag"
++  "duplicate flag"
++ 
++ Message ErrMsgUnknownInt
++  "unbekannter Interrupt"
++  "unknown interrupt"
++ 
++ Message ErrMsgDuplicateInt
++  "doppelter Interrupt"
++  "duplicate interrupt"
++ 
++ Message ErrMsgJmpDistTooBig
++  "Sprungdistanz zu gro&szlig;"
++  "jump distance too big"
++ 
++ Message ErrMsgJmpDistIsZero
++  "Sprungdistanz ist Null"
++  "jump distance is zero"
++ 
++ Message ErrMsgDistIsOdd
++  "Sprungdistanz ist ungerade"
++  "jump distance is odd"
++ 
++ Message ErrMsgSkipTargetMismatch
++  "Skip-Ziel passt nicht"
++  "skip target mismatch"
++ 
++ Message ErrMsgInvShiftArg
++  "ung&uuml;ltiges Schiebeargument"
++  "invalid argument for shifting"
++ 
++ Message ErrMsgOnly1
++  "nur Eins als Argument erlaubt"
++  "operand must be one"
++ 
++ Message ErrMsgRange18
++  "nur Bereich 1..8 erlaubt"
++  "operand must be in range 1..8"
++ 
++ Message ErrMsgShiftCntTooBig
++  "Schiebezahl zu gro&szlig;"
++  "shift amplitude too big"
++ 
++ Message ErrMsgInvRegList
++  "ung&uuml;ltige Registerliste"
++  "invalid register list"
++ 
++ Message ErrMsgInvCmpMode
++  "ung&uuml;ltiger Modus mit CMP"
++  "invalid addressing mode for CMP"
++ 
++ Message ErrMsgInvCPUType
++  "ung&uuml;ltiger Prozessortyp"
++  "invalid CPU type"
++ 
++ Message ErrMsgInvFPUType
++  "ung&uuml;ltiger FPU-Typ"
++  "invalid FPU type"
++ 
++ Message ErrMsgInvPMMUType
++  "ung&uuml;ltiger PMMU-Typ"
++  "invalid PMMU type"
++ 
++ Message ErrMsgInvCtrlReg
++  "ung&uuml;ltiges Kontrollregister"
++  "invalid control register"
++ 
++ Message ErrMsgInvReg
++  "ung&uuml;ltiges Register"
++  "invalid register"
++ 
++ Message ErrMsgDoubleReg
++  "Register mehr als einmal gelistet"
++  "register(s) listed more than once"
++ 
++ Message ErrMsgRegBankMismatch
++  "Register-Bank-Diskrepanz"
++  "register bank mismatch"
++ 
++ Message ErrMsgUndefRegSize
++  "Registerl&auml;nge undefiniert"
++  "undefined register length"
++ 
++ Message ErrMsgInvOpOnReg
++  "ung&auml;ltige Operation auf Register"
++  "invalid operation on register"
++ 
++ Message ErrMsgNoSaveFrame
++  "RESTORE ohne SAVE"
++  "RESTORE without SAVE"
++ 
++ Message ErrMsgNoRestoreFrame
++  "fehlendes RESTORE"
++  "missing RESTORE"
++ 
++ Message ErrMsgUnknownMacArg
++  "unbekannte Makro-Steueranweisung"
++  "unknown macro control instruction"
++ 
++ Message ErrMsgMissEndif
++  "fehlendes ENDIF/ENDCASE"
++  "missing ENDIF/ENDCASE"
++ 
++ Message ErrMsgInvIfConst
++  "ung&uuml;ltiges IF-Konstrukt"
++  "invalid IF-structure"
++ 
++ Message ErrMsgDoubleSection
++  "doppelter Sektionsname"
++  "section name double defined"
++ 
++ Message ErrMsgInvSection
++  "unbekannte Sektion"
++  "unknown section"
++ 
++ Message ErrMsgMissingEndSect
++  "fehlendes ENDSECTION"
++  "missing ENDSECTION"
++ 
++ Message ErrMsgWrongEndSect
++  "falsches ENDSECTION"
++  "wrong ENDSECTION"
++ 
++ Message ErrMsgNotInSection
++  "ENDSECTION ohne SECTION"
++  "ENDSECTION without SECTION"
++ 
++ Message ErrMsgUndefdForward
++  "nicht aufgel&ouml;ste Vorw&auml;rtsdeklaration"
++  "unresolved forward declaration"
++ 
++ Message ErrMsgContForward
++  "widersprechende FORWARD <-> PUBLIC-Deklaration"
++  "conflicting FORWARD <-> PUBLIC-declaration"
++ 
++ Message ErrMsgInvFuncArgCnt
++  "falsche Argumentzahl f&uuml;r Funktion"
++  "wrong numbers of function arguments"
++ 
++ Message ErrMsgMissingLTORG
++  "unaufgel&ouml;ste Literale (LTORG fehlt)"
++  "unresolved literals (missing LTORG)"
++ 
++ Message ErrMsgInstructionNotOnThisCPUSupported
++  "Befehl auf dem %s nicht unterst&uuml;tzt"
++  "instruction not supported on %s"
++ 
++ Message ErrMsgAddrModeNotOnThisCPUSupported
++  "Adressierungsart auf dem %s nicht unterst&uuml;tzt"
++  "addressing mode not supported on %s"
++ 
++ Message ErrMsgFPUNotEnabled
++  "FPU-Befehle nicht freigeschaltet"
++  "FPU instructions are not enabled"
++ 
++ Message ErrMsgPMMUNotEnabled
++  "PMMU-Befehle nicht freigeschaltet"
++  "PMMU instructions are not enabled"
++ 
++ Message ErrMsgFullPMMUNotEnabled
++  "voller PMMU-Befehlssatz nicht freigeschaltet"
++  "full PMMU instruction set is not enabled"
++ 
++ Message ErrMsgCustomNotEnabled
++  "Custom-Befehle nicht freigeschaltet"
++  "Custom instructions are not enabled"
++ 
++ Message ErrMsgZ80SyntaxNotEnabled
++  "Z80-Syntax nicht erlaubt"
++  "Z80 syntax was not allowed"
++ 
++ Message ErrMsgZ80SyntaxExclusive
++  "nicht im Z80-Syntax Exklusiv-Modus erlaubt"
++  "not allowed in exclusive Z80 syntax mode"
++ 
++ Message ErrMsgInstructionNotOnThisFPUSupported
++  "FPU-Befehl auf dem %s nicht unterst&uuml;tzt"
++  "FPU instruction not supported on %s"
++ 
++ Message ErrMsgInvBitPos
++  "ung&uuml;ltige Bitstelle"
++  "invalid bit position"
++ 
++ Message ErrMsgOnlyOnOff
++  "nur ON/OFF erlaubt"
++  "only ON/OFF allowed"
++ 
++ Message ErrMsgStackEmpty
++  "Stack ist leer oder nicht definiert"
++  "stack is empty or undefined"
++ 
++ Message ErrMsgNotOneBit
++  "Nicht genau ein Bit gesetzt"
++  "not exactly one bit set"
++ 
++ Message ErrMsgMissingStruct
++  "ENDSTRUCT ohne STRUCT"
++  "ENDSTRUCT without STRUCT"
++ 
++ Message ErrMsgOpenStruct
++  "offene Strukturdefinition"
++  "open structure definition"
++ 
++ Message ErrMsgWrongStruct
++  "falsches ENDSTRUCT"
++  "wrong ENDSTRUCT"
++ 
++ Message ErrMsgPhaseDisallowed
++  "Phasendefinition nicht in Strukturen erlaubt"
++  "phase definition not allowed in structure definition"
++ 
++ Message ErrMsgInvStructDir
++  "Ung&uuml;ltige STRUCT-Direktive"
++  "invalid STRUCT directive"
++ 
++ Message ErrMsgDoubleStruct
++  "Struktur redefiniert"
++  "structure re-defined"
++ 
++ Message ErrMsgUnresolvedStructRef
++  "nicht aufl&ouml;sbare Strukturelement-Referenz"
++  "unresolvable structure element reference"
++ 
++ Message ErrMsgDuplicateStructElem
++  "Strukturelement doppelt"
++  "duplicate structure element"
++ 
++ Message ErrMsgNotRepeatable
++  "Anweisung nicht wiederholbar"
++  "instruction is not repeatable"
++ 
++ Message ErrMsgShortRead
++  "vorzeitiges Dateiende"
++  "unexpected end of file"
++ 
++ Message ErrMsgUnknownCodepage
++  "unbekannte Zeichentabelle"
++  "unknown codepage"
++ 
++ Message ErrMsgRomOffs063
++  "ROM-Offset geht nur von 0..63"
++  "ROM-offset must be in range 0..63"
++ 
++ Message ErrMsgInvFCode
++  "ung&uuml;ltiger Funktionscode"
++  "invalid function code"
++ 
++ Message ErrMsgInvFMask
++  "ung&uuml;ltige Funktionscodemaske"
++  "invalid function code mask"
++ 
++ Message ErrMsgInvMMUReg
++  "ung&uuml;ltiges MMU-Register"
++  "invalid MMU register"
++ 
++ Message ErrMsgLevel07
++  "Level nur von 0..7"
++  "level must be in range 0..7"
++ 
++ Message ErrMsgInvBitMask
++  "ung&uuml;ltige Bitmaske" 
++  "invalid bit mask"
++ 
++ Message ErrMsgInvRegPair
++  "ung&uuml;ltiges Registerpaar"
++  "invalid register pair"
++ 
++ Message ErrMsgOpenMacro
++  "offene Makrodefinition"
++  "open macro definition"
++ 
++ Message ErrMsgOpenIRP
++  "IRP ohne ENDM"
++  "IRP without ENDM"
++ 
++ Message ErrMsgOpenIRPC
++  "IRPC ohne ENDM"
++  "IRPC without ENDM"
++ 
++ Message ErrMsgOpenREPT
++  "REPT ohne ENDM"
++  "REPT without ENDM"
++ 
++ Message ErrMsgOpenWHILE
++  "WHILE ohne ENDM"
++  "WHILE without ENDM"
++ 
++ Message ErrMsgDoubleMacro
++  "doppelte Makrodefinition"
++  "macro double defined"
++ 
++ Message ErrMsgTooManyMacParams
++  "mehr als 10 Makroparameter"
++  "more than 10 macro parameters"
++ 
++ Message ErrMsgUndefKeyArg
++  "Schl&uuml;sselwortargument nicht in Makro definiert"
++  "keyword argument not defined in macro"
++ 
++ Message ErrMsgNoPosArg
++  "Positionsargument nach Schl&uuml;sselwortargumenten nicht mehr erlaubt"
++  "positional argument no longer allowed after keyword argument"
++ 
++ Message ErrMsgEXITMOutsideMacro
++  "EXITM au&szlig;erhalb eines Makrorumpfes"
++  "EXITM not called from within macro"
++ 
++ Message ErrMsgFirstPassCalc
++  "Ausdruck mu&szlig; im ersten Pass berechenbar sein"
++  "expression must be evaluatable in first pass"
++ 
++ Message ErrMsgTooManyNestedIfs
++  "zu viele verschachtelte IFs"
++  "too many nested IFs"
++ 
++ Message ErrMsgMissingIf
++  "ELSEIF/ENDIF ohne IF"
++  "ELSEIF/ENDIF without IF"
++ 
++ Message ErrMsgRekMacro
++  "zu tief verschachtelter/rekursiver Makroaufruf"
++  "too deeply nested/recursive makro call"
++ 
++ Message ErrMsgUnknownFunc
++  "unbekannte Funktion"
++  "unknown function"
++ 
++ Message ErrMsgInvFuncArg
++  "Funktionsargument au&szlig;erhalb Definitionsbereich"
++  "function argument out of definition range"
++ 
++ Message ErrMsgFloatOverflow
++  "Gleitkomma&uuml;berlauf"
++  "floating point overflow"
++ 
++ Message ErrMsgInvArgPair
++  "ung&uuml;ltiges Wertepaar"
++  "invalid value pair"
++ 
++ Message ErrMsgNotOnThisAddress
++  "Befehl darf nicht auf dieser Adresse liegen"
++  "instruction must not start on this address"
++ 
++ Message ErrMsgNotFromThisAddress
++  "ung&uuml;ltiges Sprungziel"
++  "invalid jump target"
++ 
++ Message ErrMsgJmpTargOnDiffPage
++  "Sprungziel nicht auf gleicher Seite"
++  "jump target not on same page"
++ 
++ Message ErrMsgTargOnDiffSection
++  "Sprungziel nicht in gleicher Sektion"
++  "jump target not in same section"
++ 
++ Message ErrMsgCodeOverflow
++  "Code&uuml;berlauf"
++  "code overflow"
++ 
++ Message ErrMsgMixDBDS
++  "Konstanten und Platzhalter nicht mischbar"
++  "constants and placeholders cannot be mixed"
++ 
++ Message ErrMsgNotInStruct
++  "Codeerzeugung in Strukturdefinition nicht zul&auml;ssig"
++  "code must not be generated in structure definition"
++ 
++ Message ErrMsgParNotPossible
++  "paralleles Konstrukt nicht m&ouml;glich"
++  "parallel construct not possible here"
++ 
++ Message ErrMsgAdrOverflow
++  "Adre&szlig;&uuml;berlauf"
++  "address overflow"
++ 
++ Message ErrMsgInvSegment
++  "ung&uuml;ltiges Segment"
++  "invalid segment"
++ 
++ Message ErrMsgUnknownSegment
++  "unbekanntes Segment"
++  "unknown segment"
++ 
++ Message ErrMsgUnknownSegReg
++  "unbekanntes Segmentregister"
++  "unknown segment register"
++ 
++ Message ErrMsgInvString
++  "ung&uuml;ltiger String"
++  "invalid string"
++ 
++ Message ErrMsgInvRegName
++  "ung&uuml;ltiger Registername"
++  "invalid register name"
++ 
++ Message ErrMsgInvArg
++  "ung&uuml;ltiges Argument"
++  "invalid argument"
++ 
++ Message ErrMsgNoIndir
++  "keine Indirektion erlaubt"
++  "indirect mode not allowed"
++ 
++ Message ErrMsgNotInThisSegment
++  "nicht im aktuellen Segment erlaubt"
++  "not allowed in current segment"
++ 
++ Message ErrMsgNotInMaxmode
++  "nicht im Maximum-Modus zul&auml;ssig"
++  "not allowed in maximum mode"
++ 
++ Message ErrMsgOnlyInMaxmode
++  "nicht im Minimum-Modus zul&auml;ssig"
++  "not allowed in minimum mode"
++ 
++ Message ErrMsgPackCrossBoundary
++  "Anweisungspaket &uuml;berschreitet Adre&szlig;grenze"
++  "execution packet crosses address boundary"
++ 
++ Message ErrMsgUnitMultipleUsed
++  "Ausf&uuml;hrungseinheit mehrfach benutzt"
++  "multiple use of same execution unit"
++ 
++ Message ErrMsgMultipleLongRead
++  "mehrfache Lang-Leseoperation"
++  "multiple long read operations"
++ 
++ Message ErrMsgMultipleLongWrite
++  "mehrfache Lang-Schreiboperation"
++  "multiple long write operations"
++ 
++ Message ErrMsgLongReadWithStore
++  "Lang-Lese- mit Schreiboperation"
++  "long read with write operation"
++ 
++ Message ErrMsgTooManyRegisterReads
++  "zu viele Lesezugriffe auf ein Register"
++  "too many reads of one register"
++ 
++ Message ErrMsgOverlapDests
++  "&uuml;berlappende Ziele"
++  "overlapping destinations"
++ 
++ Message ErrMsgTooManyBranchesInExPacket
++  "zu viele absolute Spr&uuml;nge in einem Anweisungspaket"
++  "too many absolute branches in one execution packet"
++ 
++ Message ErrMsgCannotUseUnit
++  "Anweisung nicht auf diese Funktionseinheit ausf&uuml;hrbar"
++  "instruction cannot be executed on this unit"
++ 
++ Message ErrMsgInvEscSequence
++  "Ung&uuml;ltige Escape-Sequenz"
++  "invalid escape sequence"
++ 
++ Message ErrMsgInvPrefixCombination
++  "ung&uuml;ltige Pr&auml;fix-Kombination"
++  "invalid combination of prefixes"
++ 
++ Message ErrMsgConstantRedefinedAsVariable
++  "Konstante kann nicht als Variable redefiniert werden"
++  "constants cannot be redefined as variables"
++ 
++ Message ErrMsgVariableRedefinedAsConstant
++  "Variable kann nicht als Konstante redefiniert werden"
++  "variables cannot be redefined as constants"
++ 
++ Message ErrMsgStructNameMissing
++  "Strukturname fehlt"
++  "structure name missing"
++ 
++ Message ErrMsgEmptyArgument
++  "leeres Argument"
++  "empty argument"
++ 
++ Message ErrMsgUnimplemented
++  "nicht implementierte Anweisung"
++  "unimplemented instruction"
++ 
++ Message ErrMsgFreestandingUnnamedStruct
++  "namenlose Struktur nicht Teil einer anderen Struktur"
++  "unnamed structure is not part of another structure"
++ 
++ Message ErrMsgSTRUCTEndedByENDUNION
++  "STRUCT durch ENDUNION beendet"
++  "STRUCT ended by ENDUNION"
++ 
++ Message ErrMsgAddrOnDifferentPage
++  "Speicheradresse nicht auf aktiver Seite"
++  "Memory address mot on active memory page"
++ 
++ Message ErrMsgUnknownMacExpMod
++  "unbekanntes Makro-Expansions-Argument"
++  "unknown macro expansion argument"
++ 
++ Message ErrMsgTooManyMacExpMod
++  "zu viele Makro-Expansions-Argumente"
++  "too many macro expansion arguments"
++ 
++ Message ErrMsgConflictingMacExpMod
++  "widerspr&uuml;chliche Angaben zur Makro-Expansion"
++  "contradicting macro expansion specifications"
++ 
++ Message ErrMsgInvalidPrepDir
++  "unbekannte Pr&auml;prozessoranweisung"
++  "unknown preprocessing directive"
++ 
++ Message ErrMsgExpectedError
++  "erwarteter Fehler nicht eingetreten"
++  "expected error did not occur"
++ 
++ Message ErrMsgNoNestExpect
++  "Verschachtelung von EXPECT/ENDEXPECT nicht erlaubt"
++  "nesting of EXPECT/ENDEXPECT not allowed"
++ 
++ Message ErrMsgMissingENDEXPECT
++  "fehlendes ENDEXPECT"
++  "missing ENDEXPECT"
++ 
++ Message ErrMsgMissingEXPECT
++  "ENDEXPECT ohne EXPECT"
++  "ENDEXPECT without EXPECT"
++ 
++ Message ErrMsgNoDefCkptReg
++  "kein Default-Checkpoint-Register definiert"
++  "no default checkpoint register defined"
++ 
++ Message ErrMsgInvBitField
++  "ung&uuml;tiges Bitfeld"
++  "invalid bit field"
++ 
++ Message ErrMsgArgValueMissing
++  "Argument-Wert fehlt"
++  "argument value missing"
++ 
++ Message ErrMsgUnknownArg
++  "unbekanntes Argument"
++  "unknown argument"
++ 
++ Message ErrMsgIndexRegMustBe16Bit
++  "Indexregister muss 16 Bit sein"
++  "index register must be 16 bit"
++ 
++ Message ErrMsgIOAddrRegMustBe16Bit
++  "I/O Adressregister muss 16 Bit sein"
++  "I/O address register must be 16 bit"
++ 
++ Message ErrMsgSegAddrRegMustBe32Bit
++  "Adressregister im segmentierten Modus muss 32 Bit sein"
++  "address register in segmented mode must be 32 bit"
++ 
++ Message ErrMsgNonSegAddrRegMustBe16Bit
++  "Adressregister im nicht-segmentierten Modus muss 16 Bit sein"
++  "address register in non-segmented mode must be 16 bit"
++ 
++ Message ErrMsgInvStructArgument
++  "ung&uuml;ltiges Strukturargument"
++  "invalid structure argument"
++ 
++ Message ErrMsgTooManyArrayDimensions
++  "zu viele Array-Dimensionen"
++  "too many array dimensions"
++ 
++ Message ErrMsgInvIntFormat
++  "unbekannte Integer-Notation"
++  "unknown integer notation"
++ 
++ Message ErrMsgInvIntFormatList
++  "ung&uuml;ltige Liste an Integer-Schreibweisen"
++  "invalid list of integer notations"
++ 
++ Message ErrMsgInvScale
++  "ung&uuml;tige Skalierung"
++  "invalid scale"
++ 
++ Message ErrMsgConfStringOpt
++  "widerspr&uuml;chliche String-Optionen"
++  "conflicting string options"
++ 
++ Message ErrMsgUnknownStringOpt
++  "unbekannte String-Option"
++  "unknown string option"
++ 
++ Message ErrMsgInvCacheInvMode
++  "ung&uuml;ltiger Cache-Invalidierungs-Modus"
++  "invalid cache invalidate mode"
++ 
++ Message ErrMsgInvCfgList
++  "ung&uuml;ltige Config-Liste"
++  "invalid config list"
++ 
++ Message ErrMsgConfBitBltOpt
++  "widerspr&uuml;chliche BITBLT-Optionen"
++  "conflicting BITBLT options"
++ 
++ Message ErrMsgUnknownBitBltOpt
++  "unbekannte BITBLT Option"
++  "unknown BITBLT option"
++ 
++ Message ErrMsgInvCBAR
++  "ung&uuml;ltiger Wert f&uuml;r CBAR"
++  "invalid CBAR value"
++ 
++ Message ErrMsgInAccPageErr
++  "Seite nicht zugreifbar"
++  "page not accessible"
++ 
++ Message ErrMsgInAccFieldErr
++  "Feld nicht zugreifbar"
++  "field not accessible"
++ 
++ Message ErrMsgTargInDiffField
++  "Ziel nicht in gleichem Feld"
++  "target not in same field"
++ 
++ Message ErrMsgInvCombination
++  "Ung&uuml;tige Instruktions-Kombination"
++  "invalid instruction combination"
++ 
++ Message ErrMsgInternalError
++  "interner Fehler"
++  "internal error"
++ 
++ Message ErrMsgOpeningFile
++  "Fehler beim &Ouml;ffnen der Datei"
++  "error in opening file"
++ 
++ Message ErrMsgListWrError
++  "Listingschreibfehler"
++  "error in writing listing"
++ 
++ Message ErrMsgFileReadError
++  "Dateilesefehler"
++  "file read error"
++ 
++ Message ErrMsgFileWriteError
++  "Dateischreibfehler"
++  "file write error"
++ 
++ Message ErrMsgIntError
++  "interne(r) Fehler/Warnung"
++  "internal error/warning"
++ 
++ Message ErrMsgHeapOvfl
++  "Speicher&uuml;berlauf"
++  "heap overflow"
++ 
++ Message ErrMsgStackOvfl
++  "Stapel&uuml;berlauf"
++  "stack overflow"
++  
++ Message ErrMsgMaxIncLevelExceeded
++  "INCLUDE zu tief verschachtelt"
++  "INCLUDE nested too deeply"
++ 
++ Message ErrMsgTooManyErrors
++  "zu viele Fehler, Assembler abgebrochen"
++  "too many errors, assembly terminated"
++ 
++ Message ErrMsgIsFatal
++  "Fataler Fehler, Assembler abgebrochen"
++  "fatal error, assembly terminated"
++ 
++ Message ErrMsgOvlyError
++  "Overlayfehler - Programmabbruch"
++  "overlay error - program terminated"
++ 
++ Message PrevDefMsg
++  "vorherige Definition in"
++  "previous definition in"
++ 
++ Message ErrMsgInvSwapSize
++  "ung&uuml;ltige Gr&ouml;&szlig;enangabe f&uuml;r Swapfile - Programmabbruch"
++  "swap file size not correctly specified - program terminated"
++ 
++ Message ErrMsgSwapTooBig
++  "zuwenig Platz f&uuml;r Swapfile - Programmabbruch"
++  "insufficient space for swap file - program terminated"
++ 
++ Message ErrMsgNoRelocs
++  "relokatible Symbole nicht erlaubt"
++  "relocatable symbols not allowed"
++ 
++ Message ErrMsgIntOrFloatButReg
++  "Ganz- oder Gleitkommazahl erwartet, aber Register bekommen"
++  "expected integer or floating point number but got register"
++ 
++ Message ErrMsgIntOrStringButReg
++  "Ganzzahl oder String erwartet, aber Register bekommen"
++  "expected integer or string but got register"
++ 
++ Message ErrMsgIntButReg
++  "Ganzzahl erwartet, aber Register bekommen"
++  "expected integer but got register"
++ 
++ Message ErrMsgUnresRelocs
++  "unverarbeitete externe Referenzen"
++  "unprocessed external references"
++ 
++ Message ErrMsgUnexportable
++  "Symbol nicht exportierbar"
++  "cannot export this symbol"
++ 
++ Message ErrMsgArgCntZero
++  "erwarte kein Argument, erhielt %d"
++  "expected no argument but got %d"
++ 
++ Message ErrMsgArgCntOne
++  "erwarte ein Argument, erhielt %d"
++  "expected one argument but got %d"
++ 
++ Message ErrMsgArgCntMulti
++  "erwarte %d Argumente, erhielt %d"
++  "expected %d arguments but got %d"
++ 
++ Message ErrMsgArgCntFromTo
++  "erwarte zwischen %d und %d Argumente, erhielt %d"
++  "expected between %d and %d arguments but got %d"
++ 
++ Message ErrMsgArgCntEitherOr
++  "erwarte %d oder %d Argumente, erhielt %d"
++  "expected %d or %d arguments but got %d"
++ 
++ Message ErrMsgAddrArgCnt
++  "Adre&szlig;ausdruck erwartet zwischen %d und %d Argumente, erhielt %d"
++  "address expression expects between %d and %d arguments but got %d"
++ 
++ Message ErrMsgCannotSplitArg
++  "Kann Argument nicht in Teile aufspalten"
++  "failed splitting argument into parts"
++ 
++ Message ErrMsgMinCPUSupported
++  "ab %s unterst&uuml;tzt"
++  "supported by %s and above"
++ 
++ Message ErrMsgMaxCPUSupported
++  "bis %s unterst&uuml;tzt"
++  "supported by %s and below"
++ 
++ Message ErrMsgRangeCPUSupported
++  "von %s bis %s unterst&uuml;tzt"
++  "supported by %s to %s" 
++ 
++ Message ErrMsgOnlyCPUSupported1
++  "nur von "
++  "supported only by "
++ 
++ Message ErrMsgOnlyCPUSupportedOr
++  " oder "
++  " or "
++ 
++ Message ErrMsgOnlyCPUSupported2
++  " unterst&uuml;tzt"
++  ""
++ 
++ ;----------------------------------------------------------------------------
++ ; Strings in Listingkopfzeile
++ 
++ Message HeadingFileNameLab
++  " - Quelle "
++  " - Source File "
++ 
++ Message HeadingPageLab
++  " - Seite "
++  " - Page "
++ 
++ ;----------------------------------------------------------------------------
++ ; Strings in Listing
++ 
++ Message ListSymListHead1
++  "  Symboltabelle (* = unbenutzt):"
++  "  Symbol Table (* = unused):"
++ 
++ Message ListSymListHead2
++  "  ----------------------------"
++  "  --------------------------"
++ 
++ Message ListSymSumMsg
++  " Symbol"
++  " symbol"
++ 
++ Message ListSymSumsMsg
++  " Symbole"
++  " symbols"
++ 
++ Message ListUSymSumMsg
++  " unbenutztes Symbol"
++  " unused symbol"
++ 
++ Message ListUSymSumsMsg
++  " unbenutzte Symbole"
++  " unused symbols"
++ 
++ Message ListRegDefListHead1
++  "  Registerdefinitionen (* = unbenutzt):"
++  "  Register Definitions (* = unused):"
++ 
++ Message ListRegDefListHead2
++  "  -----------------------------------"
++  "  ----------------------------------"
++ 
++ Message ListRegDefSumMsg
++  " Definition"
++  " definition"
++ 
++ Message ListRegDefSumsMsg
++  " Definitionen"
++  " definitions"
++ 
++ Message ListRegDefUSumMsg
++  " unbenutzte Definition"
++  " unused definition"
++ 
++ Message ListRegDefUSumsMsg
++  " unbenutzte Definitionen"
++  " unused definitions"
++ 
++ Message ListCodepageListHead1
++  "  Zeichentabellen:"
++  "  Code Pages:"
++ 
++ Message ListCodepageListHead2
++  "  ----------------"
++  "  ----------"
++ 
++ Message ListCodepageChange
++  " ver&auml;ndertes Zeichen"
++  " changed character"
++ 
++ Message ListCodepagePChange
++  " ver&auml;nderte Zeichen"
++  " changed characters"
++ 
++ Message ListCodepageSumMsg
++  " Zeichentabelle"
++  " code page"
++ 
++ Message ListCodepageSumsMsg
++  " Zeichentabellen"
++  " code pages"
++ 
++ Message ListMacListHead1
++  "  definierte Makros:"
++  "  Defined Macros:"
++ 
++ Message ListMacListHead2
++  "  ------------------"
++  "  ---------------"
++ 
++ Message ListMacSumMsg
++  " Makro"
++  " macro"
++ 
++ Message ListMacSumsMsg
++  " Makros"
++  " macros"
++ 
++ Message ListStructListHead1
++  "  definierte Strukturen/Unions:"
++  "  Defined Structures/Unions:"
++ 
++ Message ListStructListHead2
++  "  -----------------------------"
++  "  --------------------------"
++ 
++ Message ListStructSumMsg
++  " Struktur"
++  " structure"
++ 
++ Message ListStructSumsMsg
++  " Strukturen"
++  " structures"
++ 
++ Message ListFuncListHead1
++  "  definierte Funktionen:"
++  "  Defined Functions:"
++ 
++ Message ListFuncListHead2
++  "  ----------------------"
++  "  ------------------"
++ 
++ Message ListDefListHead1
++  "  DEFINEs:"
++  "  DEFINEs:"
++ 
++ Message ListDefListHead2
++  "  --------"
++  "  --------"
++ 
++ Message ListSegListHead1
++  "in "
++  "Space Used in "
++ 
++ Message ListSegListHead2
++  " belegte Bereiche:"
++  " :"
++ 
++ Message ListCrossListHead1
++  "  Querverweisliste:"
++  "  Cross Reference List:"
++ 
++ Message ListCrossListHead2
++  "  -----------------"
++  "  ---------------------"
++ 
++ Message ListSectionListHead1
++  "  Sektionen:"
++  "  Sections:"
++ 
++ Message ListSectionListHead2
++  "  ----------"
++  "  ---------"
++ 
++ Message ListIncludeListHead1
++  "  Include-Verschachtelung:"
++  "  Nested Include Files:"
++ 
++ Message ListIncludeListHead2
++  "  ------------------------"
++  "  ---------------------"
++ 
++ Message ListCrossSymName
++  "Symbol "
++  "symbol "
++ 
++ Message ListCrossFileName
++  "Datei "
++  "file "
++ 
++ Message ListPlurName
++  "n"
++  "s"
++ 
++ Message ListHourName
++  " Stunde"
++  " hour"
++ 
++ Message ListMinuName
++  " Minute"
++  " minute"
++ 
++ Message ListSecoName
++  " Sekunde"
++  " second"
++ 
++ ;---------------------------------------------------------------------------
++ ; Durchsagen...
++ 
++ Message ErrMessNoInputFiles
++  "keine Quelldateien (-help f&uuml; Hilfe)"
++  "no input files (-help for help)"
++ 
++ Message InfoMessAssembling
++  "Assembliere "
++  "Assembling "
++ 
++ Message InfoMessPass
++  "PASS "
++  "PASS "
++ 
++ Message InfoMessPass1
++  "PASS 1                             "
++  "PASS 1                             "
++ 
++ Message InfoMessPass2
++  "PASS 2                             "
++  "PASS 2                             "
++ 
++ Message InfoMessAssTime
++  " Assemblierzeit"
++  " assembly time"
++ 
++ Message InfoMessAssLine
++  " Zeile Quelltext"
++  " line source file"
++ 
++ Message InfoMessAssLines
++  " Zeilen Quelltext"
++  " lines source file"
++ 
++ Message InfoMessPassCnt
++  " Durchlauf"
++  " pass"
++ 
++ Message InfoMessPPassCnt
++  " Durchl&auml;ufe"
++  " passes"
++ 
++ Message InfoMessNoPass
++  "        zus&auml;tzliche erforderliche Durchl&auml;ufe wegen Fehlern nicht\n        durchgef&uuml;hrt, Listing m&ouml;glicherweise inkorrekt."
++  "        Additional necessary passes not started due to\n        errors, listing possibly incorrect."
++ 
++ Message InfoMessMacAssLine
++  " Zeile inkl. Makroexpansionen"
++  " line incl. macro expansions"
++ 
++ Message InfoMessMacAssLines
++  " Zeilen inkl. Makroexpansionen"
++  " lines incl. macro expansions"
++ 
++ Message InfoMessWarnCnt
++  " Warnung"
++  " warning"
++ 
++ Message InfoMessWarnPCnt
++  "en"
++  "s"
++ 
++ Message InfoMessErrCnt
++  " Fehler"
++  " error"
++ 
++ Message InfoMessErrPCnt
++  ""
++  "s"
++ 
++ Message InfoMessRemainMem
++  " KByte verf&uuml;gbarer Restspeicher"
++  " Kbytes available memory"
++ 
++ Message InfoMessRemainStack
++  " Byte verf&uuml;gbarer Stack"
++  " bytes available stack"
++ 
++ Message InfoMessNFilesFound
++  ": keine Datei(en) zu assemblieren!"
++  ": No file(s) to assemble!"
++ 
++ Message InfoMessMacroAss
++  "Makroassembler "
++  "Macro Assembler "
++ 
++ Message InfoMessVar
++  "Version"
++  "Version"
++ 
++ Message InfoMessHead1
++  "Aufruf: "
++  "usage: "
++ 
++ Message InfoMessHead2
++  " [Optionen] [Datei] [Optionen] ..."
++  " [options] [file] [options] ..."
++ 
++ Message KeyWaitMsg
++  "--- weiter mit <ENTER> ---"
++  "--- <ENTER> to go on ---"
++ 
++ Message ErrMsgInvParam
++  "ung&uuml;ltige Option (-help f&uuml; Hilfe): "
++  "Invalid option (-help for help): "
++ 
++ Message ErrMsgInvEnvParam
++  "ung&uuml;ltige Environment-Option (-help f&uuml; Hilfe): "
++  "Invalid environment option (-help for help): "
++ 
++ Message InvMsgSource
++  "Quelldatei?"
++  "Source file?"
++ 
++ Message InfoMessHelp
++  "\n" \
++  "Optionen:\n" \
++  "  -p                   : Sharefile im Pascal-Format\n" \
++  "  -c                   : Sharefile im C-Format\n" \
++  "  -a                   : Sharefile im AS-Format\n" \
++  "  -o <Name>            : Namen der Code-Datei neu setzen\n" \
++  "  -olist <Name>        : Namen der Listdatei neu setzen\n" \
++  "  -shareout <Name>     : Namen des Sharefiles neu setzen\n" \
++  "  -q, -quiet           : Stiller Betrieb\n" \
++  "  -cpu <Name>          : Zielprozessor setzen\n" \
++  "                         ('?' oder 'list', um verf&uuml;gbare nur anzuzeigen)\n" \
++  "  -alias <neu>=<alt>   : Prozessor-Alias definieren\n" \
++  "  -l                   : Listing auf Konsole\n" \
++  "  -L                   : Listing auf Datei\n" \
++  "  -listradix <2...36>  : Zahlensystem im Listing\n" \
++  "  -i <Pfad>[:Pfad]...  : Pfadliste f&uuml;r Includedateien\n" \
++  "  -D <Symbol>[,Symbol] : Symbole vordefinieren\n" \
++  "  -gnuerrors           : Fehlermeldungen im GNU-Format\n" \
++  "  -maxerrors <Anzahl>  : Assemblierung nach <Anzahl> Fehlern abbrechen\n" \
++  "  -maxinclevel <Anzahl>: Include-Verschachtelungstiefe auf <Anzahl> begrenzen\n" \
++  "  -Werror              : Warnungen als Fehler behandeln\n" \
++  "  -w[no-]implicit-sign-extension : Warnungen &uuml;ber Vorzeichen-Erweiterungen ein/ausschalten\n" \
++  "  -version             : nur Versionsinfo ausgeben\n" \
++  "  -E [Name]            : Zieldatei f&uuml;r Fehlerliste,\n" \
++  "                         !0..!4 f&uuml;r Standardhandles\n" \
++  "                         Default <Quelldatei>.LOG\n" \
++  "  -r                   : Meldungen erzeugen, falls zus&auml;tzlicher Pass erforderlich\n" \
++  "  -relaxed             : beliebige Integer-Syntax im Default zulassen\n" \
++  "  -Y                   : Sprungfehlerunterdr&uuml;ckung (siehe Anleitung)\n" \
++  "  -v                   : wortreicher Betrieb\n" \
++  "  -w                   : Warnungen unterdr&uuml;cken\n" \
++  "  +G                   : Code-Erzeugung unterdr&uuml;cken\n" \
++  "  -s                   : Sektionsliste erzeugen\n" \
++  "  -t                   : Listing-Teile ein/ausblenden\n" \
++  "  -u                   : Belegungsliste erzeugen\n" \
++  "  -C                   : Querverweisliste erzeugen\n" \
++  "  -I                   : Include-Verschachtelungsliste ausgeben\n" \
++  "  -g [map|atmel|noice] : Debug-Informationen schreiben\n" \
++  "  -A                   : kompaktere Symbolablage\n" \
++  "  -U                   : case-sensitiv arbeiten\n" \
++  "  -x                   : erweiterte Fehlermeldungen\n" \
++  "  -n                   : Fehlermeldungen mit Nummer\n" \
++  "  -P                   : Makroprozessorausgabe erzeugen\n" \
++  "  -M                   : Makrodefinitionen extrahieren\n" \
++  "  -h                   : Hexadezimalzahlen mit Kleinbuchstaben\n" \
++  "  -help                : nur Hilfe ausgeben\n" \
++  "  -splitbyte [char]    : Split-Byte-Darstellung von Zahlen\n" \
++  "  -screenheight <#>    : Bildschirmh&ouml;he f&uuml;r Paging von '-help'\n" \
++  "                         und '-cpu list' setzen\n" \
++  "\n" \
++  "Quelldateiangabe darf Jokerzeichen enthalten\n"
++  "\n" \
++  "options:\n" \
++  "  -p                   : share file formatted for Pascal\n" \
++  "  -c                   : share file formatted for C\n" \
++  "  -a                   : share file formatted for AS\n" \
++  "  -o <name>            : change name of code file\n" \
++  "  -olist <nname>       : change name of list file\n" \
++  "  -shareout <nname>    : change name of share file\n" \
++  "  -q, -quiet           : silent operation\n" \
++  "  -cpu <name>          : set target processor\n" \
++  "                         ('?' or 'list' to list available ones and exit)\n" \
++  "  -alias <new>=<old>   : define processor alias\n" \
++  "  -l                   : listing to console\n" \
++  "  -L                   : listing to file\n" \
++  "  -listradix <2...36>  : number system in listing\n" \
++  "  -i <path>[;path]...  : list of paths for include files\n" \
++  "  -D <symbol>[,symbol] : predefine symbols\n" \
++  "  -gnuerrors           : error messages in GNU format\n" \
++  "  -maxerrors <number>  : terminate assembly after <number> errors\n" \
++  "  -maxinclevel <number>: limit include nesting level to <number>\n" \
++  "  -Werror              : treat warnings as errors\n" \
++  "  -w[no-]implicit-sign-extension : enable/disable sign extension warnings\n" \
++  "  -version             : print version info and exit\n" \
++  "  -E <name>            : target file for error list,\n" \
++  "                         !0..!4 for standard handles\n" \
++  "                         default is <srcname>.LOG\n" \
++  "  -r                   : generate messages if repassing necessary\n" \
++  "  -relaxed             : allow arbitrary integer syntax by default\n" \
++  "  -Y                   : branch error suppression (see manual)\n" \
++  "  -v                   : verbose operation\n" \
++  "  -w                   : suppress warnings\n" \
++  "  +G                   : suppress code generation\n" \
++  "  -s                   : generate section list\n" \
++  "  -t                   : enable/disable parts of listing\n" \
++  "  -u                   : generate usage list\n" \
++  "  -C                   : generate cross reference list\n" \
++  "  -I                   : generate include nesting list\n" \
++  "  -g [map|atmel|noice] : write debug info\n" \
++  "  -A                   : compact symbol table\n" \
++  "  -U                   : case-sensitive operation\n" \
++  "  -x                   : extended error messages\n" \
++  "  -n                   : add error #s to error messages\n" \
++  "  -P                   : write macro processor output\n" \
++  "  -M                   : extract macro definitions\n" \
++  "  -h                   : use lower case in hexadecimal output\n" \
++  "  -help                : print help and exit\n" \
++  "  -splitbyte [char]    : use split byte display of numbers\n" \
++  "  -screenheight <#>    : set screen height for paging of '-help'\n" \
++  "                         and '-cpu list'\n" \
++  "\n" \
++  "source file specification may contain wildcards\n"
++ 
++ Message InfoMessCPUList
++  "implementierte Prozessoren :"
++  "implemented processors :"
+*** ../src.142b252/as.rc	Wed Dec 31 19:00:00 1969
+--- as.rc	Sun Nov 05 23:56:49 2023
+***************
+*** 0 ****
+--- 1,52 ----
++ #include <windows.h>
++ #include "version.h"
++ 
++ 
++ 100		ICON		"project.ico"
++ 
++ 
++ VS_VERSION_INFO VERSIONINFO
++ #ifdef AS_VER_PATCH
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++ #else
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++ #endif
++  FILEFLAGSMASK	0x3fL
++ #ifndef RELEASE_BUILD
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_SPECIALBUILD | VS_FF_DEBUG
++ # else
++  FILEFLAGS	VS_FF_SPECIALBUILD
++ # endif
++ #else
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_DEBUG
++ # else
++  FILEFLAGS	0x0L
++ # endif
++ #endif
++  FILEOS		VOS_NT_WINDOWS32
++  FILETYPE	VFT_APP
++  FILESUBTYPE	0x0L
++  BEGIN
++     BLOCK "StringFileInfo"
++     BEGIN
++         BLOCK "0409fde9"
++         BEGIN
++             VALUE "CompanyName", "The VARCem Group LLC"
++             VALUE "LegalCopyright", "Licenced under GPL-2.0-only OR GPL-3.0-only."
++             VALUE "ProductName", "AS Makro Assembler"
++             VALUE "ProductVersion", AS_VERSION
++             VALUE "InternalName", "ASL"
++             VALUE "FileDescription", "ASL Assembler"
++             VALUE "FileVersion", AS_VERSION
++             VALUE "OriginalFilename", "asl.exe"
++         END
++     END
++     BLOCK "VarFileInfo"
++     BEGIN
++         VALUE "Translation", 0x0409, 65001
++     END
++ END
+*** ../src.142b252/as.res	Fri Sep 01 14:53:54 2023
+--- as.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,1583 ****
+- ;* as.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* String-Definitionen fuer AS                                               *
+- ;*                                                                           *
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- ;-----------------------------------------------------------------------------
+- ; Fehlermeldungen
+- 
+- Message ErrName
+-  "Fehler"
+-  "error"
+- 
+- Message WarnName
+-  "Warnung"
+-  "warning"
+- 
+- Message InLineName
+-  " in Zeile "
+-  " in line "
+- 
+- Message GNUErrorMsg1
+-  "In Datei included von"
+-  "In file included from"
+- 
+- Message GNUErrorMsgN
+-  "                  von"
+-  "                 from"
+- 
+- Message ErrMsgUselessDisp
+-  "Displacement=0, &uuml;berfl&uuml;ssig"
+-  "useless displacement 0"
+- 
+- Message ErrMsgShortAddrPossible
+-  "Kurzadressierung m&ouml;glich"
+-  "short addressing possible"
+- 
+- Message ErrMsgShortJumpPossible
+-  "kurzer Sprung m&ouml;glich"
+-  "short jump possible"
+- 
+- Message ErrMsgNoShareFile
+-  "kein Sharefile angelegt, SHARED ignoriert"
+-  "no sharefile created, SHARED ignored"
+- 
+- Message ErrMsgBigDecFloat
+-  "FPU liest Wert evtl. nicht korrekt ein (>=1E1000)"
+-  "FPU possibly cannot read this value (> 1E1000)"
+- 
+- Message ErrMsgPrivOrder
+-  "privilegierte Anweisung"
+-  "privileged instruction"
+- 
+- Message ErrMsgDistNull
+-  "Distanz 0 nicht bei Kurzsprung erlaubt (NOP erzeugt)"
+-  "distance of 0 not allowed for short jump (NOP created instead)"
+- 
+- Message ErrMsgWrongSegment
+-  "Symbol aus falschem Segment"
+-  "symbol out of wrong segment"
+- 
+- Message ErrMsgInAccSegment
+-  "Segment nicht adressierbar"
+-  "segment not accessible"
+- 
+- Message ErrMsgPhaseErr
+-  "&Auml;nderung des Symbolwertes erzwingt zus&auml;tzlichen Pass"
+-  "change of symbol values forces additional pass"
+- 
+- Message ErrMsgOverlap
+-  "&uuml;berlappende Speicherbelegung"
+-  "overlapping memory usage"
+- 
+- Message ErrMsgOverlapReg
+-  "&uuml;berlappende Registernutzung"
+-  "overlapping register usage"
+- 
+- Message ErrMsgNoCaseHit
+-  "keine CASE-Bedingung zugetroffen"
+-  "none of the CASE conditions was true"
+- 
+- Message ErrMsgInAccPage
+-  "Seite m&ouml;glicherweise nicht adressierbar"
+-  "page might not be addressable"
+- 
+- Message ErrMsgRMustBeEven
+-  "Registernummer mu&szlig; gerade sein"
+-  "register number must be even"
+- 
+- Message ErrMsgObsolete
+-  "veralteter Befehl"
+-  "obsolete instruction, usage discouraged"
+- 
+- Message ErrMsgUnpredictable
+-  "nicht vorhersagbare Ausf&uuml;hrung dieser Anweisung"
+-  "unpredictable execution of this instruction"
+- 
+- Message ErrMsgAlphaNoSense
+-  "Lokaloperator au&szlig;erhalb einer Sektion &uuml;berfl&uuml;ssig"
+-  "localization operator senseless out of a section"
+- 
+- Message ErrMsgSenseless
+-  "sinnlose Operation"
+-  "senseless instruction"
+- 
+- Message ErrMsgRepassUnknown
+-  "unbekannter Symbolwert erzwingt zus&auml;tzlichen Pass"
+-  "unknown symbol value forces additional pass"
+- 
+- Message ErrMsgAddrNotAligned
+-  "Adresse nicht ausgerichtet"
+-  "address is not properly aligned"
+- 
+- Message ErrMsgIOAddrNotAllowed
+-  "I/O-Adresse darf nicht verwendet werden"
+-  "I/O-address must not be used here"
+- 
+- Message ErrMsgPipeline
+-  "m&ouml;gliche Pipelining-Effekte"
+-  "possible pipelining effects"
+- 
+- Message ErrMsgDoubleAdrRegUse
+-  "mehrfache Adre&szlig;registerbenutzung in einer Anweisung"
+-  "multiple use of address register in one instruction"
+- 
+- Message ErrMsgNotBitAddressable
+-  "Speicherstelle nicht bitadressierbar"
+-  "memory location is not bit addressable"
+- 
+- Message ErrMsgStackNotEmpty
+-  "Stack ist nicht leer"
+-  "stack is not empty"
+- 
+- Message ErrMsgNULCharacter
+-  "NUL-Zeichen in String, Ergebnis undefiniert"
+-  "NUL character in string, result is undefined"
+- 
+- Message ErrMsgPageCrossing
+-  "Befehl &uuml;berschreitet Seitengrenze"
+-  "instruction crosses page boundary" 
+- 
+- Message ErrMsgWUnderRange
+-  "Bereichsunterschreitung"
+-  "range underflow"
+- 
+- Message ErrMsgWOverRange
+-  "Bereichs&uuml;berschreitung"
+-  "range overflow"
+- 
+- Message ErrMsgNegDUP
+-  "negatives Argument f&uuml;r DUP"
+-  "negative argument for DUP"
+- 
+- Message ErrMsgConvIndX
+-  "einzelner X-Operand wird als indizierte und nicht als implizite Adressierung interpretiert"
+-  "single X operand interpreted as indexed and not implicit addressing"
+- 
+- Message ErrMsgNullResMem
+-  "kein Speicher reserviert, sind Sie sicher, da&szlig; Sie das wollten?"
+-  "no memory reserved, are you sure you wanted that?"
+- 
+- Message ErrMsgBitNumberTruncated
+-  "Bit-Nummer wird abgeschnitten werden"
+-  "bit number will be truncated"
+- 
+- Message ErrMsgInvRegisterPointer
+-  "Ung&uuml;ltiger Wert f&uuml;r Registerzeiger"
+-  "invalid register pointer value"
+- 
+- Message ErrMsgMacArgRedef
+-  "Makro-Argument umdefiniert"
+-  "macro argument redefined"
+- 
+- Message ErrMsgDeprecated
+-  "veraltete Anweisung"
+-  "deprecated instruction"
+- 
+- Message ErrMsgDeprecated_Instead
+-  "%s benutzen"
+-  "use %s"
+- 
+- Message ErrMsgSrcLEThanDest
+-  "Quelloperand l&auml;nger oder gleich Zieloperand"
+-  "source operand is longer or same size as destination operand"
+- 
+- Message ErrMsgTrapValidInstruction
+-  "TRAP-Nummer ist g&uuml;ltige Instruktion"
+-  "TRAP number represents valid instruction"
+- 
+- Message ErrMsgPaddingAdded
+-  "Padding hinzugef&uuml;gt"
+-  "Padding added"
+- 
+- Message ErrMsgRegNumWraparound
+-  "Registernummer-Umlauf"
+-  "register number wraparound"
+- 
+- Message ErrMsgIndexedForIndirect
+-  "verwende indizierte anstelle indirekter Adressierung"
+-  "using indexed instead of indirect addressing"
+- 
+- Message ErrMsgNotInNormalMode
+-  "nicht im Normal-Modus erlaubt"
+-  "not allowed in normal mode"
+- 
+- Message ErrMsgNotInPanelMode
+-  "nicht im Panel-Modus erlaubt"
+-  "not allowed in panel mode"
+- 
+- Message ErrMsgArgOutOfRange
+-  "Argument ausserhalb erlauben Bereichs"
+-  "argument out of range"
+- 
+- Message ErrMsgTrySkipMultiwordInstruction
+-  "Versuch, eine Mehrwort-Instruktion zu &uuml;berspringen"
+-  "attempt to skip multiword instruction"
+- 
+- Message ErrMsgSignExtension
+-  "implizite Vorzeichenerweiterung"
+-  "implicit sign extension"
+- 
+- ;*****
+- 
+- Message ErrMsgDoubleDef
+-  "Symbol doppelt definiert"
+-  "symbol double defined"
+- 
+- Message ErrMsgSymbolUndef
+-  "Symbol nicht definiert"
+-  "symbol undefined"
+- 
+- Message ErrMsgInvSymName
+-  "ung&uuml;ltiger Symbolname"
+-  "invalid symbol name"
+- 
+- Message ErrMsgInvFormat
+-  "ung&uuml;ltiges Format"
+-   "invalid format"
+- 
+- Message ErrMsgUseLessAttr
+-  "&uuml;berfl&uuml;ssiges Attribut"
+-  "useless attribute"
+- 
+- Message ErrMsgUndefAttr
+-  "undefiniertes Attribut"
+-  "undefined attribute"
+- 
+- Message ErrMsgTooLongAttr
+-  "Attribut darf nur 1 Zeichen lang sein"
+-  "attribute may only be one character long"
+- 
+- Message ErrMsgWrongArgCnt
+-  "unpassende Operandenzahl"
+-  "wrong number of operands"
+- 
+- Message ErrMsgWrongOptCnt
+-  "unpassende Optionszahl"
+-  "wrong number of options"
+- 
+- Message ErrMsgOnlyImmAddr
+-  "nur immediate-Adressierung erlaubt"
+-  "addressing mode must be immediate"
+- 
+- Message ErrMsgInvOpSize
+-  "unpassende Operandengr&ouml;&szlig;e"
+-  "invalid operand size"
+- 
+- Message ErrMsgConfOpSizes
+-  "widersprechende Operandengr&ouml;&szlig;en"
+-  "conflicting operand sizes"
+- 
+- Message ErrMsgUndefOpSizes
+-  "undefinierte Operandengr&ouml;&szlig;e"
+-  "undefined operand size"
+- 
+- Message ErrMsgStringOrIntButFloat
+-  "Ganzzahl oder String erwartet, aber Gleitkommazahl erhalten"
+-  "expected integer or string, but got floating point number"
+- 
+- Message ErrMsgIntButFloat
+-  "Ganzzahl erwartet, aber Gleitkommazahl erhalten"
+-  "expected integer, but got floating point number"
+- 
+- Message ErrMsgFloatButString
+-  "Gleitkommazahl erwartet, aber String erhalten"
+-  "expected floating point number, but got string"
+- 
+- Message ErrMsgOpTypeMismatch
+-  "Operandentyp-Diskrepanz"
+-  "operand type mismatch"
+- 
+- Message ErrMsgStringButInt
+-  "String erwartet, aber Ganzzahl erhalten"
+-  "expected string, but got integer"
+- 
+- Message ErrMsgStringButFloat
+-  "String erwartet, aber Gleitkommazahl erhalten"
+-  "expected string, but got floating point number"
+- 
+- Message ErrMsgTooManyArgs
+-  "zu viele Argumente"
+-  "too many arguments"
+- 
+- Message ErrMsgIntButString
+-  "Ganzzahl erwartet, aber String erhalten"
+-  "expected integer, but got string"
+- 
+- Message ErrMsgIntOrFloatButString
+-  "Ganz- oder Gleitkommazahl erwartet, aber String erhalten"
+-  "expected integer or floating point number, but got string"
+- 
+- Message ErrMsgExpectString
+-  "String erwartet"
+-  "expected string"
+- 
+- Message ErrMsgExpectInt
+-  "Ganzzahl erwartet"
+-  "expected integer"
+- 
+- Message ErrMsgStringOrIntOrFloatButReg
+-  "Ganz-, Gleitkommazahl oder String erwartet, aber Register bekommen"
+-  "expected integer, floating point number or string but got register"
+- 
+- Message ErrMsgExpectIntOrString
+-  "Ganzzahl oder String erwartet"
+-  "expected integer or string"
+- 
+- Message ErrMsgExpectReg
+-  "Register erwartet"
+-  "expected register"
+- 
+- Message ErrMsgRegWrongTarget
+-  "Registersymbol f&uuml;r anderes Ziel"
+-  "register symbol for different target"
+- 
+- Message ErrMsgFloatButInt
+-  "Gleitkomma-Argument erwartet, aber Ganzzahl bekommen"
+-  "expected floating point argument but got integer"
+- 
+- Message ErrMsgUnknownInstruction
+-  "unbekannter Befehl"
+-  "unknown instruction"
+- 
+- Message ErrMsgBrackErr
+-  "Klammerfehler"
+-  "number of opening/closing parentheses does not match"
+- 
+- Message ErrMsgDivByZero
+-  "Division durch 0"
+-  "division by 0"
+- 
+- Message ErrMsgUnderRange
+-  "Bereichsunterschreitung"
+-  "range underflow"
+- 
+- Message ErrMsgOverRange
+-  "Bereichs&uuml;berschreitung"
+-  "range overflow"
+- 
+- Message ErrMsgNotPwr2
+-  "keine Zweierpotenz"
+-  "not a power of two"
+- 
+- Message ErrMsgNotAligned
+-  "Adresse nicht ausgerichtet"
+-  "address is not properly aligned"
+- 
+- Message ErrMsgDistTooBig
+-  "Distanz zu gro&szlig;"
+-  "distance too big"
+- 
+- Message ErrMsgTargOnDiffPage
+-  "Ziel nicht auf gleicher Seite"
+-  "target not on same page"
+- 
+- Message ErrMsgInAccReg
+-  "Register nicht zugreifbar"
+-  "register not accessible"
+- 
+- Message ErrMsgNoShortAddr
+-  "Kurzadressierung nicht m&ouml;glich"
+-  "short addressing not allowed"
+- 
+- Message ErrMsgInvAddrMode
+-  "unerlaubter Adressierungsmodus"
+-  "addressing mode not allowed here"
+- 
+- Message ErrMsgAddrMustBeEven
+-  "Addresse mu&szlig; gerade sein"
+-  "address must be even"
+- 
+- Message ErrMsgAddrMustBeAligned
+-  "Addresse mu&szlig; ausgerichtet sein"
+-  "address must be aligned"
+- 
+- Message ErrMsgInvParAddrMode
+-  "Adressierungsmodus im Parallelbetrieb nicht erlaubt"
+-  "addressing mode not allowed in parallel operation"
+- 
+- Message ErrMsgUndefCond
+-  "undefinierte Bedingung"
+-  "undefined condition"
+- 
+- Message ErrMsgIncompCond
+-  "inkompatible Bedingungen"
+-  "incompatible conditions"
+- 
+- Message ErrMsgUnknownFlag
+-  "unbekanntes Flag"
+-  "unknown flag"
+- 
+- Message ErrMsgDuplicateFlag
+-  "doppeltes Flag"
+-  "duplicate flag"
+- 
+- Message ErrMsgUnknownInt
+-  "unbekannter Interrupt"
+-  "unknown interrupt"
+- 
+- Message ErrMsgDuplicateInt
+-  "doppelter Interrupt"
+-  "duplicate interrupt"
+- 
+- Message ErrMsgJmpDistTooBig
+-  "Sprungdistanz zu gro&szlig;"
+-  "jump distance too big"
+- 
+- Message ErrMsgJmpDistIsZero
+-  "Sprungdistanz ist Null"
+-  "jump distance is zero"
+- 
+- Message ErrMsgDistIsOdd
+-  "Sprungdistanz ist ungerade"
+-  "jump distance is odd"
+- 
+- Message ErrMsgSkipTargetMismatch
+-  "Skip-Ziel passt nicht"
+-  "skip target mismatch"
+- 
+- Message ErrMsgInvShiftArg
+-  "ung&uuml;ltiges Schiebeargument"
+-  "invalid argument for shifting"
+- 
+- Message ErrMsgOnly1
+-  "nur Eins als Argument erlaubt"
+-  "operand must be one"
+- 
+- Message ErrMsgRange18
+-  "nur Bereich 1..8 erlaubt"
+-  "operand must be in range 1..8"
+- 
+- Message ErrMsgShiftCntTooBig
+-  "Schiebezahl zu gro&szlig;"
+-  "shift amplitude too big"
+- 
+- Message ErrMsgInvRegList
+-  "ung&uuml;ltige Registerliste"
+-  "invalid register list"
+- 
+- Message ErrMsgInvCmpMode
+-  "ung&uuml;ltiger Modus mit CMP"
+-  "invalid addressing mode for CMP"
+- 
+- Message ErrMsgInvCPUType
+-  "ung&uuml;ltiger Prozessortyp"
+-  "invalid CPU type"
+- 
+- Message ErrMsgInvFPUType
+-  "ung&uuml;ltiger FPU-Typ"
+-  "invalid FPU type"
+- 
+- Message ErrMsgInvPMMUType
+-  "ung&uuml;ltiger PMMU-Typ"
+-  "invalid PMMU type"
+- 
+- Message ErrMsgInvCtrlReg
+-  "ung&uuml;ltiges Kontrollregister"
+-  "invalid control register"
+- 
+- Message ErrMsgInvReg
+-  "ung&uuml;ltiges Register"
+-  "invalid register"
+- 
+- Message ErrMsgDoubleReg
+-  "Register mehr als einmal gelistet"
+-  "register(s) listed more than once"
+- 
+- Message ErrMsgRegBankMismatch
+-  "Register-Bank-Diskrepanz"
+-  "register bank mismatch"
+- 
+- Message ErrMsgUndefRegSize
+-  "Registerl&auml;nge undefiniert"
+-  "undefined register length"
+- 
+- Message ErrMsgInvOpOnReg
+-  "ung&auml;ltige Operation auf Register"
+-  "invalid operation on register"
+- 
+- Message ErrMsgNoSaveFrame
+-  "RESTORE ohne SAVE"
+-  "RESTORE without SAVE"
+- 
+- Message ErrMsgNoRestoreFrame
+-  "fehlendes RESTORE"
+-  "missing RESTORE"
+- 
+- Message ErrMsgUnknownMacArg
+-  "unbekannte Makro-Steueranweisung"
+-  "unknown macro control instruction"
+- 
+- Message ErrMsgMissEndif
+-  "fehlendes ENDIF/ENDCASE"
+-  "missing ENDIF/ENDCASE"
+- 
+- Message ErrMsgInvIfConst
+-  "ung&uuml;ltiges IF-Konstrukt"
+-  "invalid IF-structure"
+- 
+- Message ErrMsgDoubleSection
+-  "doppelter Sektionsname"
+-  "section name double defined"
+- 
+- Message ErrMsgInvSection
+-  "unbekannte Sektion"
+-  "unknown section"
+- 
+- Message ErrMsgMissingEndSect
+-  "fehlendes ENDSECTION"
+-  "missing ENDSECTION"
+- 
+- Message ErrMsgWrongEndSect
+-  "falsches ENDSECTION"
+-  "wrong ENDSECTION"
+- 
+- Message ErrMsgNotInSection
+-  "ENDSECTION ohne SECTION"
+-  "ENDSECTION without SECTION"
+- 
+- Message ErrMsgUndefdForward
+-  "nicht aufgel&ouml;ste Vorw&auml;rtsdeklaration"
+-  "unresolved forward declaration"
+- 
+- Message ErrMsgContForward
+-  "widersprechende FORWARD <-> PUBLIC-Deklaration"
+-  "conflicting FORWARD <-> PUBLIC-declaration"
+- 
+- Message ErrMsgInvFuncArgCnt
+-  "falsche Argumentzahl f&uuml;r Funktion"
+-  "wrong numbers of function arguments"
+- 
+- Message ErrMsgMissingLTORG
+-  "unaufgel&ouml;ste Literale (LTORG fehlt)"
+-  "unresolved literals (missing LTORG)"
+- 
+- Message ErrMsgInstructionNotOnThisCPUSupported
+-  "Befehl auf dem %s nicht unterst&uuml;tzt"
+-  "instruction not supported on %s"
+- 
+- Message ErrMsgAddrModeNotOnThisCPUSupported
+-  "Adressierungsart auf dem %s nicht unterst&uuml;tzt"
+-  "addressing mode not supported on %s"
+- 
+- Message ErrMsgFPUNotEnabled
+-  "FPU-Befehle nicht freigeschaltet"
+-  "FPU instructions are not enabled"
+- 
+- Message ErrMsgPMMUNotEnabled
+-  "PMMU-Befehle nicht freigeschaltet"
+-  "PMMU instructions are not enabled"
+- 
+- Message ErrMsgFullPMMUNotEnabled
+-  "voller PMMU-Befehlssatz nicht freigeschaltet"
+-  "full PMMU instruction set is not enabled"
+- 
+- Message ErrMsgCustomNotEnabled
+-  "Custom-Befehle nicht freigeschaltet"
+-  "Custom instructions are not enabled"
+- 
+- Message ErrMsgZ80SyntaxNotEnabled
+-  "Z80-Syntax nicht erlaubt"
+-  "Z80 syntax was not allowed"
+- 
+- Message ErrMsgZ80SyntaxExclusive
+-  "nicht im Z80-Syntax Exklusiv-Modus erlaubt"
+-  "not allowed in exclusive Z80 syntax mode"
+- 
+- Message ErrMsgInstructionNotOnThisFPUSupported
+-  "FPU-Befehl auf dem %s nicht unterst&uuml;tzt"
+-  "FPU instruction not supported on %s"
+- 
+- Message ErrMsgInvBitPos
+-  "ung&uuml;ltige Bitstelle"
+-  "invalid bit position"
+- 
+- Message ErrMsgOnlyOnOff
+-  "nur ON/OFF erlaubt"
+-  "only ON/OFF allowed"
+- 
+- Message ErrMsgStackEmpty
+-  "Stack ist leer oder nicht definiert"
+-  "stack is empty or undefined"
+- 
+- Message ErrMsgNotOneBit
+-  "Nicht genau ein Bit gesetzt"
+-  "not exactly one bit set"
+- 
+- Message ErrMsgMissingStruct
+-  "ENDSTRUCT ohne STRUCT"
+-  "ENDSTRUCT without STRUCT"
+- 
+- Message ErrMsgOpenStruct
+-  "offene Strukturdefinition"
+-  "open structure definition"
+- 
+- Message ErrMsgWrongStruct
+-  "falsches ENDSTRUCT"
+-  "wrong ENDSTRUCT"
+- 
+- Message ErrMsgPhaseDisallowed
+-  "Phasendefinition nicht in Strukturen erlaubt"
+-  "phase definition not allowed in structure definition"
+- 
+- Message ErrMsgInvStructDir
+-  "Ung&uuml;ltige STRUCT-Direktive"
+-  "invalid STRUCT directive"
+- 
+- Message ErrMsgDoubleStruct
+-  "Struktur redefiniert"
+-  "structure re-defined"
+- 
+- Message ErrMsgUnresolvedStructRef
+-  "nicht aufl&ouml;sbare Strukturelement-Referenz"
+-  "unresolvable structure element reference"
+- 
+- Message ErrMsgDuplicateStructElem
+-  "Strukturelement doppelt"
+-  "duplicate structure element"
+- 
+- Message ErrMsgNotRepeatable
+-  "Anweisung nicht wiederholbar"
+-  "instruction is not repeatable"
+- 
+- Message ErrMsgShortRead
+-  "vorzeitiges Dateiende"
+-  "unexpected end of file"
+- 
+- Message ErrMsgUnknownCodepage
+-  "unbekannte Zeichentabelle"
+-  "unknown codepage"
+- 
+- Message ErrMsgRomOffs063
+-  "ROM-Offset geht nur von 0..63"
+-  "ROM-offset must be in range 0..63"
+- 
+- Message ErrMsgInvFCode
+-  "ung&uuml;ltiger Funktionscode"
+-  "invalid function code"
+- 
+- Message ErrMsgInvFMask
+-  "ung&uuml;ltige Funktionscodemaske"
+-  "invalid function code mask"
+- 
+- Message ErrMsgInvMMUReg
+-  "ung&uuml;ltiges MMU-Register"
+-  "invalid MMU register"
+- 
+- Message ErrMsgLevel07
+-  "Level nur von 0..7"
+-  "level must be in range 0..7"
+- 
+- Message ErrMsgInvBitMask
+-  "ung&uuml;ltige Bitmaske" 
+-  "invalid bit mask"
+- 
+- Message ErrMsgInvRegPair
+-  "ung&uuml;ltiges Registerpaar"
+-  "invalid register pair"
+- 
+- Message ErrMsgOpenMacro
+-  "offene Makrodefinition"
+-  "open macro definition"
+- 
+- Message ErrMsgOpenIRP
+-  "IRP ohne ENDM"
+-  "IRP without ENDM"
+- 
+- Message ErrMsgOpenIRPC
+-  "IRPC ohne ENDM"
+-  "IRPC without ENDM"
+- 
+- Message ErrMsgOpenREPT
+-  "REPT ohne ENDM"
+-  "REPT without ENDM"
+- 
+- Message ErrMsgOpenWHILE
+-  "WHILE ohne ENDM"
+-  "WHILE without ENDM"
+- 
+- Message ErrMsgDoubleMacro
+-  "doppelte Makrodefinition"
+-  "macro double defined"
+- 
+- Message ErrMsgTooManyMacParams
+-  "mehr als 10 Makroparameter"
+-  "more than 10 macro parameters"
+- 
+- Message ErrMsgUndefKeyArg
+-  "Schl&uuml;sselwortargument nicht in Makro definiert"
+-  "keyword argument not defined in macro"
+- 
+- Message ErrMsgNoPosArg
+-  "Positionsargument nach Schl&uuml;sselwortargumenten nicht mehr erlaubt"
+-  "positional argument no longer allowed after keyword argument"
+- 
+- Message ErrMsgEXITMOutsideMacro
+-  "EXITM au&szlig;erhalb eines Makrorumpfes"
+-  "EXITM not called from within macro"
+- 
+- Message ErrMsgFirstPassCalc
+-  "Ausdruck mu&szlig; im ersten Pass berechenbar sein"
+-  "expression must be evaluatable in first pass"
+- 
+- Message ErrMsgTooManyNestedIfs
+-  "zu viele verschachtelte IFs"
+-  "too many nested IFs"
+- 
+- Message ErrMsgMissingIf
+-  "ELSEIF/ENDIF ohne IF"
+-  "ELSEIF/ENDIF without IF"
+- 
+- Message ErrMsgRekMacro
+-  "zu tief verschachtelter/rekursiver Makroaufruf"
+-  "too deeply nested/recursive makro call"
+- 
+- Message ErrMsgUnknownFunc
+-  "unbekannte Funktion"
+-  "unknown function"
+- 
+- Message ErrMsgInvFuncArg
+-  "Funktionsargument au&szlig;erhalb Definitionsbereich"
+-  "function argument out of definition range"
+- 
+- Message ErrMsgFloatOverflow
+-  "Gleitkomma&uuml;berlauf"
+-  "floating point overflow"
+- 
+- Message ErrMsgInvArgPair
+-  "ung&uuml;ltiges Wertepaar"
+-  "invalid value pair"
+- 
+- Message ErrMsgNotOnThisAddress
+-  "Befehl darf nicht auf dieser Adresse liegen"
+-  "instruction must not start on this address"
+- 
+- Message ErrMsgNotFromThisAddress
+-  "ung&uuml;ltiges Sprungziel"
+-  "invalid jump target"
+- 
+- Message ErrMsgJmpTargOnDiffPage
+-  "Sprungziel nicht auf gleicher Seite"
+-  "jump target not on same page"
+- 
+- Message ErrMsgTargOnDiffSection
+-  "Sprungziel nicht in gleicher Sektion"
+-  "jump target not in same section"
+- 
+- Message ErrMsgCodeOverflow
+-  "Code&uuml;berlauf"
+-  "code overflow"
+- 
+- Message ErrMsgMixDBDS
+-  "Konstanten und Platzhalter nicht mischbar"
+-  "constants and placeholders cannot be mixed"
+- 
+- Message ErrMsgNotInStruct
+-  "Codeerzeugung in Strukturdefinition nicht zul&auml;ssig"
+-  "code must not be generated in structure definition"
+- 
+- Message ErrMsgParNotPossible
+-  "paralleles Konstrukt nicht m&ouml;glich"
+-  "parallel construct not possible here"
+- 
+- Message ErrMsgAdrOverflow
+-  "Adre&szlig;&uuml;berlauf"
+-  "address overflow"
+- 
+- Message ErrMsgInvSegment
+-  "ung&uuml;ltiges Segment"
+-  "invalid segment"
+- 
+- Message ErrMsgUnknownSegment
+-  "unbekanntes Segment"
+-  "unknown segment"
+- 
+- Message ErrMsgUnknownSegReg
+-  "unbekanntes Segmentregister"
+-  "unknown segment register"
+- 
+- Message ErrMsgInvString
+-  "ung&uuml;ltiger String"
+-  "invalid string"
+- 
+- Message ErrMsgInvRegName
+-  "ung&uuml;ltiger Registername"
+-  "invalid register name"
+- 
+- Message ErrMsgInvArg
+-  "ung&uuml;ltiges Argument"
+-  "invalid argument"
+- 
+- Message ErrMsgNoIndir
+-  "keine Indirektion erlaubt"
+-  "indirect mode not allowed"
+- 
+- Message ErrMsgNotInThisSegment
+-  "nicht im aktuellen Segment erlaubt"
+-  "not allowed in current segment"
+- 
+- Message ErrMsgNotInMaxmode
+-  "nicht im Maximum-Modus zul&auml;ssig"
+-  "not allowed in maximum mode"
+- 
+- Message ErrMsgOnlyInMaxmode
+-  "nicht im Minimum-Modus zul&auml;ssig"
+-  "not allowed in minimum mode"
+- 
+- Message ErrMsgPackCrossBoundary
+-  "Anweisungspaket &uuml;berschreitet Adre&szlig;grenze"
+-  "execution packet crosses address boundary"
+- 
+- Message ErrMsgUnitMultipleUsed
+-  "Ausf&uuml;hrungseinheit mehrfach benutzt"
+-  "multiple use of same execution unit"
+- 
+- Message ErrMsgMultipleLongRead
+-  "mehrfache Lang-Leseoperation"
+-  "multiple long read operations"
+- 
+- Message ErrMsgMultipleLongWrite
+-  "mehrfache Lang-Schreiboperation"
+-  "multiple long write operations"
+- 
+- Message ErrMsgLongReadWithStore
+-  "Lang-Lese- mit Schreiboperation"
+-  "long read with write operation"
+- 
+- Message ErrMsgTooManyRegisterReads
+-  "zu viele Lesezugriffe auf ein Register"
+-  "too many reads of one register"
+- 
+- Message ErrMsgOverlapDests
+-  "&uuml;berlappende Ziele"
+-  "overlapping destinations"
+- 
+- Message ErrMsgTooManyBranchesInExPacket
+-  "zu viele absolute Spr&uuml;nge in einem Anweisungspaket"
+-  "too many absolute branches in one execution packet"
+- 
+- Message ErrMsgCannotUseUnit
+-  "Anweisung nicht auf diese Funktionseinheit ausf&uuml;hrbar"
+-  "instruction cannot be executed on this unit"
+- 
+- Message ErrMsgInvEscSequence
+-  "Ung&uuml;ltige Escape-Sequenz"
+-  "invalid escape sequence"
+- 
+- Message ErrMsgInvPrefixCombination
+-  "ung&uuml;ltige Pr&auml;fix-Kombination"
+-  "invalid combination of prefixes"
+- 
+- Message ErrMsgConstantRedefinedAsVariable
+-  "Konstante kann nicht als Variable redefiniert werden"
+-  "constants cannot be redefined as variables"
+- 
+- Message ErrMsgVariableRedefinedAsConstant
+-  "Variable kann nicht als Konstante redefiniert werden"
+-  "variables cannot be redefined as constants"
+- 
+- Message ErrMsgStructNameMissing
+-  "Strukturname fehlt"
+-  "structure name missing"
+- 
+- Message ErrMsgEmptyArgument
+-  "leeres Argument"
+-  "empty argument"
+- 
+- Message ErrMsgUnimplemented
+-  "nicht implementierte Anweisung"
+-  "unimplemented instruction"
+- 
+- Message ErrMsgFreestandingUnnamedStruct
+-  "namenlose Struktur nicht Teil einer anderen Struktur"
+-  "unnamed structure is not part of another structure"
+- 
+- Message ErrMsgSTRUCTEndedByENDUNION
+-  "STRUCT durch ENDUNION beendet"
+-  "STRUCT ended by ENDUNION"
+- 
+- Message ErrMsgAddrOnDifferentPage
+-  "Speicheradresse nicht auf aktiver Seite"
+-  "Memory address mot on active memory page"
+- 
+- Message ErrMsgUnknownMacExpMod
+-  "unbekanntes Makro-Expansions-Argument"
+-  "unknown macro expansion argument"
+- 
+- Message ErrMsgTooManyMacExpMod
+-  "zu viele Makro-Expansions-Argumente"
+-  "too many macro expansion arguments"
+- 
+- Message ErrMsgConflictingMacExpMod
+-  "widerspr&uuml;chliche Angaben zur Makro-Expansion"
+-  "contradicting macro expansion specifications"
+- 
+- Message ErrMsgInvalidPrepDir
+-  "unbekannte Pr&auml;prozessoranweisung"
+-  "unknown preprocessing directive"
+- 
+- Message ErrMsgExpectedError
+-  "erwarteter Fehler nicht eingetreten"
+-  "expected error did not occur"
+- 
+- Message ErrMsgNoNestExpect
+-  "Verschachtelung von EXPECT/ENDEXPECT nicht erlaubt"
+-  "nesting of EXPECT/ENDEXPECT not allowed"
+- 
+- Message ErrMsgMissingENDEXPECT
+-  "fehlendes ENDEXPECT"
+-  "missing ENDEXPECT"
+- 
+- Message ErrMsgMissingEXPECT
+-  "ENDEXPECT ohne EXPECT"
+-  "ENDEXPECT without EXPECT"
+- 
+- Message ErrMsgNoDefCkptReg
+-  "kein Default-Checkpoint-Register definiert"
+-  "no default checkpoint register defined"
+- 
+- Message ErrMsgInvBitField
+-  "ung&uuml;tiges Bitfeld"
+-  "invalid bit field"
+- 
+- Message ErrMsgArgValueMissing
+-  "Argument-Wert fehlt"
+-  "argument value missing"
+- 
+- Message ErrMsgUnknownArg
+-  "unbekanntes Argument"
+-  "unknown argument"
+- 
+- Message ErrMsgIndexRegMustBe16Bit
+-  "Indexregister muss 16 Bit sein"
+-  "index register must be 16 bit"
+- 
+- Message ErrMsgIOAddrRegMustBe16Bit
+-  "I/O Adressregister muss 16 Bit sein"
+-  "I/O address register must be 16 bit"
+- 
+- Message ErrMsgSegAddrRegMustBe32Bit
+-  "Adressregister im segmentierten Modus muss 32 Bit sein"
+-  "address register in segmented mode must be 32 bit"
+- 
+- Message ErrMsgNonSegAddrRegMustBe16Bit
+-  "Adressregister im nicht-segmentierten Modus muss 16 Bit sein"
+-  "address register in non-segmented mode must be 16 bit"
+- 
+- Message ErrMsgInvStructArgument
+-  "ung&uuml;ltiges Strukturargument"
+-  "invalid structure argument"
+- 
+- Message ErrMsgTooManyArrayDimensions
+-  "zu viele Array-Dimensionen"
+-  "too many array dimensions"
+- 
+- Message ErrMsgInvIntFormat
+-  "unbekannte Integer-Notation"
+-  "unknown integer notation"
+- 
+- Message ErrMsgInvIntFormatList
+-  "ung&uuml;ltige Liste an Integer-Schreibweisen"
+-  "invalid list of integer notations"
+- 
+- Message ErrMsgInvScale
+-  "ung&uuml;tige Skalierung"
+-  "invalid scale"
+- 
+- Message ErrMsgConfStringOpt
+-  "widerspr&uuml;chliche String-Optionen"
+-  "conflicting string options"
+- 
+- Message ErrMsgUnknownStringOpt
+-  "unbekannte String-Option"
+-  "unknown string option"
+- 
+- Message ErrMsgInvCacheInvMode
+-  "ung&uuml;ltiger Cache-Invalidierungs-Modus"
+-  "invalid cache invalidate mode"
+- 
+- Message ErrMsgInvCfgList
+-  "ung&uuml;ltige Config-Liste"
+-  "invalid config list"
+- 
+- Message ErrMsgConfBitBltOpt
+-  "widerspr&uuml;chliche BITBLT-Optionen"
+-  "conflicting BITBLT options"
+- 
+- Message ErrMsgUnknownBitBltOpt
+-  "unbekannte BITBLT Option"
+-  "unknown BITBLT option"
+- 
+- Message ErrMsgInvCBAR
+-  "ung&uuml;ltiger Wert f&uuml;r CBAR"
+-  "invalid CBAR value"
+- 
+- Message ErrMsgInAccPageErr
+-  "Seite nicht zugreifbar"
+-  "page not accessible"
+- 
+- Message ErrMsgInAccFieldErr
+-  "Feld nicht zugreifbar"
+-  "field not accessible"
+- 
+- Message ErrMsgTargInDiffField
+-  "Ziel nicht in gleichem Feld"
+-  "target not in same field"
+- 
+- Message ErrMsgInvCombination
+-  "Ung&uuml;tige Instruktions-Kombination"
+-  "invalid instruction combination"
+- 
+- Message ErrMsgInternalError
+-  "interner Fehler"
+-  "internal error"
+- 
+- Message ErrMsgOpeningFile
+-  "Fehler beim &Ouml;ffnen der Datei"
+-  "error in opening file"
+- 
+- Message ErrMsgListWrError
+-  "Listingschreibfehler"
+-  "error in writing listing"
+- 
+- Message ErrMsgFileReadError
+-  "Dateilesefehler"
+-  "file read error"
+- 
+- Message ErrMsgFileWriteError
+-  "Dateischreibfehler"
+-  "file write error"
+- 
+- Message ErrMsgIntError
+-  "interne(r) Fehler/Warnung"
+-  "internal error/warning"
+- 
+- Message ErrMsgHeapOvfl
+-  "Speicher&uuml;berlauf"
+-  "heap overflow"
+- 
+- Message ErrMsgStackOvfl
+-  "Stapel&uuml;berlauf"
+-  "stack overflow"
+-  
+- Message ErrMsgMaxIncLevelExceeded
+-  "INCLUDE zu tief verschachtelt"
+-  "INCLUDE nested too deeply"
+- 
+- Message ErrMsgTooManyErrors
+-  "zu viele Fehler, Assembler abgebrochen"
+-  "too many errors, assembly terminated"
+- 
+- Message ErrMsgIsFatal
+-  "Fataler Fehler, Assembler abgebrochen"
+-  "fatal error, assembly terminated"
+- 
+- Message ErrMsgOvlyError
+-  "Overlayfehler - Programmabbruch"
+-  "overlay error - program terminated"
+- 
+- Message PrevDefMsg
+-  "vorherige Definition in"
+-  "previous definition in"
+- 
+- Message ErrMsgInvSwapSize
+-  "ung&uuml;ltige Gr&ouml;&szlig;enangabe f&uuml;r Swapfile - Programmabbruch"
+-  "swap file size not correctly specified - program terminated"
+- 
+- Message ErrMsgSwapTooBig
+-  "zuwenig Platz f&uuml;r Swapfile - Programmabbruch"
+-  "insufficient space for swap file - program terminated"
+- 
+- Message ErrMsgNoRelocs
+-  "relokatible Symbole nicht erlaubt"
+-  "relocatable symbols not allowed"
+- 
+- Message ErrMsgIntOrFloatButReg
+-  "Ganz- oder Gleitkommazahl erwartet, aber Register bekommen"
+-  "expected integer or floating point number but got register"
+- 
+- Message ErrMsgIntOrStringButReg
+-  "Ganzzahl oder String erwartet, aber Register bekommen"
+-  "expected integer or string but got register"
+- 
+- Message ErrMsgIntButReg
+-  "Ganzzahl erwartet, aber Register bekommen"
+-  "expected integer but got register"
+- 
+- Message ErrMsgUnresRelocs
+-  "unverarbeitete externe Referenzen"
+-  "unprocessed external references"
+- 
+- Message ErrMsgUnexportable
+-  "Symbol nicht exportierbar"
+-  "cannot export this symbol"
+- 
+- Message ErrMsgArgCntZero
+-  "erwarte kein Argument, erhielt %d"
+-  "expected no argument but got %d"
+- 
+- Message ErrMsgArgCntOne
+-  "erwarte ein Argument, erhielt %d"
+-  "expected one argument but got %d"
+- 
+- Message ErrMsgArgCntMulti
+-  "erwarte %d Argumente, erhielt %d"
+-  "expected %d arguments but got %d"
+- 
+- Message ErrMsgArgCntFromTo
+-  "erwarte zwischen %d und %d Argumente, erhielt %d"
+-  "expected between %d and %d arguments but got %d"
+- 
+- Message ErrMsgArgCntEitherOr
+-  "erwarte %d oder %d Argumente, erhielt %d"
+-  "expected %d or %d arguments but got %d"
+- 
+- Message ErrMsgAddrArgCnt
+-  "Adre&szlig;ausdruck erwartet zwischen %d und %d Argumente, erhielt %d"
+-  "address expression expects between %d and %d arguments but got %d"
+- 
+- Message ErrMsgCannotSplitArg
+-  "Kann Argument nicht in Teile aufspalten"
+-  "failed splitting argument into parts"
+- 
+- Message ErrMsgMinCPUSupported
+-  "ab %s unterst&uuml;tzt"
+-  "supported by %s and above"
+- 
+- Message ErrMsgMaxCPUSupported
+-  "bis %s unterst&uuml;tzt"
+-  "supported by %s and below"
+- 
+- Message ErrMsgRangeCPUSupported
+-  "von %s bis %s unterst&uuml;tzt"
+-  "supported by %s to %s" 
+- 
+- Message ErrMsgOnlyCPUSupported1
+-  "nur von "
+-  "supported only by "
+- 
+- Message ErrMsgOnlyCPUSupportedOr
+-  " oder "
+-  " or "
+- 
+- Message ErrMsgOnlyCPUSupported2
+-  " unterst&uuml;tzt"
+-  ""
+- 
+- ;----------------------------------------------------------------------------
+- ; Strings in Listingkopfzeile
+- 
+- Message HeadingFileNameLab
+-  " - Quelle "
+-  " - Source File "
+- 
+- Message HeadingPageLab
+-  " - Seite "
+-  " - Page "
+- 
+- ;----------------------------------------------------------------------------
+- ; Strings in Listing
+- 
+- Message ListSymListHead1
+-  "  Symboltabelle (* = unbenutzt):"
+-  "  Symbol Table (* = unused):"
+- 
+- Message ListSymListHead2
+-  "  ----------------------------"
+-  "  --------------------------"
+- 
+- Message ListSymSumMsg
+-  " Symbol"
+-  " symbol"
+- 
+- Message ListSymSumsMsg
+-  " Symbole"
+-  " symbols"
+- 
+- Message ListUSymSumMsg
+-  " unbenutztes Symbol"
+-  " unused symbol"
+- 
+- Message ListUSymSumsMsg
+-  " unbenutzte Symbole"
+-  " unused symbols"
+- 
+- Message ListRegDefListHead1
+-  "  Registerdefinitionen (* = unbenutzt):"
+-  "  Register Definitions (* = unused):"
+- 
+- Message ListRegDefListHead2
+-  "  -----------------------------------"
+-  "  ----------------------------------"
+- 
+- Message ListRegDefSumMsg
+-  " Definition"
+-  " definition"
+- 
+- Message ListRegDefSumsMsg
+-  " Definitionen"
+-  " definitions"
+- 
+- Message ListRegDefUSumMsg
+-  " unbenutzte Definition"
+-  " unused definition"
+- 
+- Message ListRegDefUSumsMsg
+-  " unbenutzte Definitionen"
+-  " unused definitions"
+- 
+- Message ListCodepageListHead1
+-  "  Zeichentabellen:"
+-  "  Code Pages:"
+- 
+- Message ListCodepageListHead2
+-  "  ----------------"
+-  "  ----------"
+- 
+- Message ListCodepageChange
+-  " ver&auml;ndertes Zeichen"
+-  " changed character"
+- 
+- Message ListCodepagePChange
+-  " ver&auml;nderte Zeichen"
+-  " changed characters"
+- 
+- Message ListCodepageSumMsg
+-  " Zeichentabelle"
+-  " code page"
+- 
+- Message ListCodepageSumsMsg
+-  " Zeichentabellen"
+-  " code pages"
+- 
+- Message ListMacListHead1
+-  "  definierte Makros:"
+-  "  Defined Macros:"
+- 
+- Message ListMacListHead2
+-  "  ------------------"
+-  "  ---------------"
+- 
+- Message ListMacSumMsg
+-  " Makro"
+-  " macro"
+- 
+- Message ListMacSumsMsg
+-  " Makros"
+-  " macros"
+- 
+- Message ListStructListHead1
+-  "  definierte Strukturen/Unions:"
+-  "  Defined Structures/Unions:"
+- 
+- Message ListStructListHead2
+-  "  -----------------------------"
+-  "  --------------------------"
+- 
+- Message ListStructSumMsg
+-  " Struktur"
+-  " structure"
+- 
+- Message ListStructSumsMsg
+-  " Strukturen"
+-  " structures"
+- 
+- Message ListFuncListHead1
+-  "  definierte Funktionen:"
+-  "  Defined Functions:"
+- 
+- Message ListFuncListHead2
+-  "  ----------------------"
+-  "  ------------------"
+- 
+- Message ListDefListHead1
+-  "  DEFINEs:"
+-  "  DEFINEs:"
+- 
+- Message ListDefListHead2
+-  "  --------"
+-  "  --------"
+- 
+- Message ListSegListHead1
+-  "in "
+-  "Space Used in "
+- 
+- Message ListSegListHead2
+-  " belegte Bereiche:"
+-  " :"
+- 
+- Message ListCrossListHead1
+-  "  Querverweisliste:"
+-  "  Cross Reference List:"
+- 
+- Message ListCrossListHead2
+-  "  -----------------"
+-  "  ---------------------"
+- 
+- Message ListSectionListHead1
+-  "  Sektionen:"
+-  "  Sections:"
+- 
+- Message ListSectionListHead2
+-  "  ----------"
+-  "  ---------"
+- 
+- Message ListIncludeListHead1
+-  "  Include-Verschachtelung:"
+-  "  Nested Include Files:"
+- 
+- Message ListIncludeListHead2
+-  "  ------------------------"
+-  "  ---------------------"
+- 
+- Message ListCrossSymName
+-  "Symbol "
+-  "symbol "
+- 
+- Message ListCrossFileName
+-  "Datei "
+-  "file "
+- 
+- Message ListPlurName
+-  "n"
+-  "s"
+- 
+- Message ListHourName
+-  " Stunde"
+-  " hour"
+- 
+- Message ListMinuName
+-  " Minute"
+-  " minute"
+- 
+- Message ListSecoName
+-  " Sekunde"
+-  " second"
+- 
+- ;---------------------------------------------------------------------------
+- ; Durchsagen...
+- 
+- Message ErrMessNoInputFiles
+-  "keine Quelldateien (-help f&uuml; Hilfe)"
+-  "no input files (-help for help)"
+- 
+- Message InfoMessAssembling
+-  "Assembliere "
+-  "Assembling "
+- 
+- Message InfoMessPass
+-  "PASS "
+-  "PASS "
+- 
+- Message InfoMessPass1
+-  "PASS 1                             "
+-  "PASS 1                             "
+- 
+- Message InfoMessPass2
+-  "PASS 2                             "
+-  "PASS 2                             "
+- 
+- Message InfoMessAssTime
+-  " Assemblierzeit"
+-  " assembly time"
+- 
+- Message InfoMessAssLine
+-  " Zeile Quelltext"
+-  " line source file"
+- 
+- Message InfoMessAssLines
+-  " Zeilen Quelltext"
+-  " lines source file"
+- 
+- Message InfoMessPassCnt
+-  " Durchlauf"
+-  " pass"
+- 
+- Message InfoMessPPassCnt
+-  " Durchl&auml;ufe"
+-  " passes"
+- 
+- Message InfoMessNoPass
+-  "        zus&auml;tzliche erforderliche Durchl&auml;ufe wegen Fehlern nicht\n        durchgef&uuml;hrt, Listing m&ouml;glicherweise inkorrekt."
+-  "        Additional necessary passes not started due to\n        errors, listing possibly incorrect."
+- 
+- Message InfoMessMacAssLine
+-  " Zeile inkl. Makroexpansionen"
+-  " line incl. macro expansions"
+- 
+- Message InfoMessMacAssLines
+-  " Zeilen inkl. Makroexpansionen"
+-  " lines incl. macro expansions"
+- 
+- Message InfoMessWarnCnt
+-  " Warnung"
+-  " warning"
+- 
+- Message InfoMessWarnPCnt
+-  "en"
+-  "s"
+- 
+- Message InfoMessErrCnt
+-  " Fehler"
+-  " error"
+- 
+- Message InfoMessErrPCnt
+-  ""
+-  "s"
+- 
+- Message InfoMessRemainMem
+-  " KByte verf&uuml;gbarer Restspeicher"
+-  " Kbytes available memory"
+- 
+- Message InfoMessRemainStack
+-  " Byte verf&uuml;gbarer Stack"
+-  " bytes available stack"
+- 
+- Message InfoMessNFilesFound
+-  ": keine Datei(en) zu assemblieren!"
+-  ": No file(s) to assemble!"
+- 
+- Message InfoMessMacroAss
+-  "Makroassembler "
+-  "Macro Assembler "
+- 
+- Message InfoMessVar
+-  "Version"
+-  "Version"
+- 
+- Message InfoMessHead1
+-  "Aufruf: "
+-  "usage: "
+- 
+- Message InfoMessHead2
+-  " [Optionen] [Datei] [Optionen] ..."
+-  " [options] [file] [options] ..."
+- 
+- Message KeyWaitMsg
+-  "--- weiter mit <ENTER> ---"
+-  "--- <ENTER> to go on ---"
+- 
+- Message ErrMsgInvParam
+-  "ung&uuml;ltige Option (-help f&uuml; Hilfe): "
+-  "Invalid option (-help for help): "
+- 
+- Message ErrMsgInvEnvParam
+-  "ung&uuml;ltige Environment-Option (-help f&uuml; Hilfe): "
+-  "Invalid environment option (-help for help): "
+- 
+- Message InvMsgSource
+-  "Quelldatei?"
+-  "Source file?"
+- 
+- Message InfoMessHelp
+-  "\n" \
+-  "Optionen:\n" \
+-  "  -p                   : Sharefile im Pascal-Format\n" \
+-  "  -c                   : Sharefile im C-Format\n" \
+-  "  -a                   : Sharefile im AS-Format\n" \
+-  "  -o <Name>            : Namen der Code-Datei neu setzen\n" \
+-  "  -olist <Name>        : Namen der Listdatei neu setzen\n" \
+-  "  -shareout <Name>     : Namen des Sharefiles neu setzen\n" \
+-  "  -q, -quiet           : Stiller Betrieb\n" \
+-  "  -cpu <Name>          : Zielprozessor setzen\n" \
+-  "                         ('?' oder 'list', um verf&uuml;gbare nur anzuzeigen)\n" \
+-  "  -alias <neu>=<alt>   : Prozessor-Alias definieren\n" \
+-  "  -l                   : Listing auf Konsole\n" \
+-  "  -L                   : Listing auf Datei\n" \
+-  "  -listradix <2...36>  : Zahlensystem im Listing\n" \
+-  "  -i <Pfad>[:Pfad]...  : Pfadliste f&uuml;r Includedateien\n" \
+-  "  -D <Symbol>[,Symbol] : Symbole vordefinieren\n" \
+-  "  -gnuerrors           : Fehlermeldungen im GNU-Format\n" \
+-  "  -maxerrors <Anzahl>  : Assemblierung nach <Anzahl> Fehlern abbrechen\n" \
+-  "  -maxinclevel <Anzahl>: Include-Verschachtelungstiefe auf <Anzahl> begrenzen\n" \
+-  "  -Werror              : Warnungen als Fehler behandeln\n" \
+-  "  -w[no-]implicit-sign-extension : Warnungen &uuml;ber Vorzeichen-Erweiterungen ein/ausschalten\n" \
+-  "  -version             : nur Versionsinfo ausgeben\n" \
+-  "  -E [Name]            : Zieldatei f&uuml;r Fehlerliste,\n" \
+-  "                         !0..!4 f&uuml;r Standardhandles\n" \
+-  "                         Default <Quelldatei>.LOG\n" \
+-  "  -r                   : Meldungen erzeugen, falls zus&auml;tzlicher Pass erforderlich\n" \
+-  "  -relaxed             : beliebige Integer-Syntax im Default zulassen\n" \
+-  "  -Y                   : Sprungfehlerunterdr&uuml;ckung (siehe Anleitung)\n" \
+-  "  -v                   : wortreicher Betrieb\n" \
+-  "  -w                   : Warnungen unterdr&uuml;cken\n" \
+-  "  +G                   : Code-Erzeugung unterdr&uuml;cken\n" \
+-  "  -s                   : Sektionsliste erzeugen\n" \
+-  "  -t                   : Listing-Teile ein/ausblenden\n" \
+-  "  -u                   : Belegungsliste erzeugen\n" \
+-  "  -C                   : Querverweisliste erzeugen\n" \
+-  "  -I                   : Include-Verschachtelungsliste ausgeben\n" \
+-  "  -g [map|atmel|noice] : Debug-Informationen schreiben\n" \
+-  "  -A                   : kompaktere Symbolablage\n" \
+-  "  -U                   : case-sensitiv arbeiten\n" \
+-  "  -x                   : erweiterte Fehlermeldungen\n" \
+-  "  -n                   : Fehlermeldungen mit Nummer\n" \
+-  "  -P                   : Makroprozessorausgabe erzeugen\n" \
+-  "  -M                   : Makrodefinitionen extrahieren\n" \
+-  "  -h                   : Hexadezimalzahlen mit Kleinbuchstaben\n" \
+-  "  -help                : nur Hilfe ausgeben\n" \
+-  "  -splitbyte [char]    : Split-Byte-Darstellung von Zahlen\n" \
+-  "  -screenheight <#>    : Bildschirmh&ouml;he f&uuml;r Paging von '-help'\n" \
+-  "                         und '-cpu list' setzen\n" \
+-  "\n" \
+-  "Quelldateiangabe darf Jokerzeichen enthalten\n"
+-  "\n" \
+-  "options:\n" \
+-  "  -p                   : share file formatted for Pascal\n" \
+-  "  -c                   : share file formatted for C\n" \
+-  "  -a                   : share file formatted for AS\n" \
+-  "  -o <name>            : change name of code file\n" \
+-  "  -olist <nname>       : change name of list file\n" \
+-  "  -shareout <nname>    : change name of share file\n" \
+-  "  -q, -quiet           : silent operation\n" \
+-  "  -cpu <name>          : set target processor\n" \
+-  "                         ('?' or 'list' to list available ones and exit)\n" \
+-  "  -alias <new>=<old>   : define processor alias\n" \
+-  "  -l                   : listing to console\n" \
+-  "  -L                   : listing to file\n" \
+-  "  -listradix <2...36>  : number system in listing\n" \
+-  "  -i <path>[;path]...  : list of paths for include files\n" \
+-  "  -D <symbol>[,symbol] : predefine symbols\n" \
+-  "  -gnuerrors           : error messages in GNU format\n" \
+-  "  -maxerrors <number>  : terminate assembly after <number> errors\n" \
+-  "  -maxinclevel <number>: limit include nesting level to <number>\n" \
+-  "  -Werror              : treat warnings as errors\n" \
+-  "  -w[no-]implicit-sign-extension : enable/disable sign extension warnings\n" \
+-  "  -version             : print version info and exit\n" \
+-  "  -E <name>            : target file for error list,\n" \
+-  "                         !0..!4 for standard handles\n" \
+-  "                         default is <srcname>.LOG\n" \
+-  "  -r                   : generate messages if repassing necessary\n" \
+-  "  -relaxed             : allow arbitrary integer syntax by default\n" \
+-  "  -Y                   : branch error suppression (see manual)\n" \
+-  "  -v                   : verbose operation\n" \
+-  "  -w                   : suppress warnings\n" \
+-  "  +G                   : suppress code generation\n" \
+-  "  -s                   : generate section list\n" \
+-  "  -t                   : enable/disable parts of listing\n" \
+-  "  -u                   : generate usage list\n" \
+-  "  -C                   : generate cross reference list\n" \
+-  "  -I                   : generate include nesting list\n" \
+-  "  -g [map|atmel|noice] : write debug info\n" \
+-  "  -A                   : compact symbol table\n" \
+-  "  -U                   : case-sensitive operation\n" \
+-  "  -x                   : extended error messages\n" \
+-  "  -n                   : add error #s to error messages\n" \
+-  "  -P                   : write macro processor output\n" \
+-  "  -M                   : extract macro definitions\n" \
+-  "  -h                   : use lower case in hexadecimal output\n" \
+-  "  -help                : print help and exit\n" \
+-  "  -splitbyte [char]    : use split byte display of numbers\n" \
+-  "  -screenheight <#>    : set screen height for paging of '-help'\n" \
+-  "                         and '-cpu list'\n" \
+-  "\n" \
+-  "source file specification may contain wildcards\n"
+- 
+- Message InfoMessCPUList
+-  "implementierte Prozessoren :"
+-  "implemented processors :"
+--- 0 ----
+*** ../src.142b252/asmsub.c	Sat Sep 23 06:27:52 2023
+--- asmsub.c	Thu Oct 19 20:18:06 2023
 ***************
 *** 1639,1644 ****
 --- 1639,1687 ----
@@ -52,8 +3529,62 @@
   #else
   
   #include <sys/time.h>
-*** ../src.142b252/code6816.c	Sun Sep 17 08:13:11 2023
---- code6816.c	Wed Nov 01 18:53:57 2023
+*** ../src.142b252/cmdarg.msg	Wed Dec 31 19:00:00 1969
+--- cmdarg.msg	Sun Nov 05 22:47:14 2023
+***************
+*** 0 ****
+--- 1,20 ----
++ ;* cmdarg.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* Definition der Fehlermeldungen, die beim Einlesen auftreten koennen       *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ 
++ Message ErrMsgKeyFileNotFound
++  "Key-Datei nicht gefunden"
++  "key file not found"
++ 
++ Message ErrMsgKeyFileError
++  "Fehler beim Lesen der Key-Datei"
++  "error reading key file"
++ 
++ Message ErrMsgNoKeyInFile
++  "Referenz auf Key-Datei in Key-Datei nicht erlaubt"
++  "no references to a key file from inside a key file"
+*** ../src.142b252/cmdarg.res	Sat Jan 18 19:26:22 2020
+--- cmdarg.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,24 ****
+- ;* decodecmd.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* Definition der Fehlermeldungen, die beim Einlesen auftreten koennen       *
+- ;*                                                                           *
+- ;* Historie:  5. 5.1996 Grundsteinlegung                                     *
+- ;*           18. 4.1999 Fehlermeldung Indirektion im Key-File                *
+- ;*                                                                           *
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- Message ErrMsgKeyFileNotFound
+-  "Key-Datei nicht gefunden"
+-  "key file not found"
+- 
+- Message ErrMsgKeyFileError
+-  "Fehler beim Lesen der Key-Datei"
+-  "error reading key file"
+- 
+- Message ErrMsgNoKeyInFile
+-  "Referenz auf Key-Datei in Key-Datei nicht erlaubt"
+-  "no references to a key file from inside a key file"
+--- 0 ----
+*** ../src.142b252/code6816.c	Sun Sep 17 07:13:11 2023
+--- code6816.c	Wed Nov 01 17:53:57 2023
 ***************
 *** 1066,1073 ****
   {
@@ -73,8 +3604,8 @@
   }
   
   /*-------------------------------------------------------------------------*/
-*** ../src.142b252/codescmp.c	Mon Oct 03 11:38:27 2022
---- codescmp.c	Mon Oct 30 19:59:59 2023
+*** ../src.142b252/codescmp.c	Mon Oct 03 10:38:27 2022
+--- codescmp.c	Mon Oct 30 18:59:59 2023
 ***************
 *** 97,107 ****
         }
@@ -112,8 +3643,8 @@
     }
   
     /* no carry in PC from bit 11 to 12; additionally handle preincrement */
-*** ../src.142b252/codevars.h	Thu Sep 21 16:07:39 2023
---- codevars.h	Wed Nov 01 15:06:39 2023
+*** ../src.142b252/codevars.h	Thu Sep 21 15:07:39 2023
+--- codevars.h	Wed Nov 01 14:06:39 2023
 ***************
 *** 16,22 ****
   
@@ -131,8 +3662,266 @@
       orders = NULL; \
     } while (0)
   
-*** ../src.142b252/dyn_array.h	Thu Sep 21 16:07:39 2023
---- dyn_array.h	Wed Nov 01 16:39:00 2023
+*** ../src.142b252/das.msg	Wed Dec 31 19:00:00 1969
+--- das.msg	Sun Nov 05 22:47:19 2023
+***************
+*** 0 ****
+--- 1,120 ----
++ ;* das.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* String-Definitions for DAS                                                *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ 
++ ;-----------------------------------------------------------------------------
++ ; Fehlermeldungen
++ 
++ Message ErrMsgInvParam
++  "ung&uuml;ltige Option: "
++  "invalid option: "
++ 
++ Message ErrMsgInvEnvParam
++  "ung&uuml;ltige Environment-Option: "
++  "invalid environment option: "
++ 
++ Message ErrMsgFileArgumentMissing
++  "Datei-Argument fehlt"
++  "file argument missing"
++ 
++ Message ErrMsgInvalidNumericValue
++  "ung&uuml;tiger numerischer Wert"
++  "invalid numeric value"
++ 
++ Message ErrMsgCannotReadBinaryFile
++  "Bin&auml;rdatei nicht lesbar"
++  "cannot read binary file"
++ 
++ Message ErrMsgCannotReadHexFile
++  "HEX-Datei nicht lesbar"
++  "cannot read HEX file"
++ 
++ Message ErrMsgInvalidHexData
++  "ung&uuml;tige HEX-Daten"
++  "invalid HEX data"
++ 
++ Message ErrMsgHexDataChecksumError
++  "Hex-File Pr&uuml;fsummenfehler"
++  "HEX file checksum error"
++ 
++ Message ErrMsgAddressArgumentMissing
++  "Adressargument fehlt"
++  "address argument missing"
++ 
++ Message ErrMsgClosingPatentheseMissing
++  "schlie&szlig;ende Klammer fehlt"
++  "missing closing parenthese"
++ 
++ Message ErrMsgInvalidEndinaness
++  "ung&uuml;tige Endianess"
++  "invalid endianess"
++ 
++ Message ErrMsgCannotRetrieveEntryAddressData
++  "Daten f&uuml;r Startadresse nicht lesbar"
++  "cannot read data for entry address"
++ 
++ Message ErrMsgSymbolArgumentMissing
++  "Symbol-Argument fehlt"
++  "missing symbol argument"
++ 
++ Message ErrMsgCPUArgumentMissing
++  "CPU-Argmuent felht"
++  "CPU argument missing"
++ 
++ Message ErrMsgUnknownCPU
++  "unbekannte CPU"
++  "unknown CPU"
++ 
++ 
++ Message KeyWaitMsg
++  "--- weiter mit <ENTER> ---"
++  "--- <ENTER> to go on ---"
++ 
++ Message InfoMessHead1
++  "Aufruf: "
++  "Usage: "
++ 
++ Message InfoMessHead2
++  " [Optionen] [Datei] [Optionen] ..."
++  " [options] [file] [options] ..."
++ 
++ Message InfoMessHelp
++  "\n" \
++  "Optionen:\n" \
++  "  -cpu <Name>              : setze Zielprozessor\n" \
++  "                             ('?' oder 'list', um verf&uuml;gbare nur anzuzeigen)\n" \
++  "  -binfile <Name>[@Start[,L&auml;nge[,Granularit&auml;t]]] : lade Bin&auml;rdatei\n" \
++  "  -hexfile <Name>          : lade HEX-Datei\n" \
++  "  -entryaddress (<Adresse>[,L&auml;nge[,MSB|LSB]]),<Name> : definiere indirekte Startadresse\n" \
++  "  -entryaddress <Adresse>,<Name> : definiere direkte Startadresse\n" \
++  "  -symbol <Adresse>=<Name> : definiere Symbol\n" \
++  "  -h                       : Hexadezimalzahlen mit Kleinbuchstaben\n" \
++  "  -help                    : nur Hilfe ausgeben\n" \
++  "  -version                 : nur Versionsinfo ausgeben\n"
++  "  -screenheight <#>        : Bildschirmh&ouml;he f&uuml;r Paging von '-help'\n" \
++  "                             und '-cpu list' setzen\n" \
++  "\n"
++  "\n" \
++  "options:\n" \
++  "  -cpu <name>              : set target processor\n" \
++  "                             ('?' or 'list' to list available ones and exit)\n" \
++  "  -binfile <name>[@start[,length[,granularity]]] : load binary file\n" \
++  "  -hexfile <name>          : load HEX file\n" \
++  "  -entryaddress (<address>[length[,MSB|LSB]]),<name> : define indirect start address\n" \
++  "  -entryaddress <address>,<name> : define direct start address\n" \
++  "  -symbol <address>=<name> : define symbol\n" \
++  "  -h                       : use lower case in hexadecimal output\n" \
++  "  -help                    : print help and exit\n" \
++  "  -version                 : print version info and exit\n"
++  "  -screenheight <#>        : set screen height for paging of '-help'\n" \
++  "                             and '-cpu list'\n" \
++  "\n"
++ 
++ Message InfoMessCPUList
++  "implementierte Prozessoren :"
++  "implemented processors :"
+*** ../src.142b252/das.res	Thu Jun 22 15:03:33 2023
+--- das.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,128 ****
+- ;* das.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* String-Definitions for DAS                                                *
+- ;*                                                                           *
+- ;*****************************************************************************
+- ;* $Id: das.res,v 1.1 2015/02/01 20:51:38 alfred Exp $                       *
+- ;*****************************************************************************
+- ;* $Log: das.res,v $
+- ;* Revision 1.1  2015/02/01 20:51:38  alfred
+- ;* - -
+- ;*
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- ;-----------------------------------------------------------------------------
+- ; Fehlermeldungen
+- 
+- Message ErrMsgInvParam
+-  "ung&uuml;ltige Option: "
+-  "invalid option: "
+- 
+- Message ErrMsgInvEnvParam
+-  "ung&uuml;ltige Environment-Option: "
+-  "invalid environment option: "
+- 
+- Message ErrMsgFileArgumentMissing
+-  "Datei-Argument fehlt"
+-  "file argument missing"
+- 
+- Message ErrMsgInvalidNumericValue
+-  "ung&uuml;tiger numerischer Wert"
+-  "invalid numeric value"
+- 
+- Message ErrMsgCannotReadBinaryFile
+-  "Bin&auml;rdatei nicht lesbar"
+-  "cannot read binary file"
+- 
+- Message ErrMsgCannotReadHexFile
+-  "HEX-Datei nicht lesbar"
+-  "cannot read HEX file"
+- 
+- Message ErrMsgInvalidHexData
+-  "ung&uuml;tige HEX-Daten"
+-  "invalid HEX data"
+- 
+- Message ErrMsgHexDataChecksumError
+-  "Hex-File Pr&uuml;fsummenfehler"
+-  "HEX file checksum error"
+- 
+- Message ErrMsgAddressArgumentMissing
+-  "Adressargument fehlt"
+-  "address argument missing"
+- 
+- Message ErrMsgClosingPatentheseMissing
+-  "schlie&szlig;ende Klammer fehlt"
+-  "missing closing parenthese"
+- 
+- Message ErrMsgInvalidEndinaness
+-  "ung&uuml;tige Endianess"
+-  "invalid endianess"
+- 
+- Message ErrMsgCannotRetrieveEntryAddressData
+-  "Daten f&uuml;r Startadresse nicht lesbar"
+-  "cannot read data for entry address"
+- 
+- Message ErrMsgSymbolArgumentMissing
+-  "Symbol-Argument fehlt"
+-  "missing symbol argument"
+- 
+- Message ErrMsgCPUArgumentMissing
+-  "CPU-Argmuent felht"
+-  "CPU argument missing"
+- 
+- Message ErrMsgUnknownCPU
+-  "unbekannte CPU"
+-  "unknown CPU"
+- 
+- 
+- Message KeyWaitMsg
+-  "--- weiter mit <ENTER> ---"
+-  "--- <ENTER> to go on ---"
+- 
+- Message InfoMessHead1
+-  "Aufruf: "
+-  "Usage: "
+- 
+- Message InfoMessHead2
+-  " [Optionen] [Datei] [Optionen] ..."
+-  " [options] [file] [options] ..."
+- 
+- Message InfoMessHelp
+-  "\n" \
+-  "Optionen:\n" \
+-  "  -cpu <Name>              : setze Zielprozessor\n" \
+-  "                             ('?' oder 'list', um verf&uuml;gbare nur anzuzeigen)\n" \
+-  "  -binfile <Name>[@Start[,L&auml;nge[,Granularit&auml;t]]] : lade Bin&auml;rdatei\n" \
+-  "  -hexfile <Name>          : lade HEX-Datei\n" \
+-  "  -entryaddress (<Adresse>[,L&auml;nge[,MSB|LSB]]),<Name> : definiere indirekte Startadresse\n" \
+-  "  -entryaddress <Adresse>,<Name> : definiere direkte Startadresse\n" \
+-  "  -symbol <Adresse>=<Name> : definiere Symbol\n" \
+-  "  -h                       : Hexadezimalzahlen mit Kleinbuchstaben\n" \
+-  "  -help                    : nur Hilfe ausgeben\n" \
+-  "  -version                 : nur Versionsinfo ausgeben\n"
+-  "  -screenheight <#>        : Bildschirmh&ouml;he f&uuml;r Paging von '-help'\n" \
+-  "                             und '-cpu list' setzen\n" \
+-  "\n"
+-  "\n" \
+-  "options:\n" \
+-  "  -cpu <name>              : set target processor\n" \
+-  "                             ('?' or 'list' to list available ones and exit)\n" \
+-  "  -binfile <name>[@start[,length[,granularity]]] : load binary file\n" \
+-  "  -hexfile <name>          : load HEX file\n" \
+-  "  -entryaddress (<address>[length[,MSB|LSB]]),<name> : define indirect start address\n" \
+-  "  -entryaddress <address>,<name> : define direct start address\n" \
+-  "  -symbol <address>=<name> : define symbol\n" \
+-  "  -h                       : use lower case in hexadecimal output\n" \
+-  "  -help                    : print help and exit\n" \
+-  "  -version                 : print version info and exit\n"
+-  "  -screenheight <#>        : set screen height for paging of '-help'\n" \
+-  "                             and '-cpu list'\n" \
+-  "\n"
+- 
+- Message InfoMessCPUList
+-  "implementierte Prozessoren :"
+-  "implemented processors :"
+--- 0 ----
+*** ../src.142b252/dyn_array.h	Thu Sep 21 15:07:39 2023
+--- dyn_array.h	Wed Nov 01 15:39:00 2023
 ***************
 *** 20,30 ****
       size_t old_roundup_cnt = dyn_array_roundup(old_cnt); \
@@ -158,8 +3947,8 @@
       } \
     } while (0)
   
-*** ../src.142b252/function.c	Mon Apr 17 12:43:46 2023
---- function.c	Wed Nov 01 16:52:40 2023
+*** ../src.142b252/function.c	Mon Apr 17 11:43:46 2023
+--- function.c	Wed Nov 01 15:52:40 2023
 ***************
 *** 11,16 ****
 --- 11,17 ----
@@ -170,8 +3959,700 @@
   #include "nonzstring.h"
   #include "strutil.h"
   #include "asmdef.h"
-*** ../src.142b252/Makefile	Sun Oct 29 15:49:38 2023
---- Makefile	Mon Oct 30 16:24:29 2023
+*** ../src.142b252/header.msg	Wed Dec 31 19:00:00 1969
+--- header.msg	Sat Jan 18 19:26:22 2020
+***************
+*** 0 ****
+--- 1,6 ----
++ ;-----------------------------------------------------------------------------
++ ; Muss mehr werden!
++ 
++ Langs DE(049) EN(001)
++ Default EN
++ 
+*** ../src.142b252/header.res	Sat Jan 18 19:26:22 2020
+--- header.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,6 ****
+- ;-----------------------------------------------------------------------------
+- ; Muss mehr werden!
+- 
+- Langs DE(049) EN(001)
+- Default EN
+- 
+--- 0 ----
+*** ../src.142b252/ioerrs.msg	Wed Dec 31 19:00:00 1969
+--- ioerrs.msg	Sun Nov 05 22:47:30 2023
+***************
+*** 0 ****
+--- 1,212 ----
++ ;* ioerrs.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* Definition Fehlermeldungs-Strings                                         *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ 
++ Message IoErr_EPERM
++  "kein Eigent&auml;mer"
++  "Not owner"
++  
++ Message IoErr_ENOENT
++  "Datei oder Verzeichnis nicht gefunden"
++  "No such file or directory"
++ 
++ Message IoErr_ESRCH
++  "Proze&szlig; existiert nicht"
++  "No such process"
++ 
++ Message IoErr_EINTR
++  "unterbrochener Systemaufruf"
++  "Interrupted system call"
++ 
++ Message IoErr_EIO
++  "E/A-Fehler"
++  "I/O error"
++  
++ Message IoErr_ENXIO
++  "Ger&auml;t existiert nicht"
++  "No such device or address"
++ 
++ Message IoErr_E2BIG
++  "Parameterliste zu lang"
++  "Exec format error"
++ 
++ Message IoErr_ENOEXEC
++  "Programm-Dateiformatfehler"
++  "Bad file number"
++ 
++ Message IoErr_EBADF
++  "ung&uuml;ltiger Dateihandle"
++  "No children"
++ 
++ Message IoErr_ECHILD
++  "Tochterproze&szlig; existiert nicht"
++  "Operation would cause deadlock"
++ 
++ Message IoErr_EDEADLK
++  "Operation w&uuml;rde Deadlock verursachen"
++  "Operation would cause deadlock"
++ 
++ Message IoErr_ENOMEM
++  "Speicher&uuml;berlauf"
++  "Not enough core"
++ 
++ Message IoErr_EACCES
++  "Zugriff verweigert"
++  "Permission denied"
++ 
++ Message IoErr_EFAULT
++  "Adre&szlig;fehler"
++  "Bad address"
++ 
++ Message IoErr_ENOTBLK
++  "Blockger&auml;t erforderlich"
++  "Block device required"
++ 
++ Message IoErr_EBUSY
++  "Ger&auml;t blockiert"
++  "Device or resource busy"
++ 
++ Message IoErr_EEXIST
++  "Datei existiert bereits"
++  "File exists"
++ 
++ Message IoErr_EXDEV
++  "Link &uuml;ber verschiedene Ger&auml;te"
++  "Cross-device link"
++ 
++ Message IoErr_ENODEV
++  "Ger&auml;t nicht vorhanden"
++  "No such device"
++ 
++ Message IoErr_ENOTDIR
++  "kein Verzeichnis"
++  "Not a directory"
++ 
++ Message IoErr_EISDIR
++  "Verzeichnis"
++  "Is a directory"
++ 
++ Message IoErr_EINVAL
++  "ung&uuml;ltiges Argument"
++  "Invalid argument"
++ 
++ Message IoErr_ENFILE
++  "Dateitabellen&uuml;berlauf"
++  "File table overflow"
++ 
++ Message IoErr_EMFILE
++  "zu viele offene Dateien"
++  "Too many open files"
++ 
++ Message IoErr_ENOTTY
++  "kein Fernschreiber"
++  "Not a typewriter"
++ 
++ Message IoErr_ETXTBSY
++  "Code-Datei blockiert"
++  "Text file busy"
++ 
++ Message IoErr_EFBIG
++  "Datei zu gro&szlig;"
++  "File too large" 
++ 
++ Message IoErr_ENOSPC
++  "Dateisystem voll"
++  "No space left on device"
++ 
++ Message IoErr_ESPIPE
++  "Ung&uuml;ltige Positionierung"
++  "Illegal seek"
++ 
++ Message IoErr_EROFS
++  "Dateisystem nur lesbar"
++  "Read-only file system"
++ 
++ Message IoErr_EMLINK
++  "zu viele Links"
++  "Too many links"
++ 
++ Message IoErr_EPIPE
++  "geplatzter Schlauch ;-)"
++  "Broken pipe"
++ 
++ Message IoErr_EDOM
++  "Funktionsargument au&szlig;erhalb Definitionsbereich"
++  "Math argument out of domain of func"
++ 
++ Message IoErr_ERANGE
++  "Funktionsergebnis au&szlig;erhalb Wertebereich"
++  "Math result not representable"
++ 
++ Message IoErr_ENAMETOOLONG
++  "Dateiname zu lang"
++  "File name too long"
++ 
++ Message IoErr_ENOLCK
++  "Datensatzverieglung nicht m&ouml;glich"
++  "No record locks available"
++ 
++ Message IoErr_ENOSYS
++  "Funktion nicht implementiert"
++  "Function not implemented"
++ 
++ Message IoErr_ENOTEMPTY
++  "Verzeichnis nicht leer"
++  "Directory not empty"
++ 
++ Message IoErr_ELOOP
++  "zu viele symbolische Links"
++  "Too many symbolic links encountered"
++ 
++ Message IoErr_EWOULDBLOCK
++  "Operation w&uuml;rde blockieren"
++  "Operation would block"
++ 
++ Message IoErr_ENOMSG
++  "keine Nachricht gew&uuml;nschten Typs verf&uuml;gbar"
++  "No message of desired type"
++ 
++ Message IoErr_EIDRM
++  "Kennung entfernt"
++  "Identifier removed"
++ 
++ Message IoErr_ECHRNG
++  "Kanalnummer au&szlig;erhalb Bereich"
++  "Channel number out of range"
++ 
++ Message IoErr_EL2NSYNC
++  "Ebene 2 nicht synchronisiert"
++  "Level 2 not synchronized"
++ 
++ Message IoErr_EL3HLT
++  "Ebene 3 angehalten"
++  "Level 3 halted"
++ 
++ Message IoErr_EL3RST
++  "Ebene 3 zur&uuml;ckgesetzt"
++  "Level 3 reset"
++ 
++ Message IoErr_ELNRNG
++  "Link-Nummer au&szlig;erhalb Bereich"
++  "Link number out of range"
++ 
++ Message IoErr_EUNATCH
++  "Protokolltreiber nicht angebunden"
++  "Protocol driver not attached"
++ 
++ Message IoErr_ENOCSI
++  "keine CSI-Struktur verf&uuml;gbar"
++  "No CSI structure available"
++ 
++ Message IoErr_READERROR
++  "Lesefehler"
++  "Read error"
++ 
++ Message IoErrUnknown
++  "unbekannter Fehler Nr."
++  "unknown error no."
+*** ../src.142b252/ioerrs.res	Fri Sep 01 14:53:54 2023
+--- ioerrs.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,216 ****
+- ;* ioerrs.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* Definition Fehlermeldungs-Strings                                         *
+- ;*                                                                           *
+- ;* Historie:  6. 9.1996 Grundsteinlegung                                     *
+- ;*           19. 9.1996 ...EACCESS                                           *
+- ;*                                                                           *
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- Message IoErr_EPERM
+-  "kein Eigent&auml;mer"
+-  "Not owner"
+-  
+- Message IoErr_ENOENT
+-  "Datei oder Verzeichnis nicht gefunden"
+-  "No such file or directory"
+- 
+- Message IoErr_ESRCH
+-  "Proze&szlig; existiert nicht"
+-  "No such process"
+- 
+- Message IoErr_EINTR
+-  "unterbrochener Systemaufruf"
+-  "Interrupted system call"
+- 
+- Message IoErr_EIO
+-  "E/A-Fehler"
+-  "I/O error"
+-  
+- Message IoErr_ENXIO
+-  "Ger&auml;t existiert nicht"
+-  "No such device or address"
+- 
+- Message IoErr_E2BIG
+-  "Parameterliste zu lang"
+-  "Exec format error"
+- 
+- Message IoErr_ENOEXEC
+-  "Programm-Dateiformatfehler"
+-  "Bad file number"
+- 
+- Message IoErr_EBADF
+-  "ung&uuml;ltiger Dateihandle"
+-  "No children"
+- 
+- Message IoErr_ECHILD
+-  "Tochterproze&szlig; existiert nicht"
+-  "Operation would cause deadlock"
+- 
+- Message IoErr_EDEADLK
+-  "Operation w&uuml;rde Deadlock verursachen"
+-  "Operation would cause deadlock"
+- 
+- Message IoErr_ENOMEM
+-  "Speicher&uuml;berlauf"
+-  "Not enough core"
+- 
+- Message IoErr_EACCES
+-  "Zugriff verweigert"
+-  "Permission denied"
+- 
+- Message IoErr_EFAULT
+-  "Adre&szlig;fehler"
+-  "Bad address"
+- 
+- Message IoErr_ENOTBLK
+-  "Blockger&auml;t erforderlich"
+-  "Block device required"
+- 
+- Message IoErr_EBUSY
+-  "Ger&auml;t blockiert"
+-  "Device or resource busy"
+- 
+- Message IoErr_EEXIST
+-  "Datei existiert bereits"
+-  "File exists"
+- 
+- Message IoErr_EXDEV
+-  "Link &uuml;ber verschiedene Ger&auml;te"
+-  "Cross-device link"
+- 
+- Message IoErr_ENODEV
+-  "Ger&auml;t nicht vorhanden"
+-  "No such device"
+- 
+- Message IoErr_ENOTDIR
+-  "kein Verzeichnis"
+-  "Not a directory"
+- 
+- Message IoErr_EISDIR
+-  "Verzeichnis"
+-  "Is a directory"
+- 
+- Message IoErr_EINVAL
+-  "ung&uuml;ltiges Argument"
+-  "Invalid argument"
+- 
+- Message IoErr_ENFILE
+-  "Dateitabellen&uuml;berlauf"
+-  "File table overflow"
+- 
+- Message IoErr_EMFILE
+-  "zu viele offene Dateien"
+-  "Too many open files"
+- 
+- Message IoErr_ENOTTY
+-  "kein Fernschreiber"
+-  "Not a typewriter"
+- 
+- Message IoErr_ETXTBSY
+-  "Code-Datei blockiert"
+-  "Text file busy"
+- 
+- Message IoErr_EFBIG
+-  "Datei zu gro&szlig;"
+-  "File too large" 
+- 
+- Message IoErr_ENOSPC
+-  "Dateisystem voll"
+-  "No space left on device"
+- 
+- Message IoErr_ESPIPE
+-  "Ung&uuml;ltige Positionierung"
+-  "Illegal seek"
+- 
+- Message IoErr_EROFS
+-  "Dateisystem nur lesbar"
+-  "Read-only file system"
+- 
+- Message IoErr_EMLINK
+-  "zu viele Links"
+-  "Too many links"
+- 
+- Message IoErr_EPIPE
+-  "geplatzter Schlauch ;-)"
+-  "Broken pipe"
+- 
+- Message IoErr_EDOM
+-  "Funktionsargument au&szlig;erhalb Definitionsbereich"
+-  "Math argument out of domain of func"
+- 
+- Message IoErr_ERANGE
+-  "Funktionsergebnis au&szlig;erhalb Wertebereich"
+-  "Math result not representable"
+- 
+- Message IoErr_ENAMETOOLONG
+-  "Dateiname zu lang"
+-  "File name too long"
+- 
+- Message IoErr_ENOLCK
+-  "Datensatzverieglung nicht m&ouml;glich"
+-  "No record locks available"
+- 
+- Message IoErr_ENOSYS
+-  "Funktion nicht implementiert"
+-  "Function not implemented"
+- 
+- Message IoErr_ENOTEMPTY
+-  "Verzeichnis nicht leer"
+-  "Directory not empty"
+- 
+- Message IoErr_ELOOP
+-  "zu viele symbolische Links"
+-  "Too many symbolic links encountered"
+- 
+- Message IoErr_EWOULDBLOCK
+-  "Operation w&uuml;rde blockieren"
+-  "Operation would block"
+- 
+- Message IoErr_ENOMSG
+-  "keine Nachricht gew&uuml;nschten Typs verf&uuml;gbar"
+-  "No message of desired type"
+- 
+- Message IoErr_EIDRM
+-  "Kennung entfernt"
+-  "Identifier removed"
+- 
+- Message IoErr_ECHRNG
+-  "Kanalnummer au&szlig;erhalb Bereich"
+-  "Channel number out of range"
+- 
+- Message IoErr_EL2NSYNC
+-  "Ebene 2 nicht synchronisiert"
+-  "Level 2 not synchronized"
+- 
+- Message IoErr_EL3HLT
+-  "Ebene 3 angehalten"
+-  "Level 3 halted"
+- 
+- Message IoErr_EL3RST
+-  "Ebene 3 zur&uuml;ckgesetzt"
+-  "Level 3 reset"
+- 
+- Message IoErr_ELNRNG
+-  "Link-Nummer au&szlig;erhalb Bereich"
+-  "Link number out of range"
+- 
+- Message IoErr_EUNATCH
+-  "Protokolltreiber nicht angebunden"
+-  "Protocol driver not attached"
+- 
+- Message IoErr_ENOCSI
+-  "keine CSI-Struktur verf&uuml;gbar"
+-  "No CSI structure available"
+- 
+- Message IoErr_READERROR
+-  "Lesefehler"
+-  "Read error"
+- 
+- Message IoErrUnknown
+-  "unbekannter Fehler Nr."
+-  "unknown error no."
+--- 0 ----
+*** ../src.142b252/makedefs.files	Wed Jun 28 14:17:12 2023
+--- makedefs.files	Sun Nov 05 23:21:18 2023
+***************
+*** 1,7 ****
+  BASEARCHFILES = *.c *.h *.hpp man/*.1 \
+              INSTALL README README.OS2 README.DOS README.LANGS TODO BENCHES Makefile Makefile.dos Makefile.def.tmpl \
+              COPYING install.sh install.bat install.cmd instw32.cmd marks.asm \
+!             *.res makedefs.src makedefs.files makedefs.str makedefs.abh makedefs.mi makedefs.mx rscdeps asl.def \
+              include/*.inc include/avr/*.inc \
+              include/s12z/*.inc include/s12z/vh/*.inc include/s12z/vca/*.inc include/s12z/vc/*.inc \
+              include/coldfire/*.inc \
+--- 1,7 ----
+  BASEARCHFILES = *.c *.h *.hpp man/*.1 \
+              INSTALL README README.OS2 README.DOS README.LANGS TODO BENCHES Makefile Makefile.dos Makefile.def.tmpl \
+              COPYING install.sh install.bat install.cmd instw32.cmd marks.asm \
+!             *.msg makedefs.src makedefs.files makedefs.str makedefs.abh makedefs.mi makedefs.mx rscdeps asl.def \
+              include/*.inc include/avr/*.inc \
+              include/s12z/*.inc include/s12z/vh/*.inc include/s12z/vca/*.inc include/s12z/vc/*.inc \
+              include/coldfire/*.inc \
+*** ../src.142b252/makedefs.str	Wed Jun 28 14:17:12 2023
+--- makedefs.str	Sun Nov 05 23:18:57 2023
+***************
+*** 1,69 ****
+! $(TARG_OBJDIR)./ioerrs.msg: ioerrs.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) ioerrs.res -m $@
+! $(TARG_OBJDIR)./ioerrs.msh: ioerrs.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) ioerrs.res -i $@
+! $(TARG_OBJDIR)./ioerrs.rsc: ioerrs.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) ioerrs.res -h $@
+! 
+! $(TARG_OBJDIR)./cmdarg.msg: cmdarg.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) cmdarg.res -m $@
+! $(TARG_OBJDIR)./cmdarg.msh: cmdarg.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) cmdarg.res -i $@
+! $(TARG_OBJDIR)./cmdarg.rsc: cmdarg.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) cmdarg.res -h $@
+! 
+! $(TARG_OBJDIR)./tools.msg: tools.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) tools.res -m $@
+! $(TARG_OBJDIR)./tools.msh: tools.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) tools.res -i $@
+! $(TARG_OBJDIR)./tools.rsc: tools.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) tools.res -h $@
+! 
+! $(TARG_OBJDIR)./as.msg: as.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) as.res -m $@
+! $(TARG_OBJDIR)./as.msh: as.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) as.res -i $@
+! $(TARG_OBJDIR)./as.rsc: as.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) as.res -h $@
+! 
+! $(TARG_OBJDIR)./das.msg: das.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) das.res -m $@
+! $(TARG_OBJDIR)./das.msh: das.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) das.res -i $@
+! $(TARG_OBJDIR)./das.rsc: das.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) das.res -h $@
+! 
+! $(TARG_OBJDIR)./plist.msg: plist.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) plist.res -m $@
+! $(TARG_OBJDIR)./plist.msh: plist.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) plist.res -i $@
+! $(TARG_OBJDIR)./plist.rsc: plist.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) plist.res -h $@
+! 
+! $(TARG_OBJDIR)./alink.msg: alink.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) alink.res -m $@
+! $(TARG_OBJDIR)./alink.msh: alink.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) alink.res -i $@
+! $(TARG_OBJDIR)./alink.rsc: alink.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) alink.res -h $@
+! 
+! $(TARG_OBJDIR)./pbind.msg: pbind.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) pbind.res -m $@
+! $(TARG_OBJDIR)./pbind.msh: pbind.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) pbind.res -i $@
+! $(TARG_OBJDIR)./pbind.rsc: pbind.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) pbind.res -h $@
+! 
+! $(TARG_OBJDIR)./p2hex.msg: p2hex.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2hex.res -m $@
+! $(TARG_OBJDIR)./p2hex.msh: p2hex.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2hex.res -i $@
+! $(TARG_OBJDIR)./p2hex.rsc: p2hex.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2hex.res -h $@
+! 
+! $(TARG_OBJDIR)./p2bin.msg: p2bin.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2bin.res -m $@
+! $(TARG_OBJDIR)./p2bin.msh: p2bin.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2bin.res -i $@
+! $(TARG_OBJDIR)./p2bin.rsc: p2bin.res tools2.res header.res $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2bin.res -h $@
+--- 1,69 ----
+! $(TARG_OBJDIR)./ioerrs.out: ioerrs.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) ioerrs.msg -m $@
+! $(TARG_OBJDIR)./ioerrs.msh: ioerrs.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) ioerrs.msg -i $@
+! $(TARG_OBJDIR)./ioerrs.rsc: ioerrs.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) ioerrs.msg -h $@
+! 
+! $(TARG_OBJDIR)./cmdarg.out: cmdarg.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) cmdarg.msg -m $@
+! $(TARG_OBJDIR)./cmdarg.msh: cmdarg.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) cmdarg.msg -i $@
+! $(TARG_OBJDIR)./cmdarg.rsc: cmdarg.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) cmdarg.msg -h $@
+! 
+! $(TARG_OBJDIR)./tools.out: tools.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) tools.msg -m $@
+! $(TARG_OBJDIR)./tools.msh: tools.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) tools.msg -i $@
+! $(TARG_OBJDIR)./tools.rsc: tools.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) tools.msg -h $@
+! 
+! $(TARG_OBJDIR)./as.out: as.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) as.msg -m $@
+! $(TARG_OBJDIR)./as.msh: as.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) as.msg -i $@
+! $(TARG_OBJDIR)./as.rsc: as.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) as.msg -h $@
+! 
+! $(TARG_OBJDIR)./das.out: das.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) das.msg -m $@
+! $(TARG_OBJDIR)./das.msh: das.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) das.msg -i $@
+! $(TARG_OBJDIR)./das.rsc: das.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) das.msg -h $@
+! 
+! $(TARG_OBJDIR)./plist.out: plist.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) plist.msg -m $@
+! $(TARG_OBJDIR)./plist.msh: plist.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) plist.msg -i $@
+! $(TARG_OBJDIR)./plist.rsc: plist.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) plist.msg -h $@
+! 
+! $(TARG_OBJDIR)./alink.out: alink.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) alink.msg -m $@
+! $(TARG_OBJDIR)./alink.msh: alink.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) alink.msg -i $@
+! $(TARG_OBJDIR)./alink.rsc: alink.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) alink.msg -h $@
+! 
+! $(TARG_OBJDIR)./pbind.out: pbind.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) pbind.msg -m $@
+! $(TARG_OBJDIR)./pbind.msh: pbind.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) pbind.msg -i $@
+! $(TARG_OBJDIR)./pbind.rsc: pbind.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) pbind.msg -h $@
+! 
+! $(TARG_OBJDIR)./p2hex.out: p2hex.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2hex.msg -m $@
+! $(TARG_OBJDIR)./p2hex.msh: p2hex.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2hex.msg -i $@
+! $(TARG_OBJDIR)./p2hex.rsc: p2hex.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2hex.msg -h $@
+! 
+! $(TARG_OBJDIR)./p2bin.out: p2bin.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2bin.msg -m $@
+! $(TARG_OBJDIR)./p2bin.msh: p2bin.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2bin.msg -i $@
+! $(TARG_OBJDIR)./p2bin.rsc: p2bin.msg tools2.msg header.msg $(RESCOMPTARGET)
+! 	$(CURRDIR)$(RESCOMPTARGET) p2bin.msg -h $@
+*** ../src.142b252/Makefile	Sun Oct 29 14:49:38 2023
+--- Makefile	Mon Nov 06 00:19:23 2023
+***************
+*** 10,15 ****
+--- 10,21 ----
+  TARG_EOBJ=$(EOBJ)
+  CURRDIR=./
+  LIBM=-lm
++ ALINKRES=
++ ASLRES=
++ P2BINRES=
++ P2HEXRES=
++ PBINDRES=
++ PLISTRES=
+  
+  include Makefile.def
+  
+***************
+*** 40,65 ****
+  
+  docs: docs_DE docs_EN
+  
+! $(ASLTARGET): $(ASM_OBJECTS) $(AS_OBJECTS) $(ST_OBJECTS) $(CODE_OBJECTS) $(NLS_OBJECTS)
+! 	$(TARG_LD) $(TARG_EOBJ)$(ASLTARGET) $(ASM_OBJECTS) $(AS_OBJECTS) $(ST_OBJECTS) $(CODE_OBJECTS) $(NLS_OBJECTS) $(LIBM) $(TARG_LDFLAGS)
+  
+! $(DASLTARGET): $(DASM_OBJECTS) $(DAS_OBJECTS) $(ST_OBJECTS) $(DECODE_OBJECTS)  $(NLS_OBJECTS)
+! 	$(TARG_LD) $(TARG_EOBJ)$(DASLTARGET) $(DASM_OBJECTS) $(DAS_OBJECTS) $(ST_OBJECTS)  $(DECODE_OBJECTS) $(NLS_OBJECTS) $(TARG_LDFLAGS)
+  
+! $(PLISTTARGET): $(PLIST_OBJECTS) $(NLS_OBJECTS)
+! 	$(TARG_LD) $(TARG_EOBJ)$(PLISTTARGET) $(PLIST_OBJECTS) $(NLS_OBJECTS) $(TARG_LDFLAGS)
+  
+! $(ALINKTARGET): $(ALINK_OBJECTS) $(NLS_OBJECTS)
+! 	$(TARG_LD) $(TARG_EOBJ)$(ALINKTARGET) $(ALINK_OBJECTS) $(NLS_OBJECTS) $(TARG_LDFLAGS)
+  
+! $(PBINDTARGET): $(PBIND_OBJECTS) $(NLS_OBJECTS)
+! 	$(TARG_LD) $(TARG_EOBJ)$(PBINDTARGET) $(PBIND_OBJECTS) $(NLS_OBJECTS) $(TARG_LDFLAGS)
+  
+! $(P2HEXTARGET): $(P2HEX_OBJECTS) $(NLS_OBJECTS)
+! 	$(TARG_LD) $(TARG_EOBJ)$(P2HEXTARGET) $(P2HEX_OBJECTS) $(NLS_OBJECTS) $(TARG_LDFLAGS)
+  
+! $(P2BINTARGET): $(P2BIN_OBJECTS) $(NLS_OBJECTS)
+! 	$(TARG_LD) $(TARG_EOBJ)$(P2BINTARGET) $(P2BIN_OBJECTS) $(NLS_OBJECTS) $(TARG_LDFLAGS)
+  
+  $(RESCOMPTARGET): $(RESCOMP_OBJECTS)
+  	$(LD) $(EOBJ)$(RESCOMPTARGET) $(RESCOMP_OBJECTS) $(LDFLAGS)
+--- 46,71 ----
+  
+  docs: docs_DE docs_EN
+  
+! $(ASLTARGET): $(ASM_OBJECTS) $(AS_OBJECTS) $(ST_OBJECTS) $(CODE_OBJECTS) $(NLS_OBJECTS) $(ASLRES)
+! 	$(TARG_LD) $(TARG_EOBJ)$(ASLTARGET) $(ASM_OBJECTS) $(AS_OBJECTS) $(ST_OBJECTS) $(CODE_OBJECTS) $(NLS_OBJECTS) $(ASLRES) $(LIBM) $(TARG_LDFLAGS)
+  
+! $(DASLTARGET): $(DASM_OBJECTS) $(DAS_OBJECTS) $(ST_OBJECTS) $(DECODE_OBJECTS)  $(NLS_OBJECTS) $(DASLRES)
+! 	$(TARG_LD) $(TARG_EOBJ)$(DASLTARGET) $(DASM_OBJECTS) $(DAS_OBJECTS) $(ST_OBJECTS)  $(DECODE_OBJECTS) $(NLS_OBJECTS) $(DASLRES) $(TARG_LDFLAGS)
+  
+! $(PLISTTARGET): $(PLIST_OBJECTS) $(NLS_OBJECTS) $(PLISTRES)
+! 	$(TARG_LD) $(TARG_EOBJ)$(PLISTTARGET) $(PLIST_OBJECTS) $(NLS_OBJECTS) $(PLISTRES) $(TARG_LDFLAGS)
+  
+! $(ALINKTARGET): $(ALINK_OBJECTS) $(NLS_OBJECTS) $(ALINKRES)
+! 	$(TARG_LD) $(TARG_EOBJ)$(ALINKTARGET) $(ALINK_OBJECTS) $(NLS_OBJECTS) $(ALINKRES) $(TARG_LDFLAGS)
+  
+! $(PBINDTARGET): $(PBIND_OBJECTS) $(NLS_OBJECTS) $(PBINDRES)
+! 	$(TARG_LD) $(TARG_EOBJ)$(PBINDTARGET) $(PBIND_OBJECTS) $(NLS_OBJECTS) $(PBINDRES) $(TARG_LDFLAGS)
+  
+! $(P2HEXTARGET): $(P2HEX_OBJECTS) $(NLS_OBJECTS) $(P2HEXRES)
+! 	$(TARG_LD) $(TARG_EOBJ)$(P2HEXTARGET) $(P2HEX_OBJECTS) $(NLS_OBJECTS) $(P2HEXRES) $(TARG_LDFLAGS)
+  
+! $(P2BINTARGET): $(P2BIN_OBJECTS) $(NLS_OBJECTS) $(P2BINRES)
+! 	$(TARG_LD) $(TARG_EOBJ)$(P2BINTARGET) $(P2BIN_OBJECTS) $(NLS_OBJECTS) $(P2BINRES) $(TARG_LDFLAGS)
+  
+  $(RESCOMPTARGET): $(RESCOMP_OBJECTS)
+  	$(LD) $(EOBJ)$(RESCOMPTARGET) $(RESCOMP_OBJECTS) $(LDFLAGS)
 ***************
 *** 80,86 ****
   	$(LD) $(EOBJ)$(MKDEPENDTARGET) $(MKDEPEND_OBJECTS) $(LDFLAGS)
@@ -181,7 +4662,7 @@
   
   #---------------------------------------------------------------------------
   # special rules for objects dependant on string resource files
---- 80,86 ----
+--- 86,92 ----
   	$(LD) $(EOBJ)$(MKDEPENDTARGET) $(MKDEPEND_OBJECTS) $(LDFLAGS)
   
   check_targ_cc:
@@ -189,8 +4670,26 @@
   
   #---------------------------------------------------------------------------
   # special rules for objects dependant on string resource files
+***************
+*** 234,239 ****
+  
+  #---------------------------------------------------------------------------
+  
+! .SUFFIXES: .asm
+  .asm.p:
+  	./asl -L -q $*.asm
+--- 240,248 ----
+  
+  #---------------------------------------------------------------------------
+  
+! .SUFFIXES: .asm .res .rc
+  .asm.p:
+  	./asl -L -q $*.asm
++ 
++ .rc.res:	$<
++ 	$(RC) $<
 *** ../src.142b252/Makefile.def-samples\Makefile.def-arm-macos	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-arm-macos	Wed Nov 01 19:57:33 2023
+--- Makefile.def-samples\Makefile.def-arm-macos	Wed Nov 01 18:57:33 2023
 ***************
 *** 0 ****
 --- 1,31 ----
@@ -226,7 +4725,7 @@
 + LIBDIR =
 + DOCDIR = /usr/local/share/doc/asl
 *** ../src.142b252/Makefile.def-samples\Makefile.def-i386-unknown-linux	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-i386-unknown-linux	Wed Nov 01 22:46:08 2023
+--- Makefile.def-samples\Makefile.def-i386-unknown-linux	Wed Nov 01 21:46:08 2023
 ***************
 *** 0 ****
 --- 1,31 ----
@@ -262,10 +4761,10 @@
 + LIBDIR =
 + DOCDIR = /usr/local/doc/asl
 *** ../src.142b252/Makefile.def-samples\Makefile.def-MSVC	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-MSVC	Mon Oct 30 16:50:08 2023
+--- Makefile.def-samples\Makefile.def-MSVC	Mon Nov 06 00:18:42 2023
 ***************
 *** 0 ****
---- 1,43 ----
+--- 1,51 ----
 + # -------------------------------------------------------------------------
 + # choose your compiler (must be ANSI-compliant!) and linker command, plus
 + # any additionally needed flags.  Also set target directory and file extensions:
@@ -283,6 +4782,7 @@
 + LD	= cl /nologo
 + LDFLAGS	=
 + EOBJ	= /Fe
++ RC	= rc /fo $@
 + HOST_OBJEXTENSION = .obj
 + HOST_EXEXTENSION = .exe
 + LIBM	=
@@ -300,6 +4800,13 @@
 + TARG_LDFLAGS = $(LDFLAGS)
 + TARG_EXEXTENSION = $(HOST_EXEXTENSION)
 + 
++ ALINKRES=alink.res
++ ASLRES=as.res
++ P2BINRES=p2bin.res
++ P2HEXRES=p2hex.res
++ PBINDRES=pbind.res
++ PLISTRES=plist.res
++ 
 + # -------------------------------------------------------------------------
 + # directories where binaries, includes, and manpages should go during
 + # installation
@@ -310,10 +4817,10 @@
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
 *** ../src.142b252/Makefile.def-samples\Makefile.def-tinyc	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-tinyc	Mon Oct 30 16:26:25 2023
+--- Makefile.def-samples\Makefile.def-tinyc	Mon Nov 06 00:08:23 2023
 ***************
 *** 0 ****
---- 1,35 ----
+--- 1,44 ----
 + # -------------------------------------------------------------------------
 + #
 + # choose your compiler (must be ANSI-compliant!) and linker command, plus
@@ -329,6 +4836,7 @@
 + LIBM	=
 + LD	= $(CC)
 + LDFLAGS	=
++ RC	= windres -Ocoff
 + HOST_OBJEXTENSION = .o
 + HOST_EXEXTENSION = .exe
 + 
@@ -340,6 +4848,14 @@
 + TARG_OBJEXTENSION = .o
 + TARG_EXEXTENSION = $(HOST_EXEXTENSION)
 + 
++ ALINKRES=alink.res
++ ASLRES=as.res
++ P2BINRES=p2bin.res
++ P2HEXRES=p2hex.res
++ PBINDRES=pbind.res
++ PLISTRES=plist.res
++ 
++ 
 + # -------------------------------------------------------------------------
 + # directories where binaries, includes, and manpages should go during
 + # installation
@@ -350,10 +4866,10 @@
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
 *** ../src.142b252/Makefile.def-samples\Makefile.def-x86-msys2-mingw	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-x86-msys2-mingw	Mon Oct 30 16:31:38 2023
+--- Makefile.def-samples\Makefile.def-x86-msys2-mingw	Mon Nov 06 00:07:56 2023
 ***************
 *** 0 ****
---- 1,32 ----
+--- 1,40 ----
 + # -------------------------------------------------------------------------
 + # choose your compiler (must be ANSI-compliant!) and linker command, plus
 + # any additionally needed flags
@@ -367,6 +4883,7 @@
 + HOST_OBJEXTENSION = .o
 + LD = $(CC)
 + LDFLAGS =
++ RC = windres -Ocoff
 + HOST_EXEXTENSION = .exe
 + 
 + TARG_CC = $(CC)
@@ -376,6 +4893,13 @@
 + TARG_LD = $(LD)
 + TARG_LDFLAGS = $(LDFLAGS)
 + TARG_EXEXTENSION = $(HOST_EXEXTENSION)
++ 
++ ALINKRES=alink.res
++ ASLRES=as.res
++ P2BINRES=p2bin.res
++ P2HEXRES=p2hex.res
++ PBINDRES=pbind.res
++ PLISTRES=plist.res
 + 
 + # -------------------------------------------------------------------------
 + # directories where binaries, includes, and manpages should go during
@@ -387,7 +4911,7 @@
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
 *** ../src.142b252/Makefile.def-samples\Makefile.def-x86_64-macos	Wed Dec 31 19:00:00 1969
---- Makefile.def-samples\Makefile.def-x86_64-macos	Wed Nov 01 22:26:29 2023
+--- Makefile.def-samples\Makefile.def-x86_64-macos	Wed Nov 01 21:26:29 2023
 ***************
 *** 0 ****
 --- 1,31 ----
@@ -422,8 +4946,8 @@
 + MANDIR = /usr/local/share/man
 + LIBDIR =
 + DOCDIR = /usr/local/share/doc/asl
-*** ../src.142b252/Makefile.def-samples\Makefile.def-x86_64-unknown-linux	Fri Sep 01 15:53:54 2023
---- Makefile.def-samples\Makefile.def-x86_64-unknown-linux	Wed Nov 01 22:46:40 2023
+*** ../src.142b252/Makefile.def-samples\Makefile.def-x86_64-unknown-linux	Fri Sep 01 14:53:54 2023
+--- Makefile.def-samples\Makefile.def-x86_64-unknown-linux	Wed Nov 01 21:46:40 2023
 ***************
 *** 3,10 ****
   # any additionally needed flags
@@ -443,8 +4967,27 @@
   HOST_OBJEXTENSION = .o
   LD = $(CC)
   LDFLAGS =
-*** ../src.142b252/mkdepend.c	Wed Jun 28 15:17:12 2023
---- mkdepend.c	Thu Oct 19 16:54:59 2023
+*** ../src.142b252/Makefile.dos	Sun Oct 29 14:49:38 2023
+--- Makefile.dos	Sun Nov 05 23:21:32 2023
+***************
+*** 13,19 ****
+  
+  !include Makefile.def
+  
+! # targets built via this file use message catalogs in external .res files:
+  
+  !include makedefs.mx
+  
+--- 13,19 ----
+  
+  !include Makefile.def
+  
+! # targets built via this file use message catalogs in external .msg files:
+  
+  !include makedefs.mx
+  
+*** ../src.142b252/mkdepend.c	Wed Jun 28 14:17:12 2023
+--- mkdepend.c	Thu Oct 19 15:54:59 2023
 ***************
 *** 6,12 ****
   #include <errno.h>
@@ -464,8 +5007,8 @@
   
   #include "strutil.h"
   #include "stringlists.h"
-*** ../src.142b252/nls.c	Mon Apr 17 12:43:46 2023
---- nls.c	Thu Oct 19 20:33:29 2023
+*** ../src.142b252/nls.c	Mon Apr 17 11:43:46 2023
+--- nls.c	Thu Oct 19 19:33:29 2023
 ***************
 *** 8,13 ****
 --- 8,17 ----
@@ -479,8 +5022,896 @@
   #undef DEBUG_NLS
   
   #include "stdinc.h"
-*** ../src.142b252/README	Wed Feb 17 12:04:28 2021
---- README	Mon Oct 30 17:00:51 2023
+*** ../src.142b252/p2bin.msg	Wed Dec 31 19:00:00 1969
+--- p2bin.msg	Sun Nov 05 22:47:55 2023
+***************
+*** 0 ****
+--- 1,70 ----
++ ;* p2bin.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* Stringdefinitionen fuer P2BIN                                             *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ Include tools2.msg
++ 
++ ;------------------------------------------------------------------------------
++ ; Ansagen
++ 
++ Message InfoMessChecksum
++  "Pr&uuml;fsumme: "
++  "checksum: "
++ 
++ Message InfoMessHead2
++  " <Quelldatei(en)> <Zieldatei> [Optionen]"
++  " <source file(s)> <target file> [options]"
++ 
++ Message Byte
++  "byte"
++  "Byte"
++ 
++ Message Bytes
++  "bytes"
++  "Bytes"
++ 
++ Message InfoMessHelp
++  "\n" \
++  "Optionen:\n" \
++  "  -f <Headerliste>  : auszufilternde Records\n" \
++  "  -r <Start>-<Stop> : auszufilternder Adre&szlig;bereich\n" \
++  "                      ($ oder 0x = erste bzw. letzte auftauchende Adresse)\n" \
++  "  -segment <Name>   : Quellsegment w&auml;hlen\n" \
++  "  -l <8-Bit-Zahl>   : Inhalt unbenutzter Speicherzellen festlegen\n" \
++  "  -s                : Pr&uuml;fsumme in Datei ablegen\n" \
++  "  -m <Modus>        : EPROM-Modus (odd,even,byte0..byte3)\n" \
++  "  -e <Adresse>      : Startadresse festlegen\n" \
++  "  -S [L|B]<L&auml;nge> : Startadresse voranstellen\n" \
++  "  -k                : Quelldateien automatisch l&ouml;schen\n" \
++  "  -q, -quiet        : Stiller Betrieb\n" \
++  "  -v                : wortreicher Betrieb\n" \
++  "  -help             : nur Hilfe ausgeben\n" \
++  "  -version          : nur Versionsinfo ausgeben\n"
++  "\n" \
++  "options:\n" \
++  "  -f <header list>  : records to filter out\n" \
++  "  -r <start>-<stop> : address range to filter out\n" \
++  "                      ($ or 0x = first resp. last occuring address)\n" \
++  "  -segment <name>   : select source segment\n" \
++  "  -l <8-bit-number> : set filler value for unused cells\n" \
++  "  -s                : put checksum into file\n" \
++  "  -m <mode>         : EPROM-mode (odd,even,byte0..byte3)\n" \
++  "  -e <address>      : set entry address\n" \
++  "  -S [L|B]<length>  : prepend entry address to image\n" \
++  "  -k                : automatically erase source files\n" \
++  "  -q, -quiet        : quiet operation\n" \
++  "  -v                : verbose operation\n" \
++  "  -help             : print help and exit\n" \
++  "  -version          : print version info and exit\n"
++ 
++ Message InfoMessDeducedRange
++  "Ermittelter Adre&szlig;bereich"
++  "Deduced address range"
++ 
++ Message WarnEmptyFile
++  "Warnung: keine Daten &uuml;bertragen, falsche/fehlende -r Option?\n"
++  "Warning: no data transferred, wrong/missing -r option?\n"
+*** ../src.142b252/p2bin.rc	Wed Dec 31 19:00:00 1969
+--- p2bin.rc	Sun Nov 05 23:57:36 2023
+***************
+*** 0 ****
+--- 1,52 ----
++ #include <windows.h>
++ #include "version.h"
++ 
++ 
++ 100		ICON		"project.ico"
++ 
++ 
++ VS_VERSION_INFO VERSIONINFO
++ #ifdef AS_VER_PATCH
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++ #else
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++ #endif
++  FILEFLAGSMASK	0x3fL
++ #ifndef RELEASE_BUILD
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_SPECIALBUILD | VS_FF_DEBUG
++ # else
++  FILEFLAGS	VS_FF_SPECIALBUILD
++ # endif
++ #else
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_DEBUG
++ # else
++  FILEFLAGS	0x0L
++ # endif
++ #endif
++  FILEOS		VOS_NT_WINDOWS32
++  FILETYPE	VFT_APP
++  FILESUBTYPE	0x0L
++  BEGIN
++     BLOCK "StringFileInfo"
++     BEGIN
++         BLOCK "0409fde9"
++         BEGIN
++             VALUE "CompanyName", "The VARCem Group LLC"
++             VALUE "LegalCopyright", "Licenced under GPL-2.0-only OR GPL-3.0-only."
++             VALUE "ProductName", "AS Makro Assembler"
++             VALUE "ProductVersion", AS_VERSION
++             VALUE "InternalName", "P2BIN"
++             VALUE "FileDescription", "P2BIN File Generator"
++             VALUE "FileVersion", AS_VERSION
++             VALUE "OriginalFilename", "p2bin.exe"
++         END
++     END
++     BLOCK "VarFileInfo"
++     BEGIN
++         VALUE "Translation", 0x0409, 65001
++     END
++ END
+*** ../src.142b252/p2bin.res	Thu Jun 22 15:03:33 2023
+--- p2bin.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,82 ****
+- ;* p2bin.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* Stringdefinitionen fuer P2BIN                                             *
+- ;*                                                                           *
+- ;* Historie:  3. 6.1996 Grundsteinlegung                                     *
+- ;*           24. 3.2000 added byte messages                                  *
+- ;*                                                                           *
+- ;*****************************************************************************
+- ;* $Id: p2bin.res,v 1.3 2006/12/09 18:27:30 alfred Exp $
+- /*****************************************************************************
+- ;* $Log: p2bin.res,v $
+- ;* Revision 1.3  2006/12/09 18:27:30  alfred
+- ;* - add warning about empty output
+- ;*
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- Include tools2.res
+- 
+- ;------------------------------------------------------------------------------
+- ; Ansagen
+- 
+- Message InfoMessChecksum
+-  "Pr&uuml;fsumme: "
+-  "checksum: "
+- 
+- Message InfoMessHead2
+-  " <Quelldatei(en)> <Zieldatei> [Optionen]"
+-  " <source file(s)> <target file> [options]"
+- 
+- Message Byte
+-  "byte"
+-  "Byte"
+- 
+- Message Bytes
+-  "bytes"
+-  "Bytes"
+- 
+- Message InfoMessHelp
+-  "\n" \
+-  "Optionen:\n" \
+-  "  -f <Headerliste>  : auszufilternde Records\n" \
+-  "  -r <Start>-<Stop> : auszufilternder Adre&szlig;bereich\n" \
+-  "                      ($ oder 0x = erste bzw. letzte auftauchende Adresse)\n" \
+-  "  -segment <Name>   : Quellsegment w&auml;hlen\n" \
+-  "  -l <8-Bit-Zahl>   : Inhalt unbenutzter Speicherzellen festlegen\n" \
+-  "  -s                : Pr&uuml;fsumme in Datei ablegen\n" \
+-  "  -m <Modus>        : EPROM-Modus (odd,even,byte0..byte3)\n" \
+-  "  -e <Adresse>      : Startadresse festlegen\n" \
+-  "  -S [L|B]<L&auml;nge> : Startadresse voranstellen\n" \
+-  "  -k                : Quelldateien automatisch l&ouml;schen\n" \
+-  "  -q, -quiet        : Stiller Betrieb\n" \
+-  "  -v                : wortreicher Betrieb\n" \
+-  "  -help             : nur Hilfe ausgeben\n" \
+-  "  -version          : nur Versionsinfo ausgeben\n"
+-  "\n" \
+-  "options:\n" \
+-  "  -f <header list>  : records to filter out\n" \
+-  "  -r <start>-<stop> : address range to filter out\n" \
+-  "                      ($ or 0x = first resp. last occuring address)\n" \
+-  "  -segment <name>   : select source segment\n" \
+-  "  -l <8-bit-number> : set filler value for unused cells\n" \
+-  "  -s                : put checksum into file\n" \
+-  "  -m <mode>         : EPROM-mode (odd,even,byte0..byte3)\n" \
+-  "  -e <address>      : set entry address\n" \
+-  "  -S [L|B]<length>  : prepend entry address to image\n" \
+-  "  -k                : automatically erase source files\n" \
+-  "  -q, -quiet        : quiet operation\n" \
+-  "  -v                : verbose operation\n" \
+-  "  -help             : print help and exit\n" \
+-  "  -version          : print version info and exit\n"
+- 
+- Message InfoMessDeducedRange
+-  "Ermittelter Adre&szlig;bereich"
+-  "Deduced address range"
+- 
+- Message WarnEmptyFile
+-  "Warnung: keine Daten &uuml;bertragen, falsche/fehlende -r Option?\n"
+-  "Warning: no data transferred, wrong/missing -r option?\n"
+--- 0 ----
+*** ../src.142b252/p2hex.msg	Wed Dec 31 19:00:00 1969
+--- p2hex.msg	Sun Nov 05 22:48:07 2023
+***************
+*** 0 ****
+--- 1,102 ----
++ ;* p2hex.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* String-Definitionen fuer P2HEX                                            *
++ ;*****************************************************************************/ 
++ 
++ Include header.msg
++ Include tools2.msg
++ 
++ ;------------------------------------------------------------------------------
++ ; Steuerstrings HEX-Files
++ 
++ Message DSKHeaderLine
++  "K_DSKA_1.00_DSK_"
++  "K_DSKA_1.00_DSK_"
++ 
++ ;------------------------------------------------------------------------------
++ ; Fehlermeldungen
++ 
++ Message ErrMsgAdrOverflow
++  "Warnung: Adre&szlig;&uuml;berlauf "
++  "warning: address overflow "
++ 
++ ;------------------------------------------------------------------------------
++ ; Ansagen
++ 
++ Message InfoMessHead2
++  " <Quelldatei(en)> <Zieldatei> [Optionen]"
++  " <source file(s)> <target file> [options]"
++ 
++ Message Byte
++  "byte"
++  "Byte"
++ 
++ Message Bytes
++  "bytes"
++  "Bytes"
++ 
++ Message InfoMessHelp
++  "\n" \
++  "Optionen:\n" \
++  "  -f <Headerliste>  : auszufilternde Records\n" \
++  "  -r <Start>-<Stop> : auszufilternder Adre&szlig;bereich\n" \
++  "  -R <offset>       : Adressen um Offset verschieben\n" \
++  "                      ($ oder 0x = erste bzw. letzte auftauchende Adresse)\n" \
++  "  -segment <Name>   : Quellsegment w&auml;hlen\n" \
++  "  -a                : Adressen relativ zum Start ausgeben\n" \
++  "  -l <L&auml;nge>   : L&auml;nge Datenzeile in Bytes\n" \
++  "  -i <0|1|2>        : Terminierer f&uuml;r Intel-Hexfiles\n" \
++  "  -m <0..3>         : Multibyte-Modus\n" \
++  "  -F <Format>       : Zielformat\n" \
++  "                      Format = Default|Moto|Intel|MOS|Tek|\n" \
++  "                               Intel16|DSK|Intel32|Atmel|Mico8|C>\n" \
++  "  +5                : S5-Records unterdr&uuml;cken\n" \
++  "  -s                : S-Record-Gruppen einzeln terminieren\n" \
++  "  -M <1|2|3>        : Minimallaenge Adressen S-Records\n" \
++  "  -d <Start>-<Stop> : Datenbereich festlegen (veraltet, siehe Handbuch)\n" \
++  "  -e <Adresse>      : Startadresse festlegen\n" \
++  "  -k                : Quelldateien autom. l&ouml;schen\n" \
++  "  -avrlen <2|3>     : Adre&szlig;feldl&auml;nge Atmel-Format setzen\n" \
++  "  -q, -quiet        : Stiller Betrieb\n" \
++  "  -v                : wortreicher Betrieb\n" \
++  "  -help             : nur Hilfe ausgeben\n" \
++  "  -version          : nur Versionsinfo ausgeben\n"
++  "\n" \
++  "options:\n" \
++  "  -f <header list>  : records to filter out\n" \
++  "  -r <start>-<stop> : address range to filter out\n" \
++  "  -R <offset>       : relocate addresses by offset\n" \
++  "                      ($ or 0x = first resp. last occuring address)\n" \
++  "  -segment <name>   : select source segment\n" \
++  "  -a                : addresses in hex file relativ to start\n" \
++  "  -l <length>       : set length of data line in bytes\n" \
++  "  -i <0|1|2>        : terminating line for intel hex\n" \
++  "  -m <0..3>         : multibyte mode\n" \
++  "  -F <Format>       : target format\n" \
++  "                      Format = Default|Moto|Intel|MOS|Tek|\n" \
++  "                               Intel16|DSK|Intel32|Atmel|Mico8|C\n" \
++  "  +5                : suppress S5-records\n" \
++  "  -s                : separate terminators for S-record groups\n" \
++  "  -M <1|2|3>        : minimum length of S records addresses\n" \
++  "  -d <start>-<stop> : set data range (obsolete, see manual)\n" \
++  "  -e <address>      : set entry address\n" \
++  "  -k                : automatically erase source files\n" \
++  "  -avrlen <2|3>     : set address field length of Atmel format\n" \
++  "  -q, -quiet        : quiet operation\n" \
++  "  -v                : verbose operation\n" \
++  "  -help             : print help and exit\n" \
++  "  -version          : print version info and exit\n"
++ 
++ Message InfoMessDeducedRange
++  "Ermittelter Adre&szlig;bereich"
++  "Deduced address range"
++ 
++ Message WarnDOption
++  "Warnung: -d - Option ist veraltet, siehe Handbuch\n"
++  "Warning: -d option is obsolete, see manual\n"
++ 
++ Message WarnEmptyFile
++  "Warnung: keine Daten &uuml;bertragen, falsche/fehlende -r Option?\n"
++  "Warning: no data transferred, wrong/missing -r option?\n"
+*** ../src.142b252/p2hex.rc	Wed Dec 31 19:00:00 1969
+--- p2hex.rc	Sun Nov 05 23:58:19 2023
+***************
+*** 0 ****
+--- 1,52 ----
++ #include <windows.h>
++ #include "version.h"
++ 
++ 
++ 100		ICON		"project.ico"
++ 
++ 
++ VS_VERSION_INFO VERSIONINFO
++ #ifdef AS_VER_PATCH
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++ #else
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++ #endif
++  FILEFLAGSMASK	0x3fL
++ #ifndef RELEASE_BUILD
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_SPECIALBUILD | VS_FF_DEBUG
++ # else
++  FILEFLAGS	VS_FF_SPECIALBUILD
++ # endif
++ #else
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_DEBUG
++ # else
++  FILEFLAGS	0x0L
++ # endif
++ #endif
++  FILEOS		VOS_NT_WINDOWS32
++  FILETYPE	VFT_APP
++  FILESUBTYPE	0x0L
++  BEGIN
++     BLOCK "StringFileInfo"
++     BEGIN
++         BLOCK "0409fde9"
++         BEGIN
++             VALUE "CompanyName", "The VARCem Group LLC"
++             VALUE "LegalCopyright", "Licenced under GPL-2.0-only OR GPL-3.0-only."
++             VALUE "ProductName", "AS Makro Assembler"
++             VALUE "ProductVersion", AS_VERSION
++             VALUE "InternalName", "P2HEX"
++             VALUE "FileDescription", "P2HEX File Generator"
++             VALUE "FileVersion", AS_VERSION
++             VALUE "OriginalFilename", "p2hex.exe"
++         END
++     END
++     BLOCK "VarFileInfo"
++     BEGIN
++         VALUE "Translation", 0x0409, 65001
++     END
++ END
+*** ../src.142b252/p2hex.res	Thu Jun 22 15:03:33 2023
+--- p2hex.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,104 ****
+- ;* p2hex.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* String-Definitionen fuer P2HEX                                            *
+- ;*                                                                           *
+- ;*****************************************************************************/ 
+- 
+- Include header.res
+- 
+- Include tools2.res
+- 
+- ;------------------------------------------------------------------------------
+- ; Steuerstrings HEX-Files
+- 
+- Message DSKHeaderLine
+-  "K_DSKA_1.00_DSK_"
+-  "K_DSKA_1.00_DSK_"
+- 
+- ;------------------------------------------------------------------------------
+- ; Fehlermeldungen
+- 
+- Message ErrMsgAdrOverflow
+-  "Warnung: Adre&szlig;&uuml;berlauf "
+-  "warning: address overflow "
+- 
+- ;------------------------------------------------------------------------------
+- ; Ansagen
+- 
+- Message InfoMessHead2
+-  " <Quelldatei(en)> <Zieldatei> [Optionen]"
+-  " <source file(s)> <target file> [options]"
+- 
+- Message Byte
+-  "byte"
+-  "Byte"
+- 
+- Message Bytes
+-  "bytes"
+-  "Bytes"
+- 
+- Message InfoMessHelp
+-  "\n" \
+-  "Optionen:\n" \
+-  "  -f <Headerliste>  : auszufilternde Records\n" \
+-  "  -r <Start>-<Stop> : auszufilternder Adre&szlig;bereich\n" \
+-  "  -R <offset>       : Adressen um Offset verschieben\n" \
+-  "                      ($ oder 0x = erste bzw. letzte auftauchende Adresse)\n" \
+-  "  -segment <Name>   : Quellsegment w&auml;hlen\n" \
+-  "  -a                : Adressen relativ zum Start ausgeben\n" \
+-  "  -l <L&auml;nge>   : L&auml;nge Datenzeile in Bytes\n" \
+-  "  -i <0|1|2>        : Terminierer f&uuml;r Intel-Hexfiles\n" \
+-  "  -m <0..3>         : Multibyte-Modus\n" \
+-  "  -F <Format>       : Zielformat\n" \
+-  "                      Format = Default|Moto|Intel|MOS|Tek|\n" \
+-  "                               Intel16|DSK|Intel32|Atmel|Mico8|C>\n" \
+-  "  +5                : S5-Records unterdr&uuml;cken\n" \
+-  "  -s                : S-Record-Gruppen einzeln terminieren\n" \
+-  "  -M <1|2|3>        : Minimallaenge Adressen S-Records\n" \
+-  "  -d <Start>-<Stop> : Datenbereich festlegen (veraltet, siehe Handbuch)\n" \
+-  "  -e <Adresse>      : Startadresse festlegen\n" \
+-  "  -k                : Quelldateien autom. l&ouml;schen\n" \
+-  "  -avrlen <2|3>     : Adre&szlig;feldl&auml;nge Atmel-Format setzen\n" \
+-  "  -q, -quiet        : Stiller Betrieb\n" \
+-  "  -v                : wortreicher Betrieb\n" \
+-  "  -help             : nur Hilfe ausgeben\n" \
+-  "  -version          : nur Versionsinfo ausgeben\n"
+-  "\n" \
+-  "options:\n" \
+-  "  -f <header list>  : records to filter out\n" \
+-  "  -r <start>-<stop> : address range to filter out\n" \
+-  "  -R <offset>       : relocate addresses by offset\n" \
+-  "                      ($ or 0x = first resp. last occuring address)\n" \
+-  "  -segment <name>   : select source segment\n" \
+-  "  -a                : addresses in hex file relativ to start\n" \
+-  "  -l <length>       : set length of data line in bytes\n" \
+-  "  -i <0|1|2>        : terminating line for intel hex\n" \
+-  "  -m <0..3>         : multibyte mode\n" \
+-  "  -F <Format>       : target format\n" \
+-  "                      Format = Default|Moto|Intel|MOS|Tek|\n" \
+-  "                               Intel16|DSK|Intel32|Atmel|Mico8|C\n" \
+-  "  +5                : suppress S5-records\n" \
+-  "  -s                : separate terminators for S-record groups\n" \
+-  "  -M <1|2|3>        : minimum length of S records addresses\n" \
+-  "  -d <start>-<stop> : set data range (obsolete, see manual)\n" \
+-  "  -e <address>      : set entry address\n" \
+-  "  -k                : automatically erase source files\n" \
+-  "  -avrlen <2|3>     : set address field length of Atmel format\n" \
+-  "  -q, -quiet        : quiet operation\n" \
+-  "  -v                : verbose operation\n" \
+-  "  -help             : print help and exit\n" \
+-  "  -version          : print version info and exit\n"
+- 
+- Message InfoMessDeducedRange
+-  "Ermittelter Adre&szlig;bereich"
+-  "Deduced address range"
+- 
+- Message WarnDOption
+-  "Warnung: -d - Option ist veraltet, siehe Handbuch\n"
+-  "Warning: -d option is obsolete, see manual\n"
+- 
+- Message WarnEmptyFile
+-  "Warnung: keine Daten &uuml;bertragen, falsche/fehlende -r Option?\n"
+-  "Warning: no data transferred, wrong/missing -r option?\n"
+--- 0 ----
+*** ../src.142b252/pbind.msg	Wed Dec 31 19:00:00 1969
+--- pbind.msg	Sun Nov 05 22:48:20 2023
+***************
+*** 0 ****
+--- 1,49 ----
++ ;* pbind.msg
++ ;****************************************************************************
++ ;* Makroassembler AS 							    *
++ ;* 									    *
++ ;* Stringdefinitionen fuer BIND                                             *
++ ;****************************************************************************
++ 
++ Include header.msg
++ Include tools2.msg
++ 
++ ;-----------------------------------------------------------------------------
++ ; Fehlermeldungen
++ 
++ Message ErrMsgTargetMissing
++  "Zieldateiangabe fehlt!"
++  "target file specification is missing!"
++ 
++ ;-----------------------------------------------------------------------------
++ ; Ansagen
++ 
++ Message InfoMessHead2
++  " <Quelldatei(en)> <Zieldatei> [Optionen]"
++  " <source file(s)> <target file> [options]"
++ 
++ Message Byte
++  "byte"
++  "Byte"
++ 
++ Message Bytes
++  "bytes"
++  "Bytes"
++ 
++ Message InfoMessHelp
++  "\n" \
++  "Optionen:\n" \
++  "  -f <Headerliste> : auszufilternde Records\n" \
++  "  -help            : nur Hilfe ausgeben\n" \
++  "  -q, -quiet       : Stiller Betrieb\n" \
++  "  -v               : wortreicher Betrieb\n" \
++  "  -version         : nur Versionsinfo ausgeben\n" \
++  "\n"
++  "\n" \
++  "options:\n" \
++  "  -f <header list> : records to filter out\n" \
++  "  -help            : print help and exit\n" \
++  "  -q, -quiet       : silent operation\n" \
++  "  -v               : verbose operation\n" \
++  "  -version         : print version info and exit\n" \
++  "\n"
+*** ../src.142b252/pbind.rc	Wed Dec 31 19:00:00 1969
+--- pbind.rc	Mon Nov 06 00:10:30 2023
+***************
+*** 0 ****
+--- 1,52 ----
++ #include <windows.h>
++ #include "version.h"
++ 
++ 
++ 100		ICON		"project.ico"
++ 
++ 
++ VS_VERSION_INFO VERSIONINFO
++ #ifdef AS_VER_PATCH
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++ #else
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++ #endif
++  FILEFLAGSMASK	0x3fL
++ #ifndef RELEASE_BUILD
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_SPECIALBUILD | VS_FF_DEBUG
++ # else
++  FILEFLAGS	VS_FF_SPECIALBUILD
++ # endif
++ #else
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_DEBUG
++ # else
++  FILEFLAGS	0x0L
++ # endif
++ #endif
++  FILEOS		VOS_NT_WINDOWS32
++  FILETYPE	VFT_APP
++  FILESUBTYPE	0x0L
++  BEGIN
++     BLOCK "StringFileInfo"
++     BEGIN
++         BLOCK "0409fde9"
++         BEGIN
++             VALUE "CompanyName", "The VARCem Group LLC"
++             VALUE "LegalCopyright", "Licenced under GPL-2.0-only OR GPL-3.0-only."
++             VALUE "ProductName", "AS Makro Assembler"
++             VALUE "ProductVersion", AS_VERSION
++             VALUE "InternalName", "PBIND"
++             VALUE "FileDescription", "PBIND"
++             VALUE "FileVersion", AS_VERSION
++             VALUE "OriginalFilename", "pbind.exe"
++         END
++     END
++     BLOCK "VarFileInfo"
++     BEGIN
++         VALUE "Translation", 0x0409, 65001
++     END
++ END
+*** ../src.142b252/pbind.res	Thu Jun 22 15:03:33 2023
+--- pbind.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,54 ****
+- ;* pbind.res
+- ;****************************************************************************
+- ;* Makroassembler AS 							    *
+- ;* 									    *
+- ;* Headerdatei BIND.RSC - enthaelt Stringdefinitionen fuer BIND             *
+- ;* 									    *
+- ;* Historie : 28.1.1997 Grundsteinlegung                                    *
+- ;*           24. 3.2000 added byte messages                                  *
+- ;*                                                                          *
+- ;****************************************************************************
+- 
+- Include header.res
+- 
+- Include tools2.res
+- 
+- ;-----------------------------------------------------------------------------
+- ; Fehlermeldungen
+- 
+- Message ErrMsgTargetMissing
+-  "Zieldateiangabe fehlt!"
+-  "target file specification is missing!"
+- 
+- ;-----------------------------------------------------------------------------
+- ; Ansagen
+- 
+- Message InfoMessHead2
+-  " <Quelldatei(en)> <Zieldatei> [Optionen]"
+-  " <source file(s)> <target file> [options]"
+- 
+- Message Byte
+-  "byte"
+-  "Byte"
+- 
+- Message Bytes
+-  "bytes"
+-  "Bytes"
+- 
+- Message InfoMessHelp
+-  "\n" \
+-  "Optionen:\n" \
+-  "  -f <Headerliste> : auszufilternde Records\n" \
+-  "  -help            : nur Hilfe ausgeben\n" \
+-  "  -q, -quiet       : Stiller Betrieb\n" \
+-  "  -v               : wortreicher Betrieb\n" \
+-  "  -version         : nur Versionsinfo ausgeben\n" \
+-  "\n"
+-  "\n" \
+-  "options:\n" \
+-  "  -f <header list> : records to filter out\n" \
+-  "  -help            : print help and exit\n" \
+-  "  -q, -quiet       : silent operation\n" \
+-  "  -v               : verbose operation\n" \
+-  "  -version         : print version info and exit\n" \
+-  "\n"
+--- 0 ----
+*** ../src.142b252/plist.msg	Wed Dec 31 19:00:00 1969
+--- plist.msg	Sun Nov 05 22:48:36 2023
+***************
+*** 0 ****
+--- 1,76 ----
++ ;* plist.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* Stringdefinitionen fuer PLIST                                             *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ Include tools2.msg
++ 
++ ;-----------------------------------------------------------------------------
++ ; Ansagen
++ 
++ Message MessHeaderLine1
++  "Codetyp     Segment    Startadresse   L&auml;nge (Byte)  Endadresse"
++  "Code-Type   Segment    Start-Address  Length (Bytes) End-Address"
++ 
++ Message MessHeaderLine2
++  "--------------------------------------------------------------"
++  "----------------------------------------------------------------"
++ 
++ Message MessHeaderLine1F
++  "Datei "
++  "File  "
++ 
++ Message MessHeaderLine2F
++  "------"
++  "------"
++ 
++ Message MessGenerator
++  "Erzeuger : "
++  "creator : "
++ 
++ Message MessSum1
++  "insgesamt "
++  "altogether "
++ 
++ Message MessSumSing
++  " Byte  "
++  " byte  "
++ 
++ Message MessSumPlur
++  " Bytes "
++  " bytes "
++ 
++ Message MessEntryPoint
++  "<Einsprung>           "
++  "<entry point>         "
++ 
++ Message MessRelocInfo
++  "<Relokationsinfo>   "
++  "<relocation info>   "
++ 
++ Message MessExportInfo
++  "<export. symbol>    "
++  "<exported symbol>   "
++ 
++ Message InfoMessHead2
++  " [Optionen] [Programmdateiname(n)]"
++  " [options] [name of program file(s)]"
++ 
++ Message InfoMessHelp
++  "\n" \
++  "Optionen:\n" \
++  "  -help      : nur Hilfe ausgeben\n" \
++  "  -q, -quiet : Stiller Betrieb\n" \
++  "  -v         : wortreicher Betrieb\n" \
++  "  -version   : nur Versionsinfo ausgeben\n" \
++  "\n"
++  "\n" \
++  "options:\n" \
++  "  -help      : print help and exit\n" \
++  "  -q, -quiet : silent operation\n" \
++  "  -v         : verbose operation\n" \
++  "  -version   : print version info and exit\n" \
++  "\n"
+*** ../src.142b252/plist.rc	Wed Dec 31 19:00:00 1969
+--- plist.rc	Mon Nov 06 00:10:41 2023
+***************
+*** 0 ****
+--- 1,52 ----
++ #include <windows.h>
++ #include "version.h"
++ 
++ 
++ 100		ICON		"project.ico"
++ 
++ 
++ VS_VERSION_INFO VERSIONINFO
++ #ifdef AS_VER_PATCH
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,AS_VER_PATCH
++ #else
++  FILEVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++  PRODUCTVERSION	AS_VER_MAJOR,AS_VER_MINOR,AS_VER_BUILD,0
++ #endif
++  FILEFLAGSMASK	0x3fL
++ #ifndef RELEASE_BUILD
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_SPECIALBUILD | VS_FF_DEBUG
++ # else
++  FILEFLAGS	VS_FF_SPECIALBUILD
++ # endif
++ #else
++ # ifdef _DEBUG
++  FILEFLAGS	VS_FF_DEBUG
++ # else
++  FILEFLAGS	0x0L
++ # endif
++ #endif
++  FILEOS		VOS_NT_WINDOWS32
++  FILETYPE	VFT_APP
++  FILESUBTYPE	0x0L
++  BEGIN
++     BLOCK "StringFileInfo"
++     BEGIN
++         BLOCK "0409fde9"
++         BEGIN
++             VALUE "CompanyName", "The VARCem Group LLC"
++             VALUE "LegalCopyright", "Licenced under GPL-2.0-only OR GPL-3.0-only."
++             VALUE "ProductName", "AS Makro Assembler"
++             VALUE "ProductVersion", AS_VERSION
++             VALUE "InternalName", "PLIST"
++             VALUE "FileDescription", "PLIST File Generator"
++             VALUE "FileVersion", AS_VERSION
++             VALUE "OriginalFilename", "plist.exe"
++         END
++     END
++     BLOCK "VarFileInfo"
++     BEGIN
++         VALUE "Translation", 0x0409, 65001
++     END
++ END
+*** ../src.142b252/plist.res	Thu Jun 22 15:03:33 2023
+--- plist.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,83 ****
+- ;* plist.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* Stringdefinitionen fuer PLIST                                             *
+- ;*                                                                           *
+- ;* Historie: 31. 5.1996 Grundsteinlegung                                     *
+- ;*            3.12.1996 Erweiterung um Segment-Spalte                        *
+- ;*           21. 1.2000 Meldungen RelocInfo                                  *
+- ;*           26. 6.2000 Meldung ExportInfo                                   *
+- ;*                                                                           *
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- Include tools2.res
+- 
+- ;-----------------------------------------------------------------------------
+- ; Ansagen
+- 
+- Message MessHeaderLine1
+-  "Codetyp     Segment    Startadresse   L&auml;nge (Byte)  Endadresse"
+-  "Code-Type   Segment    Start-Address  Length (Bytes) End-Address"
+- 
+- Message MessHeaderLine2
+-  "--------------------------------------------------------------"
+-  "----------------------------------------------------------------"
+- 
+- Message MessHeaderLine1F
+-  "Datei "
+-  "File  "
+- 
+- Message MessHeaderLine2F
+-  "------"
+-  "------"
+- 
+- Message MessGenerator
+-  "Erzeuger : "
+-  "creator : "
+- 
+- Message MessSum1
+-  "insgesamt "
+-  "altogether "
+- 
+- Message MessSumSing
+-  " Byte  "
+-  " byte  "
+- 
+- Message MessSumPlur
+-  " Bytes "
+-  " bytes "
+- 
+- Message MessEntryPoint
+-  "<Einsprung>           "
+-  "<entry point>         "
+- 
+- Message MessRelocInfo
+-  "<Relokationsinfo>   "
+-  "<relocation info>   "
+- 
+- Message MessExportInfo
+-  "<export. symbol>    "
+-  "<exported symbol>   "
+- 
+- Message InfoMessHead2
+-  " [Optionen] [Programmdateiname(n)]"
+-  " [options] [name of program file(s)]"
+- 
+- Message InfoMessHelp
+-  "\n" \
+-  "Optionen:\n" \
+-  "  -help      : nur Hilfe ausgeben\n" \
+-  "  -q, -quiet : Stiller Betrieb\n" \
+-  "  -v         : wortreicher Betrieb\n" \
+-  "  -version   : nur Versionsinfo ausgeben\n" \
+-  "\n"
+-  "\n" \
+-  "options:\n" \
+-  "  -help      : print help and exit\n" \
+-  "  -q, -quiet : silent operation\n" \
+-  "  -v         : verbose operation\n" \
+-  "  -version   : print version info and exit\n" \
+-  "\n"
+--- 0 ----
+*** ../src.142b252/README	Wed Feb 17 11:04:28 2021
+--- README	Mon Oct 30 16:00:51 2023
 ***************
 *** 8,14 ****
   
@@ -527,8 +5958,54 @@
   In case of problems or questions, send them to alfred@ccac.rwth-aachen.de .
 + 
 + For questions regarding this version/repo, contact waltje@varcem.com instead!
+*** ../src.142b252/README.LANGS	Sat Jan 18 19:26:22 2020
+--- README.LANGS	Sun Nov 05 23:22:19 2023
+***************
+*** 21,29 ****
+  languages to AS, and this is just what I hoped for when I wrote these
+  lines ;-)
+  
+! Messages are stored in text files with the extension '.res'.  Since
+  parsing text files at every startup of the assembler would be quite
+! inefficient, the '.res' files are transformed into a binary, indexed
+  format that can be read with a few block read statements.  The 
+  translation is done during the build process with a special tool 
+  called 'rescomp' (you might have seen the execution of rescomp while
+--- 21,29 ----
+  languages to AS, and this is just what I hoped for when I wrote these
+  lines ;-)
+  
+! Messages are stored in text files with the extension '.msg'.  Since
+  parsing text files at every startup of the assembler would be quite
+! inefficient, the '.msg' files are transformed into a binary, indexed
+  format that can be read with a few block read statements.  The 
+  translation is done during the build process with a special tool 
+  called 'rescomp' (you might have seen the execution of rescomp while
+***************
+*** 148,157 ****
+  
+    1. Find out which non-ASCII characters you additionally need.
+       I can then extend the message file compiler appropriately.
+!   2. Add your language to the 'Langs' statement in 'header.res'.
+       This file is included into all other message files, so you
+       only have to do this once :-)
+!   3. go through all other '.res' files and add the line to all
+       messages........
+    4. recompile AS
+    5. You're done!
+--- 148,157 ----
+  
+    1. Find out which non-ASCII characters you additionally need.
+       I can then extend the message file compiler appropriately.
+!   2. Add your language to the 'Langs' statement in 'header.msg'.
+       This file is included into all other message files, so you
+       only have to do this once :-)
+!   3. go through all other '.msg' files and add the line to all
+       messages........
+    4. recompile AS
+    5. You're done!
 *** ../src.142b252/README.MSVC	Wed Dec 31 19:00:00 1969
---- README.MSVC	Mon Oct 30 16:59:23 2023
+--- README.MSVC	Mon Oct 30 15:59:23 2023
 ***************
 *** 0 ****
 --- 1,27 ----
@@ -559,8 +6036,8 @@
 + 
 + Fred N. van Kempen, <waltje@varcem.com>
 + Last updated: 2023/10/30
-*** ../src.142b252/stdhandl.c	Thu Jun 22 16:03:33 2023
---- stdhandl.c	Thu Oct 19 20:34:39 2023
+*** ../src.142b252/stdhandl.c	Thu Jun 22 15:03:33 2023
+--- stdhandl.c	Thu Oct 19 19:34:39 2023
 ***************
 *** 118,125 ****
 --- 118,127 ----
@@ -574,8 +6051,8 @@
     else
       Redirected = NoRedir;
   
-*** ../src.142b252/stdinc.h	Thu Jun 22 16:03:33 2023
---- stdinc.h	Thu Oct 19 19:19:37 2023
+*** ../src.142b252/stdinc.h	Thu Jun 22 15:03:33 2023
+--- stdinc.h	Thu Oct 19 18:19:37 2023
 ***************
 *** 18,24 ****
   #ifndef __MUNIX__
@@ -593,8 +6070,8 @@
   #include <unistd.h>
   #endif
   #include <math.h>
-*** ../src.142b252/sysdefs.h	Sun Dec 04 11:57:07 2022
---- sysdefs.h	Wed Nov 01 22:17:42 2023
+*** ../src.142b252/sysdefs.h	Sun Dec 04 10:57:07 2022
+--- sysdefs.h	Wed Nov 01 21:17:42 2023
 ***************
 *** 1,5 ****
 - #ifndef _SYSDEFS_H
@@ -3350,8 +8827,8 @@
 ! 
 ! 
 ! #endif	/* _SYSDEFS_H */
-*** ../src.142b252/TODO	Wed Feb 17 12:04:28 2021
---- TODO	Wed Nov 01 19:04:46 2023
+*** ../src.142b252/TODO	Wed Feb 17 11:04:28 2021
+--- TODO	Wed Nov 01 18:04:46 2023
 ***************
 *** 8,11 ****
   
@@ -3359,3 +8836,269 @@
   - Entschüsselung AttrPart über strchr()
 - 
 --- 8,10 ----
+*** ../src.142b252/tools.msg	Wed Dec 31 19:00:00 1969
+--- tools.msg	Sun Nov 05 22:48:52 2023
+***************
+*** 0 ****
+--- 1,32 ----
++ ;* tools.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* Stringdefinitionen, die alle AS-Tools brauchen                            *
++ ;*****************************************************************************
++ 
++ Include header.msg
++ 
++ Message FormatErr1aMsg
++  "Das Format der Datei ""
++  "the format of file ""
++ 
++ Message FormatErr1bMsg
++  "" ist fehlerhaft!"
++  "" is invalid!"
++ 
++ Message FormatErr2Msg
++  "Bitte "CH_ue"bersetzen Sie die Quelldatei neu!"
++  "please reassemble the source file!"
++ 
++ Message IOErrAHeaderMsg
++  "Bei Bearbeitung der Datei ""
++  "the following error occured while processing ""
++  
++ Message IOErrBHeaderMsg
++  "" ist folgender Fehler aufgetreten:"
++  "" :"
++ 
++ Message ErrMsgTerminating
++  "Das Programm wird beendet!"
++  "program terminated!"
+*** ../src.142b252/tools.res	Sat Jan 18 19:26:22 2020
+--- tools.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,35 ****
+- ;* tools.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* Stringdefinitionen, die alle AS-Tools brauchen                            *
+- ;*                                                                           *
+- ;* Historie: 31. 5.1996 Grundsteinlegung                                     *
+- ;*                                                                           *
+- ;*****************************************************************************
+- 
+- Include header.res
+- 
+- Message FormatErr1aMsg
+-  "Das Format der Datei ""
+-  "the format of file ""
+- 
+- Message FormatErr1bMsg
+-  "" ist fehlerhaft!"
+-  "" is invalid!"
+- 
+- Message FormatErr2Msg
+-  "Bitte "CH_ue"bersetzen Sie die Quelldatei neu!"
+-  "please reassemble the source file!"
+- 
+- Message IOErrAHeaderMsg
+-  "Bei Bearbeitung der Datei ""
+-  "the following error occured while processing ""
+-  
+- Message IOErrBHeaderMsg
+-  "" ist folgender Fehler aufgetreten:"
+-  "" :"
+- 
+- Message ErrMsgTerminating
+-  "Das Programm wird beendet!"
+-  "program terminated!"
+--- 0 ----
+*** ../src.142b252/tools2.msg	Wed Dec 31 19:00:00 1969
+--- tools2.msg	Sun Nov 05 22:49:08 2023
+***************
+*** 0 ****
+--- 1,71 ----
++ ;* tools2.msg
++ ;*****************************************************************************
++ ;* AS-Portierung                                                             *
++ ;*                                                                           *
++ ;* Stringdefinitionen, die alle AS-Tools brauchen                            *
++ ;*****************************************************************************
++ 
++ ;-----------------------------------------------------------------------------
++ ; Durchsagen
++ 
++ Message InfoMessHead1
++  "Aufruf: "
++  "Usage: "
++ 
++ ;-----------------------------------------------------------------------------
++ ; Fehlermeldungen
++ 
++ Message FormatInvHeaderMsg
++  "ung&uuml;ltiger Dateikopf"
++  "invalid file header"
++ 
++ Message FormatInvRecordHeaderMsg
++  "ung&uuml;ltiger Datensatzkopf"
++  "invalid record header"
++ 
++ Message FormatInvRecordLenMsg
++  "fehlerhafte Datensatzl&auml;nge"
++  "invalid record length"
++ 
++ Message ErrMsgNullMaskA
++  "Warnung : Dateimaske "
++  "warning : file mask "
++ 
++ Message ErrMsgNullMaskB
++  " pa&szlig;t auf keine Datei!"
++  " does not fit to any file!"
++ 
++ Message ErrMsgInvEnvParam
++  "Fehlerhafter Environment-Parameter (-help f&uuml;r Hilfe): "
++  "invalid environment parameter (-help for help): "
++ 
++ Message ErrMsgInvParam
++  "Fehlerhafter Parameter (-help f&uuml;r Hilfe): "
++  "invalid parameter (-help for help): "
++ 
++ Message ErrMsgTargMissing
++  "Zieldateiangabe fehlt!"
++  "destination file specification missing!"
++  
++ Message ErrMsgAutoFailed
++  "automatische Bereichserkennung fehlgeschlagen!"
++  "automatic range setting failed!"
++ 
++ Message ErrMsgOverlap
++  "Warnung: &uuml;berlappende Belegung!"
++  "warning: overlapping memory allocation!"
++ 
++ Message ErrMsgProgTerm
++  "Programmabbruch"
++  "program terminated"
++ 
++ Message ErrMessNoInputFiles
++  "keine Quelldateien (-help f&uuml;r Hilfe)"
++  "no input files (-help for help)"
++ 
++ ;---------------------------------------------------------------------------
++ 
++ Message Suffix
++  ".p"
++  ".p"
++ 
+*** ../src.142b252/tools2.res	Thu Jun 22 15:03:33 2023
+--- tools2.res	Wed Dec 31 19:00:00 1969
+***************
+*** 1,74 ****
+- ;* tools.res
+- ;*****************************************************************************
+- ;* AS-Portierung                                                             *
+- ;*                                                                           *
+- ;* Stringdefinitionen, die alle AS-Tools brauchen                            *
+- ;*                                                                           *
+- ;* Historie: 31. 5.1996 Grundsteinlegung                                     *
+- ;*                                                                           *
+- ;*****************************************************************************
+- 
+- ;-----------------------------------------------------------------------------
+- ; Durchsagen
+- 
+- Message InfoMessHead1
+-  "Aufruf: "
+-  "usage: "
+- 
+- ;-----------------------------------------------------------------------------
+- ; Fehlermeldungen
+- 
+- Message FormatInvHeaderMsg
+-  "ung&uuml;ltiger Dateikopf"
+-  "invalid file header"
+- 
+- Message FormatInvRecordHeaderMsg
+-  "ung&uuml;ltiger Datensatzkopf"
+-  "invalid record header"
+- 
+- Message FormatInvRecordLenMsg
+-  "fehlerhafte Datensatzl&auml;nge"
+-  "invalid record length"
+- 
+- Message ErrMsgNullMaskA
+-  "Warnung : Dateimaske "
+-  "warning : file mask "
+- 
+- Message ErrMsgNullMaskB
+-  " pa&szlig;t auf keine Datei!"
+-  " does not fit to any file!"
+- 
+- Message ErrMsgInvEnvParam
+-  "Fehlerhafter Environment-Parameter (-help f&uuml;r Hilfe): "
+-  "invalid environment parameter (-help for help): "
+- 
+- Message ErrMsgInvParam
+-  "Fehlerhafter Parameter (-help f&uuml;r Hilfe): "
+-  "invalid parameter (-help for help): "
+- 
+- Message ErrMsgTargMissing
+-  "Zieldateiangabe fehlt!"
+-  "destination file specification missing!"
+-  
+- Message ErrMsgAutoFailed
+-  "automatische Bereichserkennung fehlgeschlagen!"
+-  "automatic range setting failed!"
+- 
+- Message ErrMsgOverlap
+-  "Warnung: &uuml;berlappende Belegung!"
+-  "warning: overlapping memory allocation!"
+- 
+- Message ErrMsgProgTerm
+-  "Programmabbruch"
+-  "program terminated"
+- 
+- Message ErrMessNoInputFiles
+-  "keine Quelldateien (-help f&uuml;r Hilfe)"
+-  "no input files (-help for help)"
+- 
+- ;---------------------------------------------------------------------------
+- 
+- Message Suffix
+-  ".p"
+-  ".p"
+- 
+--- 0 ----
+*** ../src.142b252/version.h	Wed Feb 17 11:04:29 2021
+--- version.h	Sun Nov 05 23:51:23 2023
+***************
+*** 10,15 ****
+--- 10,38 ----
+  /*                                                                           */
+  /*****************************************************************************/
+  
++ #define AS_VER_MAJOR	1
++ #define AS_VER_MINOR	42
++ #define AS_VER_BUILD	252
++ #define AS_VER_PATCH	3
++ 
++ 
++ /* Standard C preprocessor macros. */
++ #define STR_STRING(x)	#x
++ #define STR(x)		STR_STRING(x)
++ #define STR_RC(a,e)	a ## , ## e
++ 
++ 
++ /* These are used in the application. */
++ #define AS_VER_NUM	AS_VER_MAJOR.AS_VER_MINOR.AS_VER_BUILD
++ #if defined(AS_VER_PATCH) && AS_VER_PATCH > 0
++ # define AS_VER_NUM_4	AS_VER_MAJOR.AS_VER_MINOR.AS_VER_BUILD.AS_VER_PATCH
++ # define AS_VERSION	STR(AS_VER_NUM_4)
++ #else
++ # define AS_VER_NUM_4	AS_VER_MAJOR.AS_VER_MINOR.AS_VER_BUILD.0
++ # define AS_VERSION	STR(AS_VER_NUM)
++ #endif
++ 
++ 
+  extern const char *Version;
+  extern LongInt VerNo;
+  

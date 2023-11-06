@@ -1,69 +1,69 @@
-$(TARG_OBJDIR)./ioerrs.msg: ioerrs.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) ioerrs.res -m $@
-$(TARG_OBJDIR)./ioerrs.msh: ioerrs.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) ioerrs.res -i $@
-$(TARG_OBJDIR)./ioerrs.rsc: ioerrs.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) ioerrs.res -h $@
+$(TARG_OBJDIR)./ioerrs.out: ioerrs.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) ioerrs.msg -m $@
+$(TARG_OBJDIR)./ioerrs.msh: ioerrs.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) ioerrs.msg -i $@
+$(TARG_OBJDIR)./ioerrs.rsc: ioerrs.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) ioerrs.msg -h $@
 
-$(TARG_OBJDIR)./cmdarg.msg: cmdarg.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) cmdarg.res -m $@
-$(TARG_OBJDIR)./cmdarg.msh: cmdarg.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) cmdarg.res -i $@
-$(TARG_OBJDIR)./cmdarg.rsc: cmdarg.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) cmdarg.res -h $@
+$(TARG_OBJDIR)./cmdarg.out: cmdarg.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) cmdarg.msg -m $@
+$(TARG_OBJDIR)./cmdarg.msh: cmdarg.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) cmdarg.msg -i $@
+$(TARG_OBJDIR)./cmdarg.rsc: cmdarg.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) cmdarg.msg -h $@
 
-$(TARG_OBJDIR)./tools.msg: tools.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) tools.res -m $@
-$(TARG_OBJDIR)./tools.msh: tools.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) tools.res -i $@
-$(TARG_OBJDIR)./tools.rsc: tools.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) tools.res -h $@
+$(TARG_OBJDIR)./tools.out: tools.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) tools.msg -m $@
+$(TARG_OBJDIR)./tools.msh: tools.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) tools.msg -i $@
+$(TARG_OBJDIR)./tools.rsc: tools.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) tools.msg -h $@
 
-$(TARG_OBJDIR)./as.msg: as.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) as.res -m $@
-$(TARG_OBJDIR)./as.msh: as.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) as.res -i $@
-$(TARG_OBJDIR)./as.rsc: as.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) as.res -h $@
+$(TARG_OBJDIR)./as.out: as.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) as.msg -m $@
+$(TARG_OBJDIR)./as.msh: as.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) as.msg -i $@
+$(TARG_OBJDIR)./as.rsc: as.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) as.msg -h $@
 
-$(TARG_OBJDIR)./das.msg: das.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) das.res -m $@
-$(TARG_OBJDIR)./das.msh: das.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) das.res -i $@
-$(TARG_OBJDIR)./das.rsc: das.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) das.res -h $@
+$(TARG_OBJDIR)./das.out: das.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) das.msg -m $@
+$(TARG_OBJDIR)./das.msh: das.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) das.msg -i $@
+$(TARG_OBJDIR)./das.rsc: das.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) das.msg -h $@
 
-$(TARG_OBJDIR)./plist.msg: plist.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) plist.res -m $@
-$(TARG_OBJDIR)./plist.msh: plist.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) plist.res -i $@
-$(TARG_OBJDIR)./plist.rsc: plist.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) plist.res -h $@
+$(TARG_OBJDIR)./plist.out: plist.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) plist.msg -m $@
+$(TARG_OBJDIR)./plist.msh: plist.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) plist.msg -i $@
+$(TARG_OBJDIR)./plist.rsc: plist.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) plist.msg -h $@
 
-$(TARG_OBJDIR)./alink.msg: alink.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) alink.res -m $@
-$(TARG_OBJDIR)./alink.msh: alink.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) alink.res -i $@
-$(TARG_OBJDIR)./alink.rsc: alink.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) alink.res -h $@
+$(TARG_OBJDIR)./alink.out: alink.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) alink.msg -m $@
+$(TARG_OBJDIR)./alink.msh: alink.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) alink.msg -i $@
+$(TARG_OBJDIR)./alink.rsc: alink.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) alink.msg -h $@
 
-$(TARG_OBJDIR)./pbind.msg: pbind.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) pbind.res -m $@
-$(TARG_OBJDIR)./pbind.msh: pbind.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) pbind.res -i $@
-$(TARG_OBJDIR)./pbind.rsc: pbind.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) pbind.res -h $@
+$(TARG_OBJDIR)./pbind.out: pbind.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) pbind.msg -m $@
+$(TARG_OBJDIR)./pbind.msh: pbind.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) pbind.msg -i $@
+$(TARG_OBJDIR)./pbind.rsc: pbind.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) pbind.msg -h $@
 
-$(TARG_OBJDIR)./p2hex.msg: p2hex.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) p2hex.res -m $@
-$(TARG_OBJDIR)./p2hex.msh: p2hex.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) p2hex.res -i $@
-$(TARG_OBJDIR)./p2hex.rsc: p2hex.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) p2hex.res -h $@
+$(TARG_OBJDIR)./p2hex.out: p2hex.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) p2hex.msg -m $@
+$(TARG_OBJDIR)./p2hex.msh: p2hex.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) p2hex.msg -i $@
+$(TARG_OBJDIR)./p2hex.rsc: p2hex.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) p2hex.msg -h $@
 
-$(TARG_OBJDIR)./p2bin.msg: p2bin.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) p2bin.res -m $@
-$(TARG_OBJDIR)./p2bin.msh: p2bin.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) p2bin.res -i $@
-$(TARG_OBJDIR)./p2bin.rsc: p2bin.res tools2.res header.res $(RESCOMPTARGET)
-	$(CURRDIR)$(RESCOMPTARGET) p2bin.res -h $@
+$(TARG_OBJDIR)./p2bin.out: p2bin.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) p2bin.msg -m $@
+$(TARG_OBJDIR)./p2bin.msh: p2bin.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) p2bin.msg -i $@
+$(TARG_OBJDIR)./p2bin.rsc: p2bin.msg tools2.msg header.msg $(RESCOMPTARGET)
+	$(CURRDIR)$(RESCOMPTARGET) p2bin.msg -h $@

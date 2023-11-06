@@ -1,15 +1,11 @@
-;* decodecmd.res
+;* cmdarg.msg
 ;*****************************************************************************
 ;* AS-Portierung                                                             *
 ;*                                                                           *
 ;* Definition der Fehlermeldungen, die beim Einlesen auftreten koennen       *
-;*                                                                           *
-;* Historie:  5. 5.1996 Grundsteinlegung                                     *
-;*           18. 4.1999 Fehlermeldung Indirektion im Key-File                *
-;*                                                                           *
 ;*****************************************************************************
 
-Include header.res
+Include header.msg
 
 Message ErrMsgKeyFileNotFound
  "Key-Datei nicht gefunden"

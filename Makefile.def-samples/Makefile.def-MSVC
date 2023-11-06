@@ -15,6 +15,7 @@ OOBJ	= /Fo
 LD	= cl /nologo
 LDFLAGS	=
 EOBJ	= /Fe
+RC	= rc /fo $@
 HOST_OBJEXTENSION = .obj
 HOST_EXEXTENSION = .exe
 LIBM	=
@@ -31,6 +32,13 @@ TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
 TARG_LD = $(LD)
 TARG_LDFLAGS = $(LDFLAGS)
 TARG_EXEXTENSION = $(HOST_EXEXTENSION)
+
+ALINKRES=alink.res
+ASLRES=as.res
+P2BINRES=p2bin.res
+P2HEXRES=p2hex.res
+PBINDRES=pbind.res
+PLISTRES=plist.res
 
 # -------------------------------------------------------------------------
 # directories where binaries, includes, and manpages should go during

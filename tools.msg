@@ -1,14 +1,11 @@
-;* tools.res
+;* tools.msg
 ;*****************************************************************************
 ;* AS-Portierung                                                             *
 ;*                                                                           *
 ;* Stringdefinitionen, die alle AS-Tools brauchen                            *
-;*                                                                           *
-;* Historie: 31. 5.1996 Grundsteinlegung                                     *
-;*                                                                           *
 ;*****************************************************************************
 
-Include header.res
+Include header.msg
 
 Message FormatErr1aMsg
  "Das Format der Datei ""

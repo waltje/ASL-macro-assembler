@@ -13,6 +13,7 @@ CFLAGS	= -O2 -Wall
 LIBM	=
 LD	= $(CC)
 LDFLAGS	=
+RC	= windres -Ocoff
 HOST_OBJEXTENSION = .o
 HOST_EXEXTENSION = .exe
 
@@ -23,6 +24,14 @@ TARG_LD = $(LD)
 TARG_LDFLAGS = $(LDFLAGS)
 TARG_OBJEXTENSION = .o
 TARG_EXEXTENSION = $(HOST_EXEXTENSION)
+
+ALINKRES=alink.res
+ASLRES=as.res
+P2BINRES=p2bin.res
+P2HEXRES=p2hex.res
+PBINDRES=pbind.res
+PLISTRES=plist.res
+
 
 # -------------------------------------------------------------------------
 # directories where binaries, includes, and manpages should go during

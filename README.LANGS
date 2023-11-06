@@ -21,9 +21,9 @@ to do other translations.  You may now ask if you could add more
 languages to AS, and this is just what I hoped for when I wrote these
 lines ;-)
 
-Messages are stored in text files with the extension '.res'.  Since
+Messages are stored in text files with the extension '.msg'.  Since
 parsing text files at every startup of the assembler would be quite
-inefficient, the '.res' files are transformed into a binary, indexed
+inefficient, the '.msg' files are transformed into a binary, indexed
 format that can be read with a few block read statements.  The 
 translation is done during the build process with a special tool 
 called 'rescomp' (you might have seen the execution of rescomp while
@@ -148,10 +148,10 @@ translation ;-), the following steps have to be taken:
 
   1. Find out which non-ASCII characters you additionally need.
      I can then extend the message file compiler appropriately.
-  2. Add your language to the 'Langs' statement in 'header.res'.
+  2. Add your language to the 'Langs' statement in 'header.msg'.
      This file is included into all other message files, so you
      only have to do this once :-)
-  3. go through all other '.res' files and add the line to all
+  3. go through all other '.msg' files and add the line to all
      messages........
   4. recompile AS
   5. You're done!

@@ -1,15 +1,11 @@
-;* ioerrs.res
+;* ioerrs.msg
 ;*****************************************************************************
 ;* AS-Portierung                                                             *
 ;*                                                                           *
 ;* Definition Fehlermeldungs-Strings                                         *
-;*                                                                           *
-;* Historie:  6. 9.1996 Grundsteinlegung                                     *
-;*           19. 9.1996 ...EACCESS                                           *
-;*                                                                           *
 ;*****************************************************************************
 
-Include header.res
+Include header.msg
 
 Message IoErr_EPERM
  "kein Eigent&auml;mer"

@@ -1,17 +1,12 @@
-;* pbind.res
+;* pbind.msg
 ;****************************************************************************
 ;* Makroassembler AS 							    *
 ;* 									    *
-;* Headerdatei BIND.RSC - enthaelt Stringdefinitionen fuer BIND             *
-;* 									    *
-;* Historie : 28.1.1997 Grundsteinlegung                                    *
-;*           24. 3.2000 added byte messages                                  *
-;*                                                                          *
+;* Stringdefinitionen fuer BIND                                             *
 ;****************************************************************************
 
-Include header.res
-
-Include tools2.res
+Include header.msg
+Include tools2.msg
 
 ;-----------------------------------------------------------------------------
 ; Fehlermeldungen

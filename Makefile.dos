@@ -13,7 +13,7 @@ LIBM=-lm
 
 !include Makefile.def
 
-# targets built via this file use message catalogs in external .res files:
+# targets built via this file use message catalogs in external .msg files:
 
 !include makedefs.mx
 

@@ -1,19 +1,12 @@
-;* plist.res
+;* plist.msg
 ;*****************************************************************************
 ;* AS-Portierung                                                             *
 ;*                                                                           *
 ;* Stringdefinitionen fuer PLIST                                             *
-;*                                                                           *
-;* Historie: 31. 5.1996 Grundsteinlegung                                     *
-;*            3.12.1996 Erweiterung um Segment-Spalte                        *
-;*           21. 1.2000 Meldungen RelocInfo                                  *
-;*           26. 6.2000 Meldung ExportInfo                                   *
-;*                                                                           *
 ;*****************************************************************************
 
-Include header.res
-
-Include tools2.res
+Include header.msg
+Include tools2.msg
 
 ;-----------------------------------------------------------------------------
 ; Ansagen
