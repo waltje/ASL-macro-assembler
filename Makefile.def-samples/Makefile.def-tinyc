@@ -13,7 +13,7 @@ CFLAGS	= -O2 -Wall
 LIBM	=
 LD	= $(CC)
 LDFLAGS	=
-RC	= windres -Ocoff
+RC	= windres -Ocoff -o $@
 HOST_OBJEXTENSION = .o
 HOST_EXEXTENSION = .exe
 

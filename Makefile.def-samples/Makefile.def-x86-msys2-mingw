@@ -11,7 +11,7 @@ LIBM =
 HOST_OBJEXTENSION = .o
 LD = $(CC)
 LDFLAGS =
-RC = windres -Ocoff
+RC = windres -Ocoff -o $@
 HOST_EXEXTENSION = .exe
 
 TARG_CC = $(CC)
