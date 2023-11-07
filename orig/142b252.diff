@@ -9069,9 +9069,9 @@
 + LIBDIR =
 + DOCDIR = C:/ASL/doc
 *** ../src.142b252/version.c	Sun Oct 29 14:49:38 2023
---- version.c	Mon Nov 06 13:28:47 2023
+--- version.c	Tue Nov 07 16:14:28 2023
 ***************
-*** 8,21 ****
+*** 8,23 ****
   /*                                                                           */
   /*****************************************************************************/
   
@@ -9084,9 +9084,11 @@
   
 ! const char *InfoMessCopyright = "(C) 1992,2023 Alfred Arnold";
   
-  LongInt Magic = 0x12372f46;
+! LongInt Magic = 0x12372f46;
   
---- 8,42 ----
+  void version_init(void)
+  {
+--- 8,44 ----
   /*                                                                           */
   /*****************************************************************************/
   
@@ -9120,8 +9122,10 @@
   
 ! const char *InfoMessCopyright = "(C) 1992-2023 Alfred Arnold";
   
-  LongInt Magic = 0x12372f46;
+! LongInt Magic = 0x12372e46;
   
+  void version_init(void)
+  {
 *** ../src.142b252/version.h	Wed Feb 17 11:04:29 2021
 --- version.h	Mon Nov 06 13:29:32 2023
 ***************
