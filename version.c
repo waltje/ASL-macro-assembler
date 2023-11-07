@@ -38,7 +38,7 @@ LongInt VerNo = STRCAT(AS_VER_MAJOR,AS_VER_MINOR);
 
 const char *InfoMessCopyright = "(C) 1992-2023 Alfred Arnold";
 
-LongInt Magic = 0x12372f46;
+LongInt Magic = 0x12372e46;
 
 void version_init(void)
 {
