@@ -122,7 +122,7 @@ clean_doc: clean_doc_DE clean_doc_EN
 clean: clean_doc
 	if test "$(HOST_OBJEXTENSION)" != ""; then $(RM) *$(HOST_OBJEXTENSION) $(OBJDIR)*$(HOST_OBJEXTENSION); fi
 	if test "$(TARG_OBJEXTENSION)" != ""; then $(RM) *$(TARG_OBJEXTENSION) $(TARG_OBJDIR)*$(TARG_OBJEXTENSION); fi
-	$(RM) $(ALLTARGETS) $(HOSTTARGETS) $(OBJDIR)*.dep $(TARG_OBJDIR)*.dep *.p $(TARG_OBJDIR)*.msg *.rsc $(TARG_OBJDIR)*.msh $(TARG_OBJDIR)*.rsc tests/testlog testlog
+	$(RM) $(ALLTARGETS) $(HOSTTARGETS) $(OBJDIR)*.dep $(TARG_OBJDIR)*.dep *.p $(TARG_OBJDIR)*.out *.rsc $(TARG_OBJDIR)*.msh $(TARG_OBJDIR)*.rsc tests/testlog testlog
 
 #---------------------------------------------------------------------------
 # Create Distributions
