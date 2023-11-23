@@ -26,7 +26,7 @@
 # define ABSTATE	""
 #endif
 
-#ifdef AS_VER_PATCH && AS_VER_PATCH > 0
+#if AS_VER_PATCH && AS_VER_PATCH > 0
 const char *Version = STR(AS_VER_MAJOR.AS_VER_MINOR) ABSTATE " [Bld " STR(AS_VER_BUILD)"] Patch " STR(AS_VER_PATCH);
 const char *DebVersion = STR(AS_VER_MAJOR.AS_VER_MINOR)"bld"STR(AS_VER_BUILD)"-"STR(AS_VER_PATCH);
 #else
