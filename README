@@ -44,8 +44,8 @@ and it seems to run fine on Windows XP (32b), Windows 7 (32/64b),
 Windows 8.1 (ARM), Windows 10/11 (x64 and ARM64.) The Windows ARM
 binaries had to be signed, of course, and soon, so will the Windows
 11 ones have to be.  See README.MSVC for instructions.
-
-
+ 
+ 
 DIFFERENCES / THINGS TO DO
 
 The portable C version of AS has the following, known differences to
@@ -94,6 +94,7 @@ See the file 'INSTALL'
 
 FEEDBACK
 
-In case of problems or questions, send them to alfred@ccac.rwth-aachen.de .
+In case of problems or questions, send them to alfred@ccac.rwth-aachen.de.
 
-For questions regarding this version/repo, contact waltje@varcem.com instead!
+For questions regarding building on Windows with MSVC, please see the
+file README.MSVC and contact Fred N. van Kempen (waltje@varcem.com).

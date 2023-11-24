@@ -6,10 +6,10 @@ $(DOC_DE_DIR)as.ps: $(DOC_DE_DIR)as.dvi
 	dvips $(DOC_DE_DIR)as -o $(DOC_DE_DIR)as.ps
 
 $(DOC_DE_DIR)as.pdf: $(DOC_DE_DIR)as.tex $(INCFILES)
-	pdflatex -aux-directory=$(DOC_DE_DIR) -output-directory=$(DOC_DE_DIR) $(DOC_DE_DIR)as
-	pdflatex -aux-directory=$(DOC_DE_DIR) -output-directory=$(DOC_DE_DIR) $(DOC_DE_DIR)as
+	pdflatex -output-directory=$(DOC_DE_DIR) $(DOC_DE_DIR)as
+	pdflatex -output-directory=$(DOC_DE_DIR) $(DOC_DE_DIR)as
 	makeindex $(DOC_DE_DIR)as
-	pdflatex -aux-directory=$(DOC_DE_DIR) -output-directory=$(DOC_DE_DIR) $(DOC_DE_DIR)as
+	pdflatex -output-directory=$(DOC_DE_DIR) $(DOC_DE_DIR)as
 
 $(DOC_DE_DIR)as.dvi: $(DOC_DE_DIR)as.tex $(INCFILES)
 	latex  -aux-directory=$(DOC_DE_DIR) -output-directory=$(DOC_DE_DIR) $(DOC_DE_DIR)as

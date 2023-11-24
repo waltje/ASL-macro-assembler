@@ -7,6 +7,9 @@
 
 
 # ...for host-side build tools:
+RM	= del /q
+TARG_CLEAN = clean_windows
+
 CC	= tcc
 OBJDIR	=
 CFLAGS	= -O2 -Wall 
@@ -24,13 +27,15 @@ TARG_LD = $(LD)
 TARG_LDFLAGS = $(LDFLAGS)
 TARG_OBJEXTENSION = .o
 TARG_EXEXTENSION = $(HOST_EXEXTENSION)
+CHECK_TARG_CC =
 
-ALINKRES=alink.res
-ASLRES=as.res
-P2BINRES=p2bin.res
-P2HEXRES=p2hex.res
-PBINDRES=pbind.res
-PLISTRES=plist.res
+ALINK_RC_OBJECTS = alink.res
+AS_RC_OBJECTS    = as.res
+DAS_RC_OBJECTS   = das.res
+P2BIN_RC_OBJECTS = p2bin.res
+P2HEX_RC_OBJECTS = p2hex.res
+PBIND_RC_OBJECTS = pbind.res
+PLIST_RC_OBJECTS = plist.res
 
 
 # -------------------------------------------------------------------------

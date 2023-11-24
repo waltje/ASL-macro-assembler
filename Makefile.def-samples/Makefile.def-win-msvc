@@ -1,14 +1,4 @@
 # -------------------------------------------------------------------------
-# Override some Makefile defaults to match MSVC environment:
-
-RM=del/q
-OOBJ=/Fo
-EOBJ=/Fe
-TARG_OOBJ=$(OOBJ)
-TARG_EOBJ=$(EOBJ)
-CURRDIR=.\\
-
-# -------------------------------------------------------------------------
 # choose your compiler (must be ANSI-compliant!) and linker command, plus
 # any additionally needed flags.  Also set target directory and file extensions:
 #
@@ -16,14 +6,23 @@ CURRDIR=.\\
 
 
 # ...for host-side build tools:
+RM	= del /q
+TARG_CLEAN = clean_windows
 
-OBJDIR =
-CC = cl /nologo
-CFLAGS = /O2
+OBJDIR	=
+CC	= cl /nologo
+CFLAGS	= /O2
+OOBJ	= /Fo
+LD	= cl /nologo
+LDFLAGS	=
+EOBJ	= /Fe
+RC	= rc /fo $@
 HOST_OBJEXTENSION = .obj
-LD = cl /nologo
-LDFLAGS =
 HOST_EXEXTENSION = .exe
+LIBM	=
+
+TARG_OOBJ=$(OOBJ)
+TARG_EOBJ=$(EOBJ)
 
 # ...for the actual build targets.  This is the simple case for no cross-build:
 
@@ -34,6 +33,15 @@ TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
 TARG_LD = $(LD)
 TARG_LDFLAGS = $(LDFLAGS)
 TARG_EXEXTENSION = $(HOST_EXEXTENSION)
+CHECK_TARG_CC =
+
+ALINK_RC_OBJECTS = alink.res
+AS_RC_OBJECTS    = as.res
+DAS_RC_OBJECTS   = das.res
+P2BIN_RC_OBJECTS = p2bin.res
+P2HEX_RC_OBJECTS = p2hex.res
+PBIND_RC_OBJECTS = pbind.res
+PLIST_RC_OBJECTS = plist.res
 
 # -------------------------------------------------------------------------
 # directories where binaries, includes, and manpages should go during

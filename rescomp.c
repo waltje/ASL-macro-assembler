@@ -15,7 +15,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "endian.h"
+#include "be_le.h"
 #include "strutil.h"
 #include "bpemu.h"
 
@@ -269,7 +269,8 @@ static char *make_sym_name(const char *p_file_name, int include_guard)
   size_t l;
   Boolean no_replace;
 
-  if ((p_base = strrchr(p_file_name, PATHSEP)))
+  p_base = strrchr(p_file_name, PATHSEP);
+  if (p_base)
     p_file_name = p_base + 1;
   l = strlen(p_file_name);
   p_run = p_ret = (char*)malloc(!!include_guard + l + 1);
@@ -338,7 +339,7 @@ int main(int argc, char **argv)
   const char *pSrcName = NULL, *p_rsc_file_name = NULL;
   char *p_rsc_file_incl_guard_sym = NULL, *p_msh_file_incl_guard_sym = NULL;
 
-  endian_init(); strutil_init();
+  be_le_init(); strutil_init();
 
   curridx = 0;
   nextidx = -1;

@@ -20,11 +20,11 @@
     size_t old_roundup_cnt = dyn_array_roundup(old_cnt); \
     if (new_roundup_cnt != old_roundup_cnt) { \
       size_t s = sizeof(*array) * new_roundup_cnt; \
-      array = (decl_type*) (array ? realloc((void *)array, s) : malloc(s)); \
+      array = (decl_type*) (array ? realloc(array, s) : malloc(s)); \
       if (new_roundup_cnt > old_roundup_cnt) \
-        memset((void *)&array[old_roundup_cnt], 0, sizeof(*array) * (new_roundup_cnt - old_roundup_cnt)); \
+        memset(&array[old_roundup_cnt], 0, sizeof(*array) * (new_roundup_cnt - old_roundup_cnt)); \
       else if (new_roundup_cnt > (size_t)(new_cnt)) \
-        memset((void *)&array[new_cnt], 0, sizeof(*array) * (new_roundup_cnt - (new_cnt))); \
+        memset(&array[new_cnt], 0, sizeof(*array) * (new_roundup_cnt - (new_cnt))); \
     } \
   } while (0)
 

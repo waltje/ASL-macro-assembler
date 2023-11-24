@@ -12,8 +12,8 @@
 
 #define AS_VER_MAJOR	1		// major version number
 #define AS_VER_MINOR	42		// minor version number
-#define AS_VER_BUILD	252		// build (should be automated)
-#define AS_VER_PATCH	3		// local patch number
+#define AS_VER_BUILD	255		// build (should be automated)
+#define AS_VER_PATCH	0		// local patch number
 
 #define AS_ALPHA	0		// is this an ALPHA-level build?
 #define AS_BETA		1		// is this a BETA-level build?

@@ -118,10 +118,10 @@ void stdhandl_init(void)
   fstat(NumStdOut, &stdout_stat);
   if (S_ISREG(stdout_stat.st_mode))
     Redirected = RedirToFile;
-#ifdef S_ISFIFO
+# ifdef S_ISFIFO
   else if (S_ISFIFO(stdout_stat.st_mode))
     Redirected = RedirToDevice;
-#endif
+# endif
   else
     Redirected = NoRedir;
 

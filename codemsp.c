@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "nls.h"
-#include "endian.h"
+#include "be_le.h"
 #include "strutil.h"
 #include "bpemu.h"
 #include "chunks.h"
@@ -483,7 +483,6 @@ static Word GetMult(const tStrComp *pArg, Boolean *pOK)
     case eIsReg:
       *pOK = True;
       return Result | 0x0080;
-      break;
     case eIsNoReg:
       break;
     case eRegAbort:

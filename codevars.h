@@ -16,7 +16,7 @@
 
 #define order_array_free(orders) \
   do { \
-    free((void *)orders); \
+    free(orders); \
     orders = NULL; \
   } while (0)
 

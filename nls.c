@@ -8,10 +8,6 @@
 /*                                                                           */
 /*****************************************************************************/
 
-#ifdef _MSC_VER
-# include <windows.h>
-#endif
-
 #undef DEBUG_NLS
 
 #include "stdinc.h"
@@ -413,6 +409,7 @@ static void Default_TimeString(Word Hour, Word Minute, Word Second, Word Sec100,
   as_snprintf(Dest, DestSize, "%u:%u:%u", Hour, Minute, Second);
 }
 
+#include <windows.h>
 #include <windef.h>
 #include <winbase.h>
 #include <winnls.h>

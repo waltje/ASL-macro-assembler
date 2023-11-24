@@ -1,44 +1,38 @@
 # -------------------------------------------------------------------------
 # choose your compiler (must be ANSI-compliant!) and linker command, plus
-# any additionally needed flags.  Also set target directory and file extensions:
-#
-# Makefile.def for using Visual Studio on Windows.
+# any additionally needed flags
 
 
 # ...for host-side build tools:
+RM = del /q
+TARG_CLEAN = clean_windows
 
-RM	= del /q
-OBJDIR	=
-CC	= cl /nologo
-CFLAGS	= /O2
-OOBJ	= /Fo
-LD	= cl /nologo
-LDFLAGS	=
-EOBJ	= /Fe
-RC	= rc /fo $@
-HOST_OBJEXTENSION = .obj
+CC = gcc
+OBJDIR =
+CFLAGS = -O2 -Wall 
+LD = $(CC)
+LDFLAGS =
+LIBM =
+RC = windres -Ocoff -o $@
+HOST_OBJEXTENSION = .o
 HOST_EXEXTENSION = .exe
-LIBM	=
 
-TARG_OOBJ=$(OOBJ)
-TARG_EOBJ=$(EOBJ)
-
-# ...for the actual build targets.  This is the simple case for no cross-build:
-
-TARG_OBJDIR = $(OBJDIR)
 TARG_CC = $(CC)
+TARG_OBJDIR = $(OBJDIR)
 TARG_CFLAGS = $(CFLAGS)
-TARG_OBJEXTENSION = $(HOST_OBJEXTENSION)
+TARG_OBJEXTENSION = .o
 TARG_LD = $(LD)
 TARG_LDFLAGS = $(LDFLAGS)
 TARG_EXEXTENSION = $(HOST_EXEXTENSION)
+CHECK_TARG_CC =
 
-ALINKRES=alink.res
-ASLRES=as.res
-P2BINRES=p2bin.res
-P2HEXRES=p2hex.res
-PBINDRES=pbind.res
-PLISTRES=plist.res
+ALINK_RC_OBJECTS = alink.res
+AS_RC_OBJECTS    = as.res
+DAS_RC_OBJECTS   = das.res
+P2BIN_RC_OBJECTS = p2bin.res
+P2HEX_RC_OBJECTS = p2hex.res
+PBIND_RC_OBJECTS = pbind.res
+PLIST_RC_OBJECTS = plist.res
 
 # -------------------------------------------------------------------------
 # directories where binaries, includes, and manpages should go during

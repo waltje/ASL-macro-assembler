@@ -1,5 +1,5 @@
 # Tell source files to not include .msh files,
-# and use provided LIBDIR for.msg files at runtime:
+# and use provided LIBDIR for .out files at runtime:
 
 MSX_FLAGS=-DLIBDIR=\"$(LIBDIR)\"
 
@@ -7,18 +7,18 @@ MSX_FLAGS=-DLIBDIR=\"$(LIBDIR)\"
 
 DOS_MSX_FLAGS=-DLIBDIR="$(LIBDIR)"
 
-# generate .msg files
+# generate .out files
 
 ALLMSGTARGETS=\
- $(TARG_OBJDIR)./ioerrs.msg \
- $(TARG_OBJDIR)./cmdarg.msg \
- $(TARG_OBJDIR)./tools.msg \
- $(TARG_OBJDIR)./as.msg \
- $(TARG_OBJDIR)./plist.msg \
- $(TARG_OBJDIR)./alink.msg \
- $(TARG_OBJDIR)./pbind.msg \
- $(TARG_OBJDIR)./p2hex.msg \
- $(TARG_OBJDIR)./p2bin.msg
+ $(TARG_OBJDIR)./ioerrs.out \
+ $(TARG_OBJDIR)./cmdarg.out \
+ $(TARG_OBJDIR)./tools.out \
+ $(TARG_OBJDIR)./as.out \
+ $(TARG_OBJDIR)./plist.out \
+ $(TARG_OBJDIR)./alink.out \
+ $(TARG_OBJDIR)./pbind.out \
+ $(TARG_OBJDIR)./p2hex.out \
+ $(TARG_OBJDIR)./p2bin.out
 
 DASMSGTARGETS=\
- $(TARG_OBJDIR)./das.msg
+ $(TARG_OBJDIR)./das.out
