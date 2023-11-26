@@ -111,19 +111,34 @@ static Boolean DecodeAdr(const tStrComp *pArg, Boolean MayInc, Byte PCDisp, Byte
         StrCompIncRefLeft(&Left, 1);
         *Arg += 4;
       }
-      if (!as_strcasecmp(Left.str.p_str, "E"))
-        BAsmCode[1] = 0x80;
       /* Programmer's manual says that 'Auto-indexing requires ..., and a pointer register (other than PC)...' : */
-      else if (*Arg == (4 | REG_PC))
+      if (*Arg == (4 | REG_PC))
       {
         WrStrErrorPos(ErrNum_InvReg, &Right);
         return False;
       }
+      /* 0x80 -> use E register only applies if pointer register is not P0(PC): */
+      else if (!as_strcasecmp(Left.str.p_str, "E"))
+      {
+        if (*Arg == REG_PC)
+        {
+          WrStrErrorPos(ErrNum_InvAddrMode, &Left);
+          return False;
+        }
+        BAsmCode[1] = 0x80;
+      }
+      /* Depending on pointer register, valid range is -128...+127 or -127...+127: */
       else
       {
-        BAsmCode[1] = EvalStrIntExpression(&Left, SInt8, &OK);
-        if (!OK)
+        tEvalResult result;
+        BAsmCode[1] = EvalStrIntExpressionWithResult(&Left, SInt8, &result);
+        if (!result.OK)
           return False;
+        if ((*Arg != REG_PC) && (BAsmCode[1] == 0x80) && !mFirstPassUnknownOrQuestionable(result.Flags))
+        {
+          WrStrErrorPos(ErrNum_UnderRange, &Left);
+          return False;
+        }
       }
       return True;
     }
@@ -142,14 +157,15 @@ static Boolean DecodeAdr(const tStrComp *pArg, Boolean MayInc, Byte PCDisp, Byte
 
     if (!ChkSamePage(Target, PCVal, 12, Flags));
 
-    /* Since a displacement of 0x80 (-128) signifies usage of E register,
-       do not allow sich a displacement here: */
+    /* Since the pointer register is P0(PC) in this case, a displacement of 0x80
+       (-128) does not signify usage of E register, and can be used at
+       this place: */
 
-    else if ((Disp > 0x7f) && (Disp < 0xf81)) WrError(ErrNum_DistTooBig);
+    else if ((Disp > 0x7f) && (Disp < 0xf80)) WrError(ErrNum_DistTooBig);
     else
     {
       BAsmCode[1] = Disp & 0xff;
-      *Arg = 0;
+      *Arg = REG_PC;
       return True;
     }
   }

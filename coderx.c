@@ -1793,25 +1793,28 @@ static void DecodeMOV(Word Index)
 		{	/* (8) */
 			switch (size)
 			{
-			case 0x00:	/* B */
-				if (imm < -128 || imm > 255)
-				{
-					WrStrErrorPos(ErrNum_OverRange, &ArgStr[1]);
+				case 0x00:	/* B */
+					if (imm < -128 || imm > 255)
+					{
+						WrStrErrorPos(ErrNum_OverRange, &ArgStr[1]);
+						return;
+					}
+					isize = 0x01;
+					break;
+				case 0x01:	/* W */
+					if (imm < -32768 || imm > 65535)
+					{
+						WrStrErrorPos(ErrNum_OverRange, &ArgStr[1]);
+						return;
+					}
+					isize = ImmSize16(imm, flags);
+					break;
+				case 0x02:	/* L */
+					isize = ImmSize32(imm, flags);
+					break;
+				default:
+					WrError(ErrNum_InternalError);
 					return;
-				}
-				isize = 0x01;
-				break;
-			case 0x01:	/* W */
-				if (imm < -32768 || imm > 65535)
-				{
-					WrStrErrorPos(ErrNum_OverRange, &ArgStr[1]);
-					return;
-				}
-				isize = ImmSize16(imm, flags);
-				break;
-			case 0x02:	/* L */
-				isize = ImmSize32(imm, flags);
-				break;
 			}
 
 			dsize = DispSize(disp, flags2, scale);
