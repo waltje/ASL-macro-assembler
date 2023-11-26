@@ -1,0 +1,7 @@
+*.exe
+*.res
+*.obj
+*.o
+*.cmd
+*.sh
+*.orig
